@@ -1,0 +1,11 @@
+<div>
+  <h1>Produk Digital</h1>
+
+  <ul>
+    <% @digital_products.each do |product| %>
+      <li>
+        <a href="<%= product_path(product) %>"><%= product.name %></a>
+      </li>
+    <% end %>
+  </ul>
+</div>

@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  short_description: MyString
+  description: MyText
+  price: 1
+  sale_price: 1
+  sale_price_starts_at: 2025-06-13 23:59:50
+  sale_price_ends_at: 2025-06-13 23:59:50
+  slug: MyString
+  productable_id: 1
+  productable_type: MyString
+
+two:
+  name: MyString
+  short_description: MyString
+  description: MyText
+  price: 1
+  sale_price: 1
+  sale_price_starts_at: 2025-06-13 23:59:50
+  sale_price_ends_at: 2025-06-13 23:59:50
+  slug: MyString
+  productable_id: 1
+  productable_type: MyString

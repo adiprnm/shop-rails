@@ -1,0 +1,33 @@
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Produk</h1>
+
+  <%= link_to "+ Tambah produk baru", new_admin_product_path %>
+
+  <div class="full-width overflow-x-scroll mt-8">
+    <table style="min-width: 500px;">
+      <thead>
+        <th>ID</th>
+        <th>Nama</th>
+        <th>Harga</th>
+        <th>Status</th>
+        <th>Aksi</th>
+      </thead>
+      <tbody>
+        <% @products.each do |product| %>
+          <tr>
+            <td><%= product.id %></td>
+            <td><%= product.name %></td>
+            <td><%= idr product.price %></td>
+            <td><%= product.state %></td>
+            <td>
+              <%= link_to "Edit", edit_admin_product_path(product) %>
+              <%= button_to "Hapus", admin_product_path(product), method: :delete, class: "danger-text", form_class: "inline", data: { turbo_confirm: "Kamu yakin?" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

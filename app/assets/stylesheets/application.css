@@ -1,0 +1,113 @@
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+:root {
+  --background-color: #ffffff;
+  --body-color: #000000;
+  --primary-color: #0066cc;
+  --body-font: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--body-font);
+  margin: 0;
+  padding: 0;
+}
+
+a { color: var(--primary-color); }
+li a { text-decoration: none; }
+
+blockquote {
+  color: #999999;
+  border-left: 4px solid #dfdfdf;
+  padding-left: 1rem;
+  margin-left: 0;
+}
+
+p code, li code, h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
+  background-color: #f1f1f1; /* light gray */
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+
+p, li { line-height: 1.5em; }
+button:hover, summary:hover { cursor: pointer; }
+
+article hr {
+  border: none;
+  border-bottom: 1px solid gray;
+  margin: 2rem auto;
+  width: 50px;
+}
+
+article p a {
+  text-decoration: underline;
+}
+
+img {
+  width: 100%;
+  border-radius: 4px;
+
+  @media (min-width: 768px) {
+    width: 80%;
+  }
+}
+
+p img {
+  display: block;
+  margin: 0 auto;
+}
+p:has(img + em) {
+  text-align: center;
+  font-size: 12px;
+}
+p img + em {
+  display: inline-block;
+  margin-top: 8px;
+  color: gray;
+}
+
+.guestbook {
+  width: 100%;
+  height: 300px;
+  background-color: #fff;
+  padding: 0.5rem 0;
+  border-radius: 0.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #121420;
+    color: #E4E6EB;
+  }
+
+  a { color: #B0B3BA; }
+
+  nav a,
+  nav a:visited,
+  .text-gray,
+  article a:visited {
+    color: #7A7E8A;
+  }
+
+  footer.text-gray { color: #B0B3BA; }
+  footer a { color: #7A7E8A; }
+  blockquote {
+    color: #7A7E8A;
+    border-left: 2px solid #7A7E8A;
+  }
+  p code, li code, h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
+    background-color: #252836;
+    color: #B0B3BA;
+  }
+}
+

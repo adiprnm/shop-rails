@@ -1,0 +1,12 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+thead { text-align: left; }
+th, td { padding: 8px; }
+
+@media (prefers-color-scheme: dark) {
+  table, th, td {
+    border: 1px solid #E4E6EB;
+  }
+}

@@ -1,0 +1,14 @@
+.product-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.table-wrapper {
+  max-width: 100%;
+  overflow-x: scroll;
+}
