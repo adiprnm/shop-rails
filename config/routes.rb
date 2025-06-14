@@ -15,5 +15,6 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :products
+    resource :settings, only: %w[ show update ]
   end
 end

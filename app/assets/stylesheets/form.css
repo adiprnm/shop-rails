@@ -27,7 +27,7 @@ img[src=""] { display: none; }
   }
 }
 
-.form-layout {
+.form-layout, .form-wrapper {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
 
@@ -35,22 +35,23 @@ img[src=""] { display: none; }
     grid-template-columns: 40% 60%;
   }
 
-  & .grouped {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-
-    @media (min-width: 480px) {
-      flex-direction: row;
-      gap: 1rem;
-    }
-
-    & > .form-group {
-      flex-basis: 50%;
-    }
-  }
   & fieldset, div.resource { display: none; }
   & input:checked ~ fieldset, input:checked ~ div.resource { display: block; }
+}
+
+.grouped {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  @media (min-width: 480px) {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  & > .form-group {
+    flex-basis: 50%;
+  }
 }
 
 .danger-button {

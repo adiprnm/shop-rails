@@ -1,0 +1,30 @@
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Pengaturan</h1>
+
+  <%= form_with url: admin_settings_path, method: :put do |f| %>
+    <h3>Situs</h3>
+
+    <div class="form-group">
+      <%= f.label :site_name %>
+      <%= f.text_field :site_name, value: Current.settings["site_name"] %>
+    </div>
+
+    <h3>Integrasi Midtrans</h3>
+
+    <div class="grouped">
+      <div class="form-group">
+        <%= f.label :payment_client_id %>
+        <%= f.text_field :payment_client_id, value: Current.settings["payment_client_id"] %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :payment_client_secret %>
+        <%= f.text_field :payment_client_secret, value: Current.settings["payment_client_secret"] %>
+      </div>
+    </div>
+
+    <%= f.submit "Simpan", class: "mt-8" %>
+  <% end %>
+</div>
