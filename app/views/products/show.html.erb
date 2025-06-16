@@ -14,7 +14,7 @@
   <div class="form-layout">
     <div>
       <% if @product.featured_image.attached? %>
-        <%= image_tag @product.featured_image, class: "product-image" %>
+        <%= image_tag @product.featured_image, class: "product-image product-image--full-height" %>
       <% end %>
     </div>
     <div>

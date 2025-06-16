@@ -36,8 +36,8 @@
           <% end %>
         </div>
 
-        <nav class="leading-loose">
-          <%= link_to "Beranda", root_path, class: "mr-2" %>
+        <nav class="leading-loose main-menu">
+          <%= render_markdown_as_html Current.settings["site_main_menu"] %>
         </nav>
       </heading>
 

@@ -19,6 +19,11 @@
       <%= f.file_field :og_image, data: { action: "image-preview#perform" } %>
     </div>
 
+    <div class="form-group">
+      <%= f.label :site_main_menu, "Menu Utama" %>
+      <%= f.text_area :site_main_menu, style: "min-height: 40px; font-family: monospace", value: Current.settings["site_main_menu"] %>
+    </div>
+
     <h3>Integrasi Midtrans</h3>
 
     <div class="form-group">

@@ -1,6 +1,4 @@
-class Admin::OrdersController < ApplicationController
-  layout "admin"
-
+class Admin::OrdersController < AdminController
   before_action :set_order, only: %w[ show edit update destroy ]
 
   def index

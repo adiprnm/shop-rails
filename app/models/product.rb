@@ -1,6 +1,8 @@
 class Product < ApplicationRecord
   delegated_type :productable, types: %w[ DigitalProduct ]
+
   has_one_attached :featured_image
+  has_and_belongs_to_many :categories
 
   enum :state, %w[ inactive active ]
 

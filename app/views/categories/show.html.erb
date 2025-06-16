@@ -1,15 +1,15 @@
-<%= content_for(:title) { "Jual produk digital dan produk fisik | #{ Current.settings["site_name"] }" } %>
+<%= content_for(:title) { "#{ @category.name } | #{ Current.settings["site_name"] }" } %>
 <%= content_for :head do %>
-  <%= tag.meta name: "description", content: "Jual produk digital dan produk fisik" %>
-  <%= tag.meta name: "og:title", content: Current.settings["site_name"] %>
+  <%= tag.meta name: "description", content: "List produk berdasarkan kategori #{ @category.name }" %>
+  <%= tag.meta name: "og:title", content: @category.name %>
   <% if Current.settings["og_image"].present? %>
     <%= tag.meta name: "og:image", content: request.base_url + Current.settings["og_image"] %>
   <% end %>
-  <%= tag.meta name: "og:description", content: "Jual produk digital dan produk fisik" %>
+  <%= tag.meta name: "og:description", content: "List produk berdasarkan kategori #{ @category.name }" %>
 <% end %>
 
 <div>
-  <h1>Produk Terbaru</h1>
+  <h1><%= @category.name %></h1>
 
   <% if @products.empty? %>
     <p>Belum ada produk yang tersedia.</p>

@@ -1,6 +1,4 @@
-class Admin::ProductsController < ApplicationController
-  layout "admin"
-
+class Admin::ProductsController < AdminController
   before_action :set_product, only: %i[ edit update destroy ]
 
   def index
@@ -37,7 +35,7 @@ class Admin::ProductsController < ApplicationController
       params.require(:product).permit(
         :name, :slug, :short_description, :description,
         :price, :sale_price, :sale_price_starts_at, :sale_price_ends_at,
-        :productable_type, :featured_image,
+        :productable_type, :featured_image, category_ids: [],
       )
     end
 

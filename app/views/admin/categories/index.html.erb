@@ -1,0 +1,33 @@
+<%= content_for(:title) { "Kategori | #{ Current.settings["site_name"] } admin" } %>
+
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Kategori</h1>
+
+  <%= link_to "+ Tambah kategori baru", new_admin_category_path %>
+
+  <div class="full-width overflow-x-scroll mt-8">
+    <table style="min-width: 500px;">
+      <thead>
+        <th>ID</th>
+        <th>Nama</th>
+        <th>Slug</th>
+        <th>Aksi</th>
+      </thead>
+      <tbody>
+        <% @categories.each do |category| %>
+          <tr>
+            <td><%= category.id %></td>
+            <td><%= category.name %></td>
+            <td><%= category.slug %></td>
+            <td>
+              <%= link_to "Edit", edit_admin_category_path(category) %>
+              <%= button_to "Hapus", admin_category_path(category), method: :delete, class: "danger-text", form_class: "inline", data: { turbo_confirm: "Kamu yakin?" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

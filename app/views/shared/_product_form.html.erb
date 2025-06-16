@@ -23,6 +23,15 @@
       <%= f.label :description %>
       <%= f.text_area :description %>
     </div>
+    <div class="form-group check-boxes">
+      <%= f.label :category_ids, "Category" %>
+      <%= f.collection_check_boxes :category_ids, Category.all, :id, :name do |b| %>
+        <%= b.label do %>
+          <%= b.check_box %>
+          <%= b.object.name %>
+        <% end %>
+      <% end %>
+    </div>
     <div class="form-group">
       <%= f.label :price %>
       <%= f.number_field :price, required: true %>

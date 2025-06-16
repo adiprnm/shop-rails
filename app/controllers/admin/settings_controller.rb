@@ -1,6 +1,4 @@
-class Admin::SettingsController < ApplicationController
-  layout "admin"
-
+class Admin::SettingsController < AdminController
   def update
     Setting.bulk_update(settings_params)
 
@@ -11,7 +9,7 @@ class Admin::SettingsController < ApplicationController
     def settings_params
       params.permit(
         :site_name, :payment_client_id, :payment_client_secret, :payment_api_host,
-        :og_image,
+        :og_image, :site_main_menu,
       )
     end
 end

@@ -1,0 +1,9 @@
+<%= content_for(:title) { "Edit #{ @category.name } | #{ Current.settings["site_name"] } admin" } %>
+
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Edit <%= @category.name %></h1>
+
+  <%= render 'form', category: @category %>
+</div>

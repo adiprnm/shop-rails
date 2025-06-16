@@ -1,0 +1,13 @@
+<%= form_for [:admin, category] do |f| %>
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, required: true %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :slug %>
+    <%= f.text_field :slug, required: true %>
+  </div>
+
+  <%= f.submit "Simpan" %>
+<% end %>
