@@ -1,5 +1,7 @@
 <div class="text-green">
-  <% if product.sale_price? %>
+  <% if product.coming_soon? %>
+    <span>Coming soon!</span>
+  <% elsif product.sale_price? %>
     <small class="text-gray"><del><%= idr product.price %></del></small>
     <span><%= idr product.sale_price %></span>
   <% else %>

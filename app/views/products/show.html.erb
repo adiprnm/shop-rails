@@ -1,16 +1,35 @@
 <%= render "shared/flash" %>
 
-<article class="form-layout">
-  <div>
-    <% if @product.featured_image.attached? %>
-      <%= image_tag @product.featured_image, class: "product-image" %>
-    <% end %>
-  </div>
-  <div>
-    <%= button_to "+ Keranjangin", add_to_cart_product_path(@product.slug), method: :post, form_class: "mb-4" %>
-    <%= render "product_price", product: @product %>
-    <h1 class="mt-2"><%= @product.name %></h1>
+<%= content_for(:title) { "#{ @product.name } | #{ Current.settings["site_name"] }" } %>
+<%= content_for :head do %>
+  <%= tag.meta name: "description", content: @product.short_description %>
+  <%= tag.meta name: "og:title", content: @product.name %>
+  <%= tag.meta name: "og:description", content: @product.short_description %>
+  <% if @product.featured_image.attached? %>
+    <%= tag.meta name: "og:image", content: request.base_url + url_for(@product.featured_image) %>
+  <% end %>
+<% end %>
 
+<article class="mb-16">
+  <div class="form-layout">
+    <div>
+      <% if @product.featured_image.attached? %>
+        <%= image_tag @product.featured_image, class: "product-image" %>
+      <% end %>
+    </div>
+    <div>
+      <%= render "product_price", product: @product %>
+      <h1 class="mt-2"><%= @product.name %></h1>
+      <p><%= @product.short_description %></p>
+
+      <% unless @product.coming_soon? %>
+        <%= button_to "+ Keranjangin", add_to_cart_product_path(@product.slug), method: :post, form_class: "mb-4" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <h2>Deskripsi</h2>
     <%= render_markdown_as_html @product.description %>
   </div>
 </article>

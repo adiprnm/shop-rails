@@ -34,6 +34,7 @@
 .block { display: block; }
 .flex { display: flex; }
 .items-end { align-items: flex-end; }
+.gap-1 { gap: 0.25rem; }
 .gap-2 { gap: 0.5rem; }
 .gap-4 { gap: 1rem; }
 .text-center { text-align: center; }
@@ -70,4 +71,11 @@ a:has(> article.product-card) {
   width: 100%;
   border: 1px solid #dfdfdf;
   margin-bottom: 0.5rem;
+}
+.site-title, .cart {
+  color: inherit;
+  text-decoration: none;
+}
+.cart-icon {
+  width: 20px;
 }

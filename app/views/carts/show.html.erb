@@ -1,3 +1,8 @@
+<%= content_for(:title) { "Keranjang | #{ Current.settings["site_name"] }" } %>
+<%= content_for :head do %>
+  <%= tag.meta name: "robots", content: "noindex" %>
+<% end %>
+
 <div class="mb-16">
   <h1>Keranjang</h1>
 

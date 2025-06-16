@@ -1,3 +1,13 @@
+<%= content_for(:title) { "Jual produk digital dan produk fisik | #{ Current.settings["site_name"] }" } %>
+<%= content_for :head do %>
+  <%= tag.meta name: "description", content: "Jual produk digital dan produk fisik" %>
+  <%= tag.meta name: "og:title", content: Current.settings["site_name"] %>
+  <% if Current.settings["og_image"].present? %>
+    <%= tag.meta name: "og:image", content: request.base_url + Current.settings["og_image"] %>
+  <% end %>
+  <%= tag.meta name: "og:description", content: "Jual produk digital dan produk fisik" %>
+<% end %>
+
 <div>
   <h1>Produk Terbaru</h1>
 
@@ -12,8 +22,6 @@
             <%= render "product_price", product: product %>
             <h2 class="product-title"><%= product.name %></h2>
           </header>
-
-          <p><%= product.short_description %></p>
         </article>
       <% end %>
     <% end %>

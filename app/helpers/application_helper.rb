@@ -4,4 +4,13 @@ module ApplicationHelper
 
     number_to_currency(amount, unit: "Rp", separator: ".", delimiter: ".", precision: 0)
   end
+
+  def icon(name, options)
+    file = Nokogiri::XML.parse Rails.root.join("app/assets/images/heroicons/#{name}.svg")
+    if options[:class].present?
+      file.at_css("svg").add_class(options[:class])
+    end
+    file.to_html.html_safe
+  end
+
 end

@@ -1,7 +1,6 @@
 input[type="text"],
 input[type="date"],
 input[type="number"],
-input[type="submit"],
 input[type="url"],
 select,
 fieldset,
@@ -13,7 +12,7 @@ textarea {
   font-size: inherit;
 }
 textarea { min-height: 200px; font-family: inherit; }
-input[type="submit"] { width: max-content; }
+input[type="submit"] { cursor: pointer; }
 fieldset { padding: 1rem; }
 img[src=""] { display: none; }
 

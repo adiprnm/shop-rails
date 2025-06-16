@@ -26,4 +26,8 @@ class Product < ApplicationRecord
   def actual_price
     sale_price? ? sale_price : price
   end
+
+  def coming_soon?
+    productable.resource_path.blank?
+  end
 end

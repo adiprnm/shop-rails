@@ -9,6 +9,8 @@ class ProductsController < ApplicationController
   end
 
   def add_to_cart
+    return redirect_to(request.referer.presence || root_url) if @product.coming_soon?
+
     Current.cart.add_item(@product)
 
     redirect_to product_path(@product.slug), notice: "Produk berhasil ditambahkan ke keranjang!"

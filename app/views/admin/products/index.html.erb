@@ -1,3 +1,5 @@
+<%= content_for(:title) { "Produk | #{ Current.settings["site_name"] } admin" } %>
+
 <div>
   <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
 

@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   private
     def set_settings
-      Current.settings = Setting.all.pluck(:key, :value).to_h
+      Current.settings = Setting.all.to_a.map { |setting| [setting.key, setting.value] }.to_h
     end
 
     def set_current_cart
