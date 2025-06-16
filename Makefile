@@ -2,6 +2,9 @@
 .PHONY: dev setup db
 
 dev:
+	bin/dev -b 0.0.0.0
+
+devsolid:
 	SOLID_QUEUE_IN_PUMA=1 bin/dev -b 0.0.0.0
 
 pc:

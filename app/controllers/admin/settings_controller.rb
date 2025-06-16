@@ -10,7 +10,7 @@ class Admin::SettingsController < ApplicationController
   private
     def settings_params
       params.permit(
-        :site_name, :payment_client_id, :payment_client_secret
+        :site_name, :payment_client_id, :payment_client_secret, :payment_api_host
       )
     end
 end

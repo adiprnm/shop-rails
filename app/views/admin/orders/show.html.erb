@@ -1,0 +1,59 @@
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Pesanan #<%= @order.id %></h1>
+
+  <table>
+    <tr>
+      <td><strong>Order ID</strong></td>
+      <td><%= @order.order_id %></td>
+    </tr>
+    <tr>
+      <td><strong>Nama Customer</strong></td>
+      <td><%= @order.customer_name %></td>
+    </tr>
+    <tr>
+      <td><strong>Email Customer</strong></td>
+      <td><%= @order.customer_email_address %></td>
+    </tr>
+    <tr>
+      <td><strong>Status</strong></td>
+      <td><%= @order.state %></td>
+    </tr>
+    <tr>
+      <td><strong>Status Diperbarui pada</strong></td>
+      <td><%= l @order.state_updated_at, format: :long %></td>
+    </tr>
+    <tr>
+      <td><strong>Total Harga</strong></td>
+      <td><%= idr @order.total_price %></td>
+    </tr>
+    <tr>
+      <td><strong>Response Midtrans</strong></td>
+      <td>
+        <details>
+          <summary>Lihat response</summary>
+
+          <pre><%= JSON.pretty_generate @order.integration_data %></pre>
+        </details>
+      </td>
+    </tr>
+  </table>
+
+  <h2 class="mt-8">Rincian</h2>
+
+  <table>
+    <thead>
+      <th>Nama</th>
+      <th>Harga</th>
+    </thead>
+    <tbody>
+      <% @order.line_items.each do |order_item| %>
+      <tr>
+        <td><%= link_to order_item.cartable_name, product_path(order_item.cartable.slug) %></td>
+        <td><%= idr order_item.cartable_price %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

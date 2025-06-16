@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  order: one
+  cartable: one
+  cartable_type: Cartable
+  cartable_name: MyString
+  cartable_price: 1
+
+two:
+  order: two
+  cartable: two
+  cartable_type: Cartable
+  cartable_name: MyString
+  cartable_price: 1

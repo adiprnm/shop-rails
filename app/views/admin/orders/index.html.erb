@@ -1,0 +1,31 @@
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Pesanan</h1>
+
+  <div class="full-width overflow-x-scroll mt-8">
+    <table style="min-width: 500px;">
+      <thead>
+        <th>Tanggal</th>
+        <th>Nama</th>
+        <th>Total Harga</th>
+        <th>Status</th>
+        <th>Aksi</th>
+      </thead>
+      <tbody>
+        <% @orders.each do |order| %>
+          <tr>
+            <td><%= order.created_at.strftime("%b %d, %Y") %></td>
+            <td><%= link_to order.customer_name, admin_order_path(order) %></td>
+            <td><%= idr order.total_price %></td>
+            <td><%= order.state %></td>
+            <td>
+              <%= link_to "Edit", edit_admin_order_path(order) %>
+              <%= button_to "Hapus", admin_order_path(order), method: :delete, class: "danger-text", form_class: "inline", data: { turbo_confirm: "Kamu yakin?" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

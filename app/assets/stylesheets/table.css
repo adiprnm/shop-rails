@@ -2,11 +2,14 @@ table {
   width: 100%;
   border-collapse: collapse;
 }
-thead { text-align: left; }
+thead { text-align: left; background-color: #f2f2f2; }
 th, td { padding: 8px; }
+table, th, td { border: 1px solid #dfdfdf; }
 
 @media (prefers-color-scheme: dark) {
   table, th, td {
     border: 1px solid #E4E6EB;
   }
+
+  thead { background-color: transparent; }
 }

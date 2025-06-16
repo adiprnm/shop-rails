@@ -1,0 +1,16 @@
+<%= render "shared/flash" %>
+
+<article class="form-layout">
+  <div>
+    <% if @product.featured_image.attached? %>
+      <%= image_tag @product.featured_image, class: "product-image" %>
+    <% end %>
+  </div>
+  <div>
+    <%= button_to "+ Keranjangin", add_to_cart_product_path(@product.slug), method: :post, form_class: "mb-4" %>
+    <%= render "product_price", product: @product %>
+    <h1 class="mt-2"><%= @product.name %></h1>
+
+    <%= render_markdown_as_html @product.description %>
+  </div>
+</article>

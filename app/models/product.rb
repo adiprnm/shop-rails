@@ -8,10 +8,22 @@ class Product < ApplicationRecord
     productable_type = product_params.delete(:productable_type)
 
     productable = case productable_type
-    when "digital_product"
+    when "DigitalProduct"
       DigitalProduct.new(**productable_params)
     end
 
     Product.create(productable: productable, **product_params)
+  end
+
+  def sale_price?
+    return false unless sale_price
+    return false if sale_price_starts_at? && sale_price_starts_at > Time.now
+    return false if sale_price_ends_at? && sale_price_ends_at < Time.now
+
+    true
+  end
+
+  def actual_price
+    sale_price? ? sale_price : price
   end
 end

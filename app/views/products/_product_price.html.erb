@@ -1,0 +1,8 @@
+<div class="text-green">
+  <% if product.sale_price? %>
+    <small class="text-gray"><del><%= idr product.price %></del></small>
+    <span><%= idr product.sale_price %></span>
+  <% else %>
+    <span><%= idr product.price %></span>
+  <% end %>
+</div>

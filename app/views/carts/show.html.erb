@@ -1,0 +1,63 @@
+<div class="mb-16">
+  <h1>Keranjang</h1>
+
+  <% if params[:order_id].present? %>
+    <p class="flash-success mt-8">Pembelian berhasil! Harap periksa email kakak ya, kami sudah mengirimkan akses terhadap produk yang kakak beli.</p>
+  <% end %>
+
+  <% if Current.cart.line_items.present? %>
+    <table style="font-size: 14px" class="mb-4">
+      <thead>
+        <tr>
+          <td>Produk</td>
+          <td>Harga</td>
+          <td>Aksi</td>
+        </tr>
+      </thead>
+      <tbody>
+        <% Current.cart.line_items.each do |line_item| %>
+          <tr>
+            <td><%= link_to line_item.cartable.name, product_path(line_item.cartable.slug) %></td>
+            <td class="text-green"><%= idr line_item.cartable.actual_price %></td>
+            <td>
+              <%= button_to "Hapus", cart_line_item_path(line_item), method: :delete, class: "danger-text", data: { turbo_confirm: "Hapus #{line_item.cartable.name} dari keranjang?" } %>
+            </td>
+          </tr>
+        <% end %>
+        <tr>
+          <td><strong>Total</strong></td>
+          <td colspan="2" class="text-green"><%= idr Current.cart.total_price %></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 class="mt-8">Checkout</h2>
+
+    <%= form_with url: checkout_path, method: :post, data: { turbo: false, controller: "auto-filler", auto_filler_fields_value: %w[ customer_name customer_email_address ] } do |f| %>
+      <div class="grouped mb-4">
+        <div class="form-group">
+          <%= f.label :customer_name, "Nama" %>
+          <%= f.text_field :customer_name, required: true, data: { action: "auto-filler#save " } %>
+        </div>
+        <div class="form-group">
+          <%= f.label :customer_email_address, "Email" %>
+          <%= f.text_field :customer_email_address, required: true, data: { action: "auto-filler#save" } %>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= f.check_box :customer_agree_to_terms, style: "align-self: flex-start" %>
+        <%= f.label :customer_agree_to_terms, "Saya setuju untuk menerima Syarat dan Ketentuan yang berlaku" %>
+      </div>
+
+      <div class="flex items-center gap-2 mb-4">
+        <%= f.check_box :customer_agree_to_receive_newsletter, style: "align-self: flex-start" %>
+        <%= f.label :customer_agree_to_receive_newsletter, "Saya setuju untuk menerima email promosi dan penawaran menarik lainnya" %>
+      </div>
+
+      <%= f.submit "Checkout sekarang juga", class: "mt-4" %>
+    <% end %>
+  <% else %>
+    <p>Keranjang kamu masih kosong nih. <%= link_to "Belanja sekarang", products_path %></p>
+  <% end %>
+</div>

@@ -1,5 +1,21 @@
 class ProductsController < ApplicationController
+  before_action :set_product, only: %w[ show add_to_cart ]
+
   def index
     @products = Product.active.order(id: :desc)
   end
+
+  def show
+  end
+
+  def add_to_cart
+    Current.cart.add_item(@product)
+
+    redirect_to product_path(@product.slug), notice: "Produk berhasil ditambahkan ke keranjang!"
+  end
+
+  private
+    def set_product
+      @product = Product.find_by slug: params[:id]
+    end
 end
