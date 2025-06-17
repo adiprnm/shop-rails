@@ -1,4 +1,4 @@
-class Admin::EmailsController < ApplicationController
+class Admin::EmailsController < AdminController
   def test
     DummyMailer.test_email(params[:email_address]).deliver_now
     message = "Email berhasil dikirim! Silahkan cek kotak masuk."
