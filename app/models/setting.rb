@@ -6,6 +6,7 @@ class Setting < ApplicationRecord
   KEYS = %i[
     site_name
     site_main_menu
+    site_storage_host
     og_image
     payment_client_id
     payment_client_secret
