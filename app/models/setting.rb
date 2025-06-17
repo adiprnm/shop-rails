@@ -5,6 +5,7 @@ class Setting < ApplicationRecord
 
   KEYS = %i[
     site_name
+    site_favicon
     site_main_menu
     site_storage_host
     og_image

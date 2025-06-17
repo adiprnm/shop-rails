@@ -8,9 +8,16 @@
   <%= form_with url: admin_settings_path, method: :put do |f| %>
     <h3>Situs</h3>
 
-    <div class="form-group">
-      <%= f.label :site_name, "Nama Situs" %>
-      <%= f.text_field :site_name, value: Current.settings["site_name"] %>
+    <div class="grouped">
+      <div class="form-group">
+        <%= f.label :site_name, "Nama Situs" %>
+        <%= f.text_field :site_name, value: Current.settings["site_name"] %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :site_favicon, "Favicon" %>
+        <%= f.text_field :site_favicon, value: Current.settings["site_favicon"] %>
+      </div>
     </div>
 
     <div class="form-group">
