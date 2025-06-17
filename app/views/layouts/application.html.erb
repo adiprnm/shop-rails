@@ -44,5 +44,9 @@
         <%= yield %>
       </div>
     </main>
+
+    <% if Rails.env.production? %>
+      <script src="https://stats.adipurnm.my.id/script.js" data-website="<%= URI.parse(request.base_url).host %>"></script>
+    <% end %>
   </body>
 </html>
