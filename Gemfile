@@ -65,3 +65,5 @@ group :test do
 end
 
 gem "redcarpet", "~> 3.6"
+
+gem "mission_control-jobs", "~> 1.0"

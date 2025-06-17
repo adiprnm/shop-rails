@@ -39,4 +39,6 @@ Rails.application.routes.draw do
       post :payment
     end
   end
+
+  mount MissionControl::Jobs::Engine, at: "/jobs"
 end
