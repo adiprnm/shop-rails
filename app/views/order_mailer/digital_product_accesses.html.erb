@@ -5,14 +5,12 @@
 <table >
   <thead style="text-align: left;">
     <th>Nama</th>
-    <th>Harga</th>
     <th>URL</th>
   </thead>
   <tbody>
     <% @products.each.with_index(1) do |item, index| %>
       <tr>
         <td><%= item.orderable_name %></td>
-        <td><%= idr item.orderable_price %></td>
         <td>
           <% prefix = item.productable.url? ? "" : (Current.settings.to_h["storage_host"].presence || "http://localhost:3000") %>
           <%= link_to "Klik di sini", prefix + item.productable.resource_path %>
