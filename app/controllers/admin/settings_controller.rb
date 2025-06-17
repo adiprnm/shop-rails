@@ -7,9 +7,6 @@ class Admin::SettingsController < AdminController
 
   private
     def settings_params
-      params.permit(
-        :site_name, :payment_client_id, :payment_client_secret, :payment_api_host,
-        :og_image, :site_main_menu,
-      )
+      params.permit(*Setting::KEYS)
     end
 end

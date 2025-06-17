@@ -27,7 +27,7 @@ class Integrations::MidtransController < ApplicationController
   def valid_signature?
     required_params = params.permit(:order_id, :status_code, :gross_amount)
     required_params = required_params.as_json.values_at("order_id", "status_code", "gross_amount")
-    required_params.push Rails.application.credentials.dig(:midtrans, :server_key)
+    required_params.push Current.settings["payment_client_secret"]
     payload = format("%s%s%s%s", *required_params)
 
     digest = Digest::SHA2.new(512).hexdigest(payload)

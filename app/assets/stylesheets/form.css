@@ -77,3 +77,10 @@ img[src=""] { display: none; }
   padding: 8px;
   border-radius: 4px;
 }
+
+.flash-error {
+  background-color: red;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+}

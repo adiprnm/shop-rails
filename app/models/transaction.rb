@@ -10,11 +10,14 @@ class Transaction
       total_price: cart.total_price,
       **params,
     )
+    return @order if @order.invalid?
+
     cart.line_items.each do |line_item|
       @order.line_items.create(
-        cartable: line_item.cartable,
-        cartable_name: line_item.cartable.name,
-        cartable_price: line_item.cartable.actual_price
+        orderable: line_item.cartable,
+        orderable_name: line_item.cartable.name,
+        orderable_price: line_item.cartable.actual_price,
+        productable: line_item.cartable.productable,
       )
     end
     cart.line_items.delete_all

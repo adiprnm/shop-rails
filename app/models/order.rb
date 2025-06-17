@@ -9,8 +9,16 @@ class Order < ApplicationRecord
   before_create -> { self.order_id = SecureRandom.uuid }
   after_save_commit :send_order_successful_email, if: -> { saved_change_to_state? && paid? }
 
+  validates :customer_agree_to_terms, acceptance: true
+
   private
     def send_order_successful_email
-      # OrderMailer.with(order: self).order_successful.deliver_later
+      products = line_items.to_a
+      OrderMailer.with(order: self, products: products).order_invoice.deliver_later
+
+      digital_products = products.select(&:digital_product?)
+      if digital_products.present?
+        OrderMailer.with(order: self, products: digital_products).digital_product_accesses.deliver_later
+      end
     end
 end

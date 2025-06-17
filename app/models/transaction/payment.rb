@@ -42,13 +42,13 @@ class Transaction::Payment
       item_details: order.line_items.map do |line_item|
         {
           id: line_item.id,
-          name: line_item.cartable_name,
+          name: line_item.orderable_name,
           quantity: 1,
-          price: line_item.cartable_price,
+          price: line_item.orderable_price,
           brand: "adipurnm",
-          category: "Digital Product",
+          category: line_item.orderable.categories.pluck(:name).join(", ").presence || "Lainnya",
           merchant_name: "adipurnm",
-          url: ENV["APP_HOST"].to_s + Rails.application.routes.url_helpers.product_path(line_item.cartable.slug)
+          url: ENV["APP_HOST"].to_s + Rails.application.routes.url_helpers.product_path(line_item.orderable.slug)
         }
       end
     }

@@ -54,6 +54,7 @@
 .items-center { align-items: center; }
 .h-min { height: min-content; }
 .w-1\/2 { width: 50%; }
+.min-w-max { min-width: max-content; }
 .text-right { text-align: right; }
 .text-sm { font-size: 0.875rem; }
 .font-normal { font-weight: 400; }

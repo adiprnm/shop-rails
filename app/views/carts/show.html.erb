@@ -4,11 +4,13 @@
 <% end %>
 
 <div class="mb-16">
-  <h1>Keranjang</h1>
-
   <% if params[:order_id].present? %>
     <p class="flash-success mt-8">Pembelian berhasil! Harap periksa email kakak ya, kami sudah mengirimkan akses terhadap produk yang kakak beli.</p>
   <% end %>
+
+  <%= tag.div flash[:alert], class: "flash-error mb-4" if flash[:alert] %>
+
+  <h1>Keranjang</h1>
 
   <% if Current.cart.line_items.present? %>
     <table style="font-size: 14px" class="mb-4">
@@ -53,6 +55,9 @@
       <div class="flex items-center gap-2">
         <%= f.check_box :customer_agree_to_terms, style: "align-self: flex-start" %>
         <%= f.label :customer_agree_to_terms, "Saya setuju untuk menerima Syarat dan Ketentuan yang berlaku" %>
+        <% if @order && @order.errors[:customer_agree_to_terms].present? %>
+          <p class="text-red"><%= @order.errors[:customer_agree_to_terms].first %></p>
+        <% end %>
       </div>
 
       <div class="flex items-center gap-2 mb-4">

@@ -3,6 +3,27 @@ class Setting < ApplicationRecord
 
   has_one_attached :file
 
+  KEYS = %i[
+    site_name
+    site_main_menu
+    og_image
+    payment_client_id
+    payment_client_secret
+    payment_api_host
+    email_sender_email
+    email_sender_name
+    smtp_host
+    smtp_port
+    smtp_username
+    smtp_password
+  ]
+
+  KEYS.each do |key|
+    define_singleton_method key do
+      find_or_initialize_by(key: key)
+    end
+  end
+
   def self.bulk_update(params)
     params.each do |key, value|
       if key.to_s == "og_image"

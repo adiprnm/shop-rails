@@ -3,42 +3,44 @@
 
   <h1>Pesanan #<%= @order.id %></h1>
 
-  <table>
-    <tr>
-      <td><strong>Order ID</strong></td>
-      <td><%= @order.order_id %></td>
-    </tr>
-    <tr>
-      <td><strong>Nama Customer</strong></td>
-      <td><%= @order.customer_name %></td>
-    </tr>
-    <tr>
-      <td><strong>Email Customer</strong></td>
-      <td><%= @order.customer_email_address %></td>
-    </tr>
-    <tr>
-      <td><strong>Status</strong></td>
-      <td><%= @order.state %></td>
-    </tr>
-    <tr>
-      <td><strong>Status Diperbarui pada</strong></td>
-      <td><%= l @order.state_updated_at, format: :long %></td>
-    </tr>
-    <tr>
-      <td><strong>Total Harga</strong></td>
-      <td><%= idr @order.total_price %></td>
-    </tr>
-    <tr>
-      <td><strong>Response Midtrans</strong></td>
-      <td>
-        <details>
-          <summary>Lihat response</summary>
+  <div class="full-width overflow-x-scroll">
+    <table>
+      <tr>
+        <td class="min-w-max"><strong>Order ID</strong></td>
+        <td><%= @order.order_id %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Nama Customer</strong></td>
+        <td><%= @order.customer_name %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Email Customer</strong></td>
+        <td><%= @order.customer_email_address %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Status</strong></td>
+        <td class="min-w-max"><%= @order.state %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Status Diperbarui pada</strong></td>
+        <td><%= l @order.state_updated_at, format: :long %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Total Harga</strong></td>
+        <td><%= idr @order.total_price %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Response Midtrans</strong></td>
+        <td>
+          <details>
+            <summary>Lihat response</summary>
 
-          <pre><%= JSON.pretty_generate @order.integration_data %></pre>
-        </details>
-      </td>
-    </tr>
-  </table>
+            <pre><%= JSON.pretty_generate @order.integration_data %></pre>
+          </details>
+        </td>
+      </tr>
+    </table>
+  </div>
 
   <h2 class="mt-8">Rincian</h2>
 
@@ -50,8 +52,8 @@
     <tbody>
       <% @order.line_items.each do |order_item| %>
       <tr>
-        <td><%= link_to order_item.cartable_name, product_path(order_item.cartable.slug) %></td>
-        <td><%= idr order_item.cartable_price %></td>
+        <td><%= link_to order_item.orderable_name, product_path(order_item.orderable.slug) %></td>
+        <td><%= idr order_item.orderable_price %></td>
       </tr>
       <% end %>
     </tbody>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_16_130101) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_16_171900) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -76,14 +76,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_16_130101) do
 
   create_table "order_line_items", force: :cascade do |t|
     t.integer "order_id", null: false
-    t.string "cartable_type", null: false
-    t.integer "cartable_id", null: false
-    t.string "cartable_name", null: false
-    t.integer "cartable_price", null: false
+    t.string "orderable_type", null: false
+    t.integer "orderable_id", null: false
+    t.string "orderable_name", null: false
+    t.integer "orderable_price", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["cartable_type", "cartable_id"], name: "index_order_line_items_on_cartable"
+    t.string "productable_type"
+    t.integer "productable_id"
     t.index ["order_id"], name: "index_order_line_items_on_order_id"
+    t.index ["orderable_type", "orderable_id"], name: "index_order_line_items_on_cartable"
+    t.index ["productable_type", "productable_id"], name: "index_order_line_items_on_productable"
   end
 
   create_table "orders", force: :cascade do |t|

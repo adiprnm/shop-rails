@@ -1,0 +1,33 @@
+<h2>Halo kak <%= @order.customer_name %>!</h2>
+
+<p style="line-height: 1.5">Berikut akses menuju produk yang kakak beli:</p>
+
+<table >
+  <thead style="text-align: left;">
+    <th>Nama</th>
+    <th>Harga</th>
+    <th>URL</th>
+  </thead>
+  <tbody>
+    <% @products.each.with_index(1) do |item, index| %>
+      <tr>
+        <td><%= item.orderable_name %></td>
+        <td><%= idr item.orderable_price %></td>
+        <td>
+          <% prefix = item.productable.url? ? "" : (Current.settings.to_h["storage_host"].presence || "http://localhost:3000") %>
+          <%= link_to "Klik di sini", prefix + item.productable.resource_path %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<p style="line-height: 1.5">Jika ada link yang sudah tidak berfungsi, bisa hubungi saya via <%= link_to "Threads", "https://www.threads.com/@by.adipurnm", style: "color: #0066cc" %> atau <%= link_to "DM Instagram", "https://instagram.com/by.adipurnm", style: "color: #0066cc" %> 🫡</p>
+
+<p style="line-height: 1.5">Semoga produknya bermanfaat yaa!</p>
+
+<p style="line-height: 1.5; margin-top: 3rem;">
+  Salam,<br>
+  <%= Setting.email_sender_name.value %>
+</p>
+

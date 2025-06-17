@@ -1,22 +1,25 @@
 class CheckoutsController < ApplicationController
   def create
     ActiveRecord::Base.transaction do
-      order = Transaction.new(Current.cart).create(checkout_params)
+      @order = Transaction.new(Current.cart).create(checkout_params)
+      if @order.invalid?
+        redirect_to cart_path, alert: @order.errors.full_messages.first
+      end
 
-      if order.total_price.zero?
-        order.paid!
-        redirect_to cart_path(order_id: order.order_id)
+      if @order.total_price.zero?
+        @order.paid!
+        redirect_to cart_path(order_id: @order.order_id)
       else
         begin
-          Transaction::Payment.cancel(order.order_id)
+          Transaction::Payment.cancel(@order.order_id)
         rescue MidtransClient::Error => e
           raise StandardError, e if e.message.exclude?("404")
         ensure
-          order.order_id = SecureRandom.uuid
-          order.save
+          @order.order_id = SecureRandom.uuid
+          @order.save
         end
 
-        payment = Transaction::Payment.new(order)
+        payment = Transaction::Payment.new(@order)
         redirect_to payment.payment_url(url: root_url, name: checkout_params[:name]), allow_other_host: true
       end
     rescue StandardError => e
