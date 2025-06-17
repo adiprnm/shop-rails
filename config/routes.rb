@@ -25,6 +25,11 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :products
     resources :categories
+    resources :emails, only: %w[ index ] do
+      collection do
+        post :test
+      end
+    end
     resources :orders
     resource :settings, only: %w[ show update ]
   end
