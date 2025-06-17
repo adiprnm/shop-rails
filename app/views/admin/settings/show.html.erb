@@ -91,6 +91,21 @@
         <%= f.text_field :smtp_password, value: Current.settings["smtp_password"] %>
       </div>
     </div>
+
+    <h3>Akun Admin</h3>
+
+    <div class="grouped">
+      <div class="form-group">
+        <%= f.label :admin_username, "Username" %>
+        <%= f.text_field :admin_username, value: Current.settings["admin_username"] %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :admin_password, "Password" %>
+        <%= f.text_field :admin_password, value: Current.settings["admin_password"] %>
+      </div>
+    </div>
+
     <%= f.submit "Simpan", class: "mt-4" %>
   <% end %>
 </div>

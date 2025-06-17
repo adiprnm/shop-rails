@@ -18,6 +18,8 @@ class Setting < ApplicationRecord
     smtp_port
     smtp_username
     smtp_password
+    admin_username
+    admin_password
   ]
 
   KEYS.each do |key|
@@ -37,6 +39,8 @@ class Setting < ApplicationRecord
   end
 
   def value
-    super || Rails.application.routes.url_helpers.rails_blob_url(file, only_path: true)
+    return super unless file.attached?
+
+    Rails.application.routes.url_helpers.rails_blob_url(file, only_path: true)
   end
 end
