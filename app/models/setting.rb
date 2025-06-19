@@ -20,7 +20,8 @@ class Setting < ApplicationRecord
     smtp_password
     admin_username
     admin_password
-  ]
+  ].freeze
+  ATTACHABLE_KEYS = %i[ site_favicon og_image ].freeze
 
   KEYS.each do |key|
     define_singleton_method key do
@@ -30,7 +31,7 @@ class Setting < ApplicationRecord
 
   def self.bulk_update(params)
     params.each do |key, value|
-      if key.to_s == "og_image"
+      if key.to_sym.in?(ATTACHABLE_KEYS)
         find_or_initialize_by(key: key).update(file: value)
       else
         find_or_initialize_by(key: key).update(value: value)
@@ -41,6 +42,6 @@ class Setting < ApplicationRecord
   def value
     return super unless file.attached?
 
-    Rails.application.routes.url_helpers.rails_blob_url(file, only_path: true)
+    Rails.application.routes.url_helpers.rails_blob_url(file, disposition: "inline", only_path: true)
   end
 end

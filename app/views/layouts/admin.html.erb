@@ -13,7 +13,10 @@
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E<%= Current.settings["site_favicon"] %>%3C/text%3E%3C/svg%3E">
+    <%= favicon = Setting.site_favicon %>
+    <% if favicon.present? %>
+      <link rel="icon" type="<%= favicon.file.content_type %>" href="<%= request.base_url + favicon.value %>">
+    <% end %>
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
