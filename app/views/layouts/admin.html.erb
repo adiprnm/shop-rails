@@ -29,6 +29,7 @@
       <heading>
         <h2><%= Current.settings["site_name"] %> admin</h2>
         <nav class="leading-loose">
+          <%= link_to "Dashboard", admin_index_path, class: "mr-2" %>
           <%= link_to "Pesanan", admin_orders_path, class: "mr-2" %>
           <%= link_to "Produk", admin_products_path, class: "mr-2" %>
           <%= link_to "Kategori", admin_categories_path, class: "mr-2" %>

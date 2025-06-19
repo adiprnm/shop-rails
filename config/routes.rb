@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   end
   resource :checkout, only: %w[ create ]
 
+  resources :admin, controller: "admin", only: %w[ index ]
   namespace :admin do
     resources :products
     resources :categories
