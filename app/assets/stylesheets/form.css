@@ -11,9 +11,10 @@ textarea {
   border: 1px solid #dfdfdf;
   border-radius: 4px;
   font-size: inherit;
+  font-family: inherit;
 }
 textarea { min-height: 200px; font-family: inherit; }
-input[type="submit"] { cursor: pointer; }
+input[type="submit"] { cursor: pointer; font-family: inherit; }
 fieldset { padding: 1rem; }
 img[src=""] { display: none; }
 

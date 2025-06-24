@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <link rel="preload" href="/fonts/PTSerif-Regular.ttf">
+    <link rel="preload" href="/fonts/PTSerif-Bold.ttf">
+    <link rel="preload" href="/fonts/PTSerif-Italic.ttf">
+    <link rel="preload" href="/fonts/PTSerif-BoldItalic.ttf">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -16,9 +20,8 @@
     <% favicon = Setting.site_favicon %>
     <% if favicon.present? %>
       <link rel="shortcut icon" type="<%= favicon.file.content_type %>" href="<%= favicon.value %>">
+      <link rel="apple-touch-icon" href="<%= favicon.value %>">
     <% end %>
-
-    <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
