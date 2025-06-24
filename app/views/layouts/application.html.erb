@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="preload" href="/fonts/PTSerif-Regular.ttf">
-    <link rel="preload" href="/fonts/PTSerif-Bold.ttf">
-    <link rel="preload" href="/fonts/PTSerif-Italic.ttf">
-    <link rel="preload" href="/fonts/PTSerif-BoldItalic.ttf">
+    <% font_files.each do |font_file| %>
+      <link rel="preload" href="<%= asset_path(font_file) %>">
+    <% end %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 

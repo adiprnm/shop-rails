@@ -13,4 +13,9 @@ module ApplicationHelper
     file.to_html.html_safe
   end
 
+  def font_files
+    Dir.glob(Rails.root.join("app/assets/fonts/*.ttf")).to_a.tap do |files|
+      files.map! { |file| file.split("/").last }
+    end
+  end
 end
