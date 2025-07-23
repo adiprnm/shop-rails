@@ -41,5 +41,7 @@ Rails.application.routes.draw do
     end
   end
 
+  get "syarat-dan-ketentuan" => "pages#terms_and_conditions"
+
   mount MissionControl::Jobs::Engine, at: "/jobs"
 end

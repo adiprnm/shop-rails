@@ -24,6 +24,11 @@
       <%= f.text_field :site_storage_host, value: Current.settings["site_storage_host"] %>
     </div>
 
+    <div class="form-group">
+      <%= f.label :site_terms_and_conditions_url, "URL halaman Syarat dan Ketentuan" %>
+      <%= f.text_field :site_terms_and_conditions_url, value: Current.settings["site_terms_and_conditions_url"].presence || "/syarat-dan-ketentuan" %>
+    </div>
+
     <div class="form-group" data-controller="image-preview">
       <%= f.label :og_image, "Open Graph Image" %>
       <%= image_tag Current.settings["og_image"].present? ? request.base_url + Current.settings["og_image"] : "", data: { image_preview_target: "preview" } %>

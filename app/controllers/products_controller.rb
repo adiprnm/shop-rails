@@ -13,6 +13,7 @@ class ProductsController < ApplicationController
 
     Current.cart.add_item(@product)
 
+    flash[:action] = "add_product_to_cart"
     redirect_to product_path(@product.slug), notice: "Produk berhasil ditambahkan ke keranjang!"
   end
 

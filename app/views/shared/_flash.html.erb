@@ -1,1 +1,8 @@
-<%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+<% if flash[:notice] %>
+  <div class="flash-success mb-4">
+    <%= flash[:notice] %>
+    <% if flash[:action] == "add_product_to_cart" %>
+      <%= link_to "Lihat keranjang", cart_path, style: "text-decoration: underline; color: #38e85e" %>
+    <% end %>
+  </div>
+<% end %>

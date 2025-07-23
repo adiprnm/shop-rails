@@ -23,7 +23,7 @@
       <p><%= @product.short_description %></p>
 
       <% unless @product.coming_soon? %>
-        <%= button_to "+ Keranjangin", add_to_cart_product_path(@product.slug), method: :post, form_class: "mb-4" %>
+        <%= button_to "+ Keranjangin", add_to_cart_product_path(@product.slug), method: :post, form: { data: { controller: "busy-handler" } }, form_class: "mb-4", data: { action: "busy-handler#handle" } %>
       <% end %>
     </div>
   </div>

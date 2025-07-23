@@ -16,3 +16,31 @@
   max-width: 100%;
   overflow-x: scroll;
 }
+
+.grouped {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  @media (min-width: 480px) {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  & > .form-group {
+    flex-basis: 50%;
+  }
+}
+
+.form-layout, .form-wrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+
+  @media (min-width: 480px) {
+    grid-template-columns: 40% 60%;
+  }
+
+  & fieldset, div.resource { display: none; }
+  & input:checked ~ fieldset, input:checked ~ div.resource { display: block; }
+}

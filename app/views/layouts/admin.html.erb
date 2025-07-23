@@ -27,7 +27,10 @@
   <body>
     <main class="container px-4 mb-16">
       <heading>
-        <h2><%= Current.settings["site_name"] %> admin</h2>
+      <p>
+        <strong class="mr-2" style="font-size: 1.25rem;"><%= Current.settings["site_name"] %> admin</strong>
+        <small style="font-size: 13px"><%= link_to "Kembali ke toko", root_path %> </small>
+      </p>
         <nav class="leading-loose">
           <%= link_to "Dashboard", admin_index_path, class: "mr-2" %>
           <%= link_to "Pesanan", admin_orders_path, class: "mr-2" %>

@@ -27,7 +27,7 @@
             <td><%= link_to line_item.cartable.name, product_path(line_item.cartable.slug) %></td>
             <td><%= idr line_item.cartable.actual_price %></td>
             <td>
-              <%= button_to "Hapus", cart_line_item_path(line_item), method: :delete, class: "danger-text", data: { turbo_confirm: "Hapus #{line_item.cartable.name} dari keranjang?" } %>
+              <%= link_to "Hapus", cart_line_item_path(line_item), data: { turbo_method: :delete, turbo_confirm: "Hapus #{line_item.cartable.name} dari keranjang?" }, class: "text-red" %>
             </td>
           </tr>
         <% end %>
@@ -52,16 +52,18 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
-        <%= f.check_box :customer_agree_to_terms, style: "align-self: flex-start" %>
-        <%= f.label :customer_agree_to_terms, "Saya setuju untuk menerima Syarat dan Ketentuan yang berlaku" %>
+      <div class="flex items-center gap-2 mb-4">
+        <%= f.check_box :customer_agree_to_terms, style: "aspect-ratio: 1" %>
+        <%= f.label :customer_agree_to_terms do  %>
+          Saya setuju untuk menerima <%= link_to "Syarat dan Ketentuan", Current.settings["site_terms_and_conditions_url"].presence || "/syarat-dan-ketentuan" %> yang berlaku.
+        <% end %>
         <% if @order && @order.errors[:customer_agree_to_terms].present? %>
           <p class="text-red"><%= @order.errors[:customer_agree_to_terms].first %></p>
         <% end %>
       </div>
 
       <div class="flex items-center gap-2 mb-4">
-        <%= f.check_box :customer_agree_to_receive_newsletter, style: "align-self: flex-start" %>
+        <%= f.check_box :customer_agree_to_receive_newsletter, style: "aspect-ratio: 1" %>
         <%= f.label :customer_agree_to_receive_newsletter, "Saya setuju untuk menerima email promosi dan penawaran menarik lainnya" %>
       </div>
 
