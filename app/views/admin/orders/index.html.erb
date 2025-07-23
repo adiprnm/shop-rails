@@ -23,7 +23,7 @@
             <td><%= order.state %></td>
             <td>
               <%= link_to "Edit", edit_admin_order_path(order) %>
-              <%= button_to "Hapus", admin_order_path(order), method: :delete, class: "danger-text", form_class: "inline", data: { turbo_confirm: "Kamu yakin?" } %>
+              <%= link_to "Hapus", admin_order_path(order), class: "text-red", data: { turbo_method: :delete, turbo_confirm: "Kamu yakin?" } %>
             </td>
           </tr>
         <% end %>

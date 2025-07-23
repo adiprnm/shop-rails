@@ -1,11 +1,11 @@
 <%= link_to product_path(product.slug) do %>
-  <article class="product-card">
-    <header>
-      <% if product.featured_image.attached? %>
-        <%= image_tag product.featured_image, class: "product-image" %>
-      <% end %>
+  <article class="product-card p-0">
+    <% if product.featured_image.attached? %>
+      <%= image_tag product.featured_image, class: "product-image" %>
+    <% end %>
+    <section class="p-4 mb-0">
       <%= render "products/product_price", product: product %>
       <h2 class="product-title"><%= product.name %></h2>
-    </header>
+    </section>
   </article>
 <% end %>

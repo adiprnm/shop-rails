@@ -23,7 +23,7 @@
             <td><%= category.slug %></td>
             <td>
               <%= link_to "Edit", edit_admin_category_path(category) %>
-              <%= button_to "Hapus", admin_category_path(category), method: :delete, class: "danger-text", form_class: "inline", data: { turbo_confirm: "Kamu yakin?" } %>
+              <%= link_to "Hapus", admin_category_path(category), data: { turbo_method: :delete, turbo_confirm: "Kamu yakin?" }, class: "text-red" %>
             </td>
           </tr>
         <% end %>

@@ -10,11 +10,11 @@
   <% end %>
 <% end %>
 
-<article class="mb-16">
+<div class="mb-16">
   <div class="form-layout">
     <div>
       <% if @product.featured_image.attached? %>
-        <%= image_tag @product.featured_image, class: "product-image product-image--full-height" %>
+        <%= image_tag @product.featured_image, class: "product-image product-image--full-height mb-4" %>
       <% end %>
     </div>
     <div>
@@ -32,4 +32,4 @@
     <h2>Deskripsi</h2>
     <%= render_markdown_as_html @product.description %>
   </div>
-</article>
+</div>

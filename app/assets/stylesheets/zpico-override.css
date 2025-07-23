@@ -1,0 +1,9 @@
+:root {
+  --pico-font-family: "PT Serif", "serif";
+}
+
+nav {
+  display: block;
+}
+
+a { text-decoration: none; }
