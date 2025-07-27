@@ -19,6 +19,9 @@
     </div>
     <div>
       <%= render "product_price", product: @product %>
+      <p>
+        <%= render "product_sold", product: @product %>
+      </p>
       <h1 class="mt-2"><%= @product.name %></h1>
       <p><%= @product.short_description %></p>
 

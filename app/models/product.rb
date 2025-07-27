@@ -4,6 +4,9 @@ class Product < ApplicationRecord
   has_one_attached :featured_image
   has_and_belongs_to_many :categories
 
+  has_many :order_line_items, as: :orderable
+  has_many :completed_orders, -> { paid }, through: :order_line_items, source: :order
+
   enum :state, %w[ inactive active ]
 
   def self.create_with_productable(product_params, productable_params)

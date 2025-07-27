@@ -4,9 +4,10 @@
       <%= image_tag product.featured_image, class: "product-image" %>
     <% end %>
     <section class="p-4 mb-0">
-      <%= render "products/product_price", product: product %>
       <h2 class="product-title"><%= product.name %></h2>
-      <span class="text-gray badge" style="font-size: 13px;">
+      <%= render "products/product_price", product: product %>
+      <%= render "products/product_sold", product: product %>
+      <span class="text-gray badge inline-block mt-4 text-xs">
         <%= product.categories.pluck(:name).join(", ") %>
       </span>
     </section>
