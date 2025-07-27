@@ -2,7 +2,9 @@ class Admin::OrdersController < AdminController
   before_action :set_order, only: %w[ show edit update destroy ]
 
   def index
-    @orders = Order.all.order(id: :desc)
+    all_orders = Order.all.order(created_at: :desc)
+    page = (params[:page] || 1).to_i
+    @orders, @pagination = Pagination.new(all_orders).paginate(page: page)
   end
 
   def show; end

@@ -54,6 +54,7 @@
 
 .flex { display: flex; }
 .justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
 .items-center { align-items: center; }
 .h-min { height: min-content; }
 .w-1\/2 { width: 50%; }

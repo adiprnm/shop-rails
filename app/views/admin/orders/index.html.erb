@@ -29,5 +29,21 @@
         <% end %>
       </tbody>
     </table>
+
+    <% if @pagination.has_next_page || @pagination.has_previous_page %>
+      <nav class="flex justify-end gap-4 mt-4">
+        <% if @pagination.has_previous_page %>
+          <%= link_to "← Previous", admin_orders_path(page: @pagination.previous_page) %>
+        <% else %>
+          <span class="text-gray">← Previous</span>
+        <% end %>
+
+        <% if @pagination.has_next_page %>
+          <%= link_to "Next →", admin_orders_path(page: @pagination.next_page) %>
+        <% else %>
+          <span class="text-gray">Next →</span>
+        <% end %>
+      </nav>
+    <% end %>
   </div>
 </div>
