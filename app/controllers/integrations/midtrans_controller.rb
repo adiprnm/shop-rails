@@ -5,6 +5,7 @@ class Integrations::MidtransController < ApplicationController
   def payment
     return render json: { "message" => "Fraud detected!" }, status: :unauthorized if fraud?
     return render json: { "message" => "Invalid signature" }, status: :unauthorized unless valid_signature?
+    return render json: { "message" => "OK" } if test_payment?
 
     @order = Order.find_by!(order_id: params[:order_id])
     @updated = @order.update(state: state, integration_data: params.as_json)
@@ -43,5 +44,9 @@ class Integrations::MidtransController < ApplicationController
     when "expire" then "pending"
     else "failed"
     end
+  end
+
+  def test_payment?
+    params[:order_id].to_s.downcase.starts_with?("payment_notif_test")
   end
 end
