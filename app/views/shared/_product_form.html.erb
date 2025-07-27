@@ -21,7 +21,7 @@
     </div>
     <div class="form-group">
       <%= f.label :description %>
-      <%= f.text_area :description %>
+      <%= f.text_area :description, style: "min-height: 300px" %>
     </div>
     <div class="form-group check-boxes">
       <%= f.label :category_ids, "Category" %>
@@ -52,7 +52,7 @@
     </div>
     <div class="form-group">
       <%= f.label :state %>
-      <%= f.select :state, Product.states.to_a %>
+      <%= f.select :state, Product.states.keys.map { |k| [k.to_s.humanize, k] } %>
     </div>
     <div class="form-group">
       <%= f.label :product_type %>
