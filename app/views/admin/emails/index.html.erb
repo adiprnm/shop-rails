@@ -9,7 +9,7 @@
   <%= form_with url: test_admin_emails_path, method: :post do |f| %>
     <div class="form-group">
       <%= f.label :email_address, "Alamat Email" %>
-      <%= f.email_field :email_address, required: true %>
+      <%= f.email_field :email_address, required: true, value: Current.settings["admin_email"] %>
     </div>
 
     <%= f.submit "Kirim email test", class: "mt-4" %>

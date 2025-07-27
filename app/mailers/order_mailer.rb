@@ -8,6 +8,15 @@ class OrderMailer < ApplicationMailer
       subject: "Invoice Pembelian Produk di #{ site_name }"
   end
 
+  def admin_notification
+    admin_email = Setting.admin_email.value
+    return if admin_email.blank?
+
+    mail from: from_email,
+      to: admin_email,
+      subject: "Seseorang membeli produk kita!"
+  end
+
   def digital_product_accesses
     mail from: from_email,
       to: @order.customer_email_address,

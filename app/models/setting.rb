@@ -21,6 +21,7 @@ class Setting < ApplicationRecord
     smtp_password
     admin_username
     admin_password
+    admin_email
   ].freeze
   ATTACHABLE_KEYS = %i[ site_favicon og_image ].freeze
 

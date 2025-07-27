@@ -110,6 +110,11 @@
       </div>
     </div>
 
+    <div class="form-group">
+      <%= f.label :admin_email, "Email" %>
+      <%= f.email_field :admin_email, value: Current.settings["admin_email"] %>
+    </div>
+
     <%= f.submit "Simpan", class: "mt-4" %>
   <% end %>
 </div>
