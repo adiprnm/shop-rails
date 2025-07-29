@@ -7,9 +7,13 @@
       <h2 class="product-title"><%= product.name %></h2>
       <%= render "products/product_price", product: product %>
       <%= render "products/product_sold", product: product %>
-      <span class="text-gray badge inline-block mt-4 text-xs">
-        <%= product.categories.pluck(:name).join(", ") %>
-      </span>
+      <% if product.categories.present? %>
+        <% product.categories.each do |category| %>
+          <span class="text-gray badge inline-block mt-4 text-xs">
+            <%= category.name %>
+          </span>
+        <% end %>
+      <% end %>
     </section>
   </article>
 <% end %>

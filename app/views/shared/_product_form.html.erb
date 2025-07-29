@@ -40,6 +40,11 @@
       <%= f.label :sale_price %>
       <%= f.number_field :sale_price %>
     </div>
+    <div class="form-group">
+      <%= f.label :minimum_price %>
+      <%= f.number_field :minimum_price, required: true %>
+      <small>Menggunakan harga minimal akan mengabaikan harga asli dan harga diskon</small>
+    </div>
     <div class="grouped">
       <div class="form-group">
         <%= f.label :sale_price_starts_at %>

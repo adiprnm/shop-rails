@@ -25,7 +25,7 @@
         <% Current.cart.line_items.each do |line_item| %>
           <tr>
             <td><%= link_to line_item.cartable.name, product_path(line_item.cartable.slug) %></td>
-            <td><%= idr line_item.cartable.actual_price %></td>
+            <td><%= idr line_item.price %></td>
             <td>
               <%= link_to "Hapus", cart_line_item_path(line_item), data: { turbo_method: :delete, turbo_confirm: "Hapus #{line_item.cartable.name} dari keranjang?" }, class: "text-red" %>
             </td>

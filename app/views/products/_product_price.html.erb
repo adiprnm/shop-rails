@@ -1,6 +1,8 @@
 <div class="text-green">
   <small>
-    <% if product.coming_soon? %>
+    <% if product.minimum_price.present? %>
+      <span>Mulai dari <%= idr product.minimum_price, text: false %></span>
+    <% elsif product.coming_soon? %>
       <span>Coming soon!</span>
     <% elsif product.sale_price? %>
       <del class="text-gray"><%= idr product.price %></del>
