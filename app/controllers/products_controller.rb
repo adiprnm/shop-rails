@@ -24,6 +24,6 @@ class ProductsController < ApplicationController
     end
 
     def below_minimum_price?
-      @product.minimum_price? && params[:price].to_i < @product.minimum_price
+      @product.minimum_price.present? && params[:price].to_i < @product.minimum_price
     end
 end
