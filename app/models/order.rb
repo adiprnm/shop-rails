@@ -3,11 +3,13 @@ class Order < ApplicationRecord
 
   has_many :line_items, class_name: "OrderLineItem", dependent: :delete_all
 
-  enum :state, %w[ pending paid failed ]
+  enum :state, %w[ pending paid failed expired ]
 
   before_save -> { self.state_updated_at = Time.now }, if: :state_changed?
   before_create -> { self.order_id = SecureRandom.uuid }
   after_save_commit :send_order_successful_notification, if: -> { saved_change_to_state? && paid? }
+
+  scope :today, -> { where(state_updated_at: Time.now.all_day) }
 
   validates :customer_agree_to_terms, acceptance: true
 

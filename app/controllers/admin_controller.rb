@@ -5,6 +5,21 @@ class AdminController < ApplicationController
   around_action :use_time_zone
 
   def index
+    @total_earnings = Order.paid.sum(:total_price)
+    @onhold_earnings = Order.pending.sum(:total_price)
+    @total_order = Order.count
+    @completed_order = Order.paid.count
+    @pending_order = Order.pending.count
+    @expired_order = Order.expired.count
+
+    @today_earnings = Order.paid.today.sum(:total_price)
+    @today_onhold_earnings = Order.pending.today.sum(:total_price)
+    @today_total_order = Order.today.count
+    @today_completed_order = Order.paid.today.count
+    @today_pending_order = Order.pending.today.count
+    @today_expired_order = Order.expired.today.count
+
+    @products = Product.order(id: :desc)
   end
 
   private

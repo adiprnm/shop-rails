@@ -127,3 +127,9 @@ a:has(> article.product-card) {
   padding: 0.25rem 0.75rem;
   border: 1px solid var(--pico-muted-color);
 }
+
+.mb-4-on-tablet-and-up {
+  @media (min-width: 480px) {
+    margin-bottom: 1rem;
+  }
+}
