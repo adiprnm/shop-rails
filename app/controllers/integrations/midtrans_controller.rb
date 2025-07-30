@@ -11,9 +11,9 @@ class Integrations::MidtransController < ApplicationController
     @updated = @order.update(state: state, integration_data: params.as_json)
 
     if @updated
-      render json: @subscription
+      render json: @order
     else
-      render json: { errors: @subscription.errors }, status: :unprocessable_entity
+      render json: { errors: @order.errors }, status: :unprocessable_entity
     end
   rescue ActiveRecord::RecordNotFound
     render json: { "message" => "Order tidak ditemukan" }, status: :not_found
