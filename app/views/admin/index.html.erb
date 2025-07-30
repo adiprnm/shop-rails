@@ -87,7 +87,7 @@
       <tr>
         <td>ID</td>
         <td>Nama</td>
-        <td>Jumlah Terjual</td>
+        <td>Terjual</td>
       </tr>
     </thead>
 
@@ -95,7 +95,7 @@
       <% @products.each do |product| %>
         <tr>
           <td><%= product.id %></td>
-          <td><%= product.name %></td>
+          <td><%= link_to product.name, product_path(product.slug), target: "_blank" %></td>
           <td><%= product.completed_orders.count %></td>
         </tr>
       <% end %>
