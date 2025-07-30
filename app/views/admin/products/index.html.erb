@@ -21,7 +21,15 @@
           <tr>
             <td><%= product.id %></td>
             <td><%= product.name %></td>
-            <td><%= idr product.price %></td>
+            <td>
+              <% if product.minimum_price.present? %>
+                Min. <%= idr product.minimum_price, text: false %>
+              <% elsif product.sale_price? %>
+                <del><%= idr product.price %></del> <%= idr product.sale_price %>
+              <% else %>
+                <%= idr product.price %>
+              <% end %>
+            </td>
             <td><%= product.state %></td>
             <td>
               <%= link_to "Edit", edit_admin_product_path(product) %>
