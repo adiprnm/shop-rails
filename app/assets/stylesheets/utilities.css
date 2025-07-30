@@ -62,6 +62,9 @@
 .w-max { width: max-content!important; }
 .text-right { text-align: right; }
 .text-sm { font-size: 0.875rem; }
+.text-md { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
 .font-normal { font-weight: 400; }
 .leading-loose { line-height: 2em; }
 .overflow-x-scroll { overflow-x: scroll; }

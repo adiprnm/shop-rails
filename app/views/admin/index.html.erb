@@ -2,7 +2,7 @@
 
 <div>
   <h1 class="mb-8">Dashboard</h1>
-  <h2>Pendapatan</h2>
+  <h2 class="text-xl">Pendapatan</h2>
 
   <div class="grid mb-8">
     <article class="mb-0 mb-4-on-tablet-and-up">
@@ -30,7 +30,7 @@
     </article>
   </div>
 
-  <h2>Pesanan</h2>
+  <h2 class="text-xl">Pesanan</h2>
   <article>
     <h2>
       <%= @total_order %>
@@ -46,10 +46,10 @@
   <div class="grid">
     <article class="mb-0">
       <h2>
-        <%= @total_order %>
+        <%= @completed_order %>
 
-        <% if @today_total_order.positive? %>
-          <span class="text-green text-xs">+<%= @today_total_order %> hari ini</span>
+        <% if @today_completed_order.positive? %>
+          <span class="text-green text-xs">+<%= @today_completed_order %> hari ini</span>
         <% end %>
       </h2>
 
@@ -81,7 +81,7 @@
     </article>
   </div>
 
-  <h2>Produk</h2>
+  <h2 class="text-xl">Produk</h2>
   <table>
     <thead>
       <tr>

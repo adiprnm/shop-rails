@@ -14,8 +14,8 @@ module ApplicationHelper
   end
 
   def font_files
-    Dir.glob(Rails.root.join("app/assets/fonts/*.ttf")).to_a.tap do |files|
-      files.map! { |file| file.split("/").last }
+    Dir.glob(Rails.root.join("public/fonts/*.ttf")).to_a.tap do |files|
+      files.map! { |file| "/fonts/#{ File.basename(file) }" }
     end
   end
 end
