@@ -41,7 +41,7 @@ class Integrations::MidtransController < ApplicationController
     when "pending", "authorize" then "pending"
     when "deny", "failure" then "failed"
     when "cancel" then "pending"
-    when "expire" then "pending"
+    when "expire" then "expired"
     else "failed"
     end
   end
