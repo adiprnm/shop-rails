@@ -14,7 +14,7 @@ class AdminController < ApplicationController
 
     @today_earnings = Order.paid.today.sum(:total_price)
     @today_onhold_earnings = Order.pending.today.sum(:total_price)
-    @today_total_order = Order.today.count
+    @today_total_order = Order.today.where.not(state: :expired).count
     @today_completed_order = Order.paid.today.count
     @today_pending_order = Order.pending.today.count
     @today_expired_order = Order.expired.today.count
