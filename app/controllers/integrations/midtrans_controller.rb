@@ -3,11 +3,13 @@ class Integrations::MidtransController < ApplicationController
   skip_before_action :set_current_cart
 
   def payment
-    return render json: { "message" => "Fraud detected!" }, status: :unauthorized if fraud?
-    return render json: { "message" => "Invalid signature" }, status: :unauthorized unless valid_signature?
     return render json: { "message" => "OK" } if test_payment?
 
-    @order = Order.find_by!(order_id: params[:order_id])
+    @order = Order.find_by(order_id: params[:order_id])
+    return render json: { "message" => "Order not found!"}, status: :not_found unless @order
+    return render json: { "message" => "Invalid signature" }, status: :unauthorized unless valid_signature?
+    return render json: { "message" => "Fraud detected!" }, status: :unauthorized if fraud?
+
     @updated = @order.update(state: state, integration_data: params.as_json)
 
     if @updated
