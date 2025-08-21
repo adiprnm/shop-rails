@@ -10,30 +10,30 @@
  */
 
 @font-face {
-  font-family: "PT Serif";
-  src: url('/fonts/PTSerif-Bold.ttf') format('truetype');
+  font-family: "Figtree";
+  src: url('/fonts/Figtree-Bold.ttf') format('truetype');
   font-weight: 600;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "PT Serif";
-  src: url('/fonts/PTSerif-Italic.ttf') format('truetype');
+  font-family: "Figtree";
+  src: url('/fonts/Figtree-Italic.ttf') format('truetype');
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "PT Serif";
-  src: url('/fonts/PTSerif-BoldItalic.ttf') format('truetype');
+  font-family: "Figtree";
+  src: url('/fonts/Figtree-BoldItalic.ttf') format('truetype');
   font-weight: 600;
   font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "PT Serif";
-  src: url('/fonts/PTSerif-Regular.ttf') format('truetype');
+  font-family: "Figtree";
+  src: url('/fonts/Figtree-Regular.ttf') format('truetype');
   font-display: swap;
 }
 
