@@ -1,7 +1,7 @@
 <%= link_to product_path(product.slug), class: "h-full" do %>
   <article class="product-card p-0">
     <% if product.featured_image.attached? %>
-      <%= image_tag product.featured_image, class: "product-image" %>
+      <%= image_tag product.featured_image, class: "product-image product-image--square" %>
     <% end %>
     <section class="p-4 mb-0">
       <h2 class="product-title"><%= product.name %></h2>

@@ -104,12 +104,14 @@ a:has(> article.product-card) {
 }
 .product-image {
   width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
 }
 .product-price {
   font-size: 0.75rem;
   color: #008000;
+}
+.product-image--square {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
 }
 .product-image--full-height {
   max-height: 100%;
