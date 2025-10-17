@@ -1,7 +1,11 @@
 <div>
   <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
 
-  <h1>Pesanan #<%= @order.id %></h1>
+  <h1>
+    Pesanan #<%= @order.id %>
+    <%= link_to "Edit", edit_admin_order_path(@order), class: "inline-block ml-2 text-sm font-normal" %>
+    <%= link_to "Delete", admin_order_path(@order), data: { turbo_method: :delete, turbo_confirm: "Hapus pesanan ini?" }, class: "text-sm text-red font-normal" %>
+  </h1>
 
   <div class="full-width overflow-x-scroll">
     <table>

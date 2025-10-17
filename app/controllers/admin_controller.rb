@@ -19,7 +19,7 @@ class AdminController < ApplicationController
     @today_pending_order = Order.pending.today.count
     @today_expired_order = Order.expired.today.count
 
-    @products = Product.order(id: :desc)
+    @products = Product.with_completed_orders.order("total_completed_orders DESC")
   end
 
   private

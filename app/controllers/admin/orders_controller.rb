@@ -9,7 +9,22 @@ class Admin::OrdersController < AdminController
 
   def show; end
   def edit; end
-  def update; end
+
+  def update
+    @order.update(
+      params
+      .require(:order)
+      .permit(
+        :customer_name,
+        :customer_email_address,
+        :customer_agree_to_terms,
+        :customer_agree_to_receive_newsletter,
+        :state
+      )
+    )
+
+    redirect_to admin_order_path(@order)
+  end
 
   def destroy
     @order.destroy

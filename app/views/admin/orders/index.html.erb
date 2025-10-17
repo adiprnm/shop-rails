@@ -8,6 +8,7 @@
   <div class="full-width overflow-x-scroll mt-8">
     <table style="min-width: 500px;">
       <thead>
+        <th>ID</th>
         <th>Tanggal</th>
         <th>Nama</th>
         <th>Total Harga</th>
@@ -17,6 +18,7 @@
       <tbody>
         <% @orders.each do |order| %>
           <tr>
+            <td><%= order.id %></td>
             <td><%= order.created_at.strftime("%b %d, %Y") %></td>
             <td><%= link_to order.customer_name, admin_order_path(order) %></td>
             <td><%= idr order.total_price %></td>
