@@ -5,6 +5,17 @@
 
   <h1>Pesanan</h1>
 
+  <p class="mb-2">Produk</p>
+  <%= form_with url: admin_orders_path, method: :get, data: { controller: "auto-submit" } do |f| %>
+    <%= f.select :product_id,
+      Product.all.collect { |p| [ p.name, p.id ] },
+      {
+        include_blank: "Pilih produk...",
+        selected: params[:product_id]
+      },
+      data: { action: "auto-submit#perform" } %>
+  <% end %>
+
   <div class="full-width overflow-x-scroll mt-8">
     <table style="min-width: 500px;">
       <thead>
