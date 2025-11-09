@@ -5,15 +5,30 @@
 
   <h1>Pesanan</h1>
 
-  <p class="mb-2">Produk</p>
   <%= form_with url: admin_orders_path, method: :get, data: { controller: "auto-submit" } do |f| %>
-    <%= f.select :product_id,
-      Product.all.collect { |p| [ p.name, p.id ] },
-      {
-        include_blank: "Pilih produk...",
-        selected: params[:product_id]
-      },
-      data: { action: "auto-submit#perform" } %>
+    <div class="grouped">
+      <div class="form-group">
+        <%= f.label :productt_id, "Produk", class: "block mb-2" %>
+        <%= f.select :product_id,
+          Product.all.collect { |p| [ p.name, p.id ] },
+          {
+            include_blank: "Pilih produk...",
+            selected: params[:product_id]
+          },
+          data: { action: "auto-submit#perform" } %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :state, "Status", class: "block mb-2" %>
+        <%= f.select :state,
+          Order.states.keys.collect { |state| [ state.titleize, state ] },
+          {
+            include_blank: "Pilih status...",
+            selected: params[:state]
+          },
+          data: { action: "auto-submit#perform" } %>
+      </div>
+    </div>
   <% end %>
 
   <div class="full-width overflow-x-scroll mt-8">
@@ -27,18 +42,24 @@
         <th>Aksi</th>
       </thead>
       <tbody>
-        <% @orders.each do |order| %>
+        <% if @orders.empty? %>
           <tr>
-            <td><%= order.id %></td>
-            <td><%= order.created_at.strftime("%b %d, %Y") %></td>
-            <td><%= link_to order.customer_name, admin_order_path(order) %></td>
-            <td><%= idr order.total_price %></td>
-            <td><%= order.state %></td>
-            <td>
-              <%= link_to "Edit", edit_admin_order_path(order) %>
-              <%= link_to "Hapus", admin_order_path(order), class: "text-red", data: { turbo_method: :delete, turbo_confirm: "Kamu yakin?" } %>
-            </td>
+            <td colspan="6">Belum ada pesanan.</td>
           </tr>
+        <% else %>
+          <% @orders.each do |order| %>
+            <tr>
+              <td><%= order.id %></td>
+              <td><%= order.created_at.strftime("%b %d, %Y") %></td>
+              <td><%= link_to order.customer_name, admin_order_path(order) %></td>
+              <td><%= idr order.total_price %></td>
+              <td><%= order.state %></td>
+              <td>
+                <%= link_to "Edit", edit_admin_order_path(order) %>
+                <%= link_to "Hapus", admin_order_path(order), class: "text-red", data: { turbo_method: :delete, turbo_confirm: "Kamu yakin?" } %>
+              </td>
+            </tr>
+          <% end %>
         <% end %>
       </tbody>
     </table>
