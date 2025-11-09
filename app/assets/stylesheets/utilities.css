@@ -83,6 +83,7 @@ a:has(> article.product-card) {
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 
   & > section {
     flex-grow: 1;
