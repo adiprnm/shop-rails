@@ -136,17 +136,27 @@ a:has(> article.product-card) {
   width: 48px;
 }
 .flash-success {
-  background-color: green;
-  color: white;
+  background-color: #d1fae5;
+  color: #16a34a;
   padding: 1rem;
   border-radius: 4px;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #1a4731;
+    color: #6ee7b7;
+  }
 }
 
 .flash-error {
-  background-color: red;
-  color: white;
+  background-color: #FEE2E2;
+  color: #dc2626;
   padding: 1rem;
   border-radius: 4px;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #6d0a0a;
+    color: #fca5a5;
+  }
 }
 
 .badge {

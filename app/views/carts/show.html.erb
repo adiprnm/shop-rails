@@ -48,7 +48,7 @@
         </div>
         <div class="form-group">
           <%= f.label :customer_email_address, "Email" %>
-          <%= f.text_field :customer_email_address, required: true, data: { action: "auto-filler#save" } %>
+          <%= f.email_field :customer_email_address, required: true, data: { action: "auto-filler#save" } %>
         </div>
       </div>
 
