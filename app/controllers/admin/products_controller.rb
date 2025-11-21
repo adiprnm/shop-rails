@@ -43,7 +43,7 @@ class Admin::ProductsController < AdminController
       case params[:product][:productable_type]
       when "DigitalProduct"
         params.require(:product).require(:productable).permit(
-          :resource_type, :resource_url, :resource
+          :resource_type, :resource_url, :resource, :sample
         )
       end
     end
