@@ -1,4 +1,4 @@
-<%= content_for(:title) { "Donasi #{ @donation.id } | #{ Current.settings["site_name"] }"} %>
+<%= content_for(:title) { "Donasi ##{ @donation.id } | #{ Current.settings["site_name"] }"} %>
 <div>
   <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
 

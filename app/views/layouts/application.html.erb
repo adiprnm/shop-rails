@@ -33,9 +33,9 @@
         <div class="flex justify-between items-center mb-4">
           <%= link_to Current.settings["site_name"], root_path, class: "site-title" %>
           <% cart_count = Current.cart.line_items.count %>
-          <%= link_to cart_path, class: "cart flex items-center gap-1" do %>
+          <%= link_to cart_path, class: "cart flex items-center gap-1 relative" do %>
             <% if cart_count.positive? %>
-              <span class="text-red">(<%= cart_count %>)</span>
+              <span class="cart-filled-indicator"></span>
             <% end %>
             <%= icon "shopping-cart", class: "cart-icon" %>
           <% end %>

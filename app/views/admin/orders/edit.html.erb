@@ -1,7 +1,9 @@
+<%= content_for(:title) { "Edit Pesanan ##{ @order.id } | #{ Current.settings["site_name"] } admin" } %>
+
 <div>
   <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
 
-  <h1>Edit Pesanan</h1>
+  <h1>Edit Pesanan #<%= @order.id %></h1>
 
   <%= form_for [ :admin, @order ] do |f| %>
     <div class="grouped">
