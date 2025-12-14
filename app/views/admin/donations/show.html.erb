@@ -1,0 +1,49 @@
+<%= content_for(:title) { "Donasi #{ @donation.id } | #{ Current.settings["site_name"] }"} %>
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>
+    Donasi #<%= @donation.id %>
+    <%= link_to "Edit", edit_admin_donation_path(@donation), class: "inline-block ml-2 text-sm font-normal" %>
+    <%= link_to "Delete", admin_donation_path(@donation), data: { turbo_method: :delete, turbo_confirm: "Hapus pesanan ini?" }, class: "text-sm text-red font-normal" %>
+  </h1>
+
+  <div class="full-width overflow-x-scroll">
+    <table>
+      <tr>
+        <td class="min-w-max"><strong>Order ID</strong></td>
+        <td><%= @donation.donation_id %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Nama</strong></td>
+        <td><%= @donation.name %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Status</strong></td>
+        <td class="min-w-max"><%= @donation.state %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Status Diperbarui pada</strong></td>
+        <td><%= l @donation.state_updated_at, format: :long %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Jumlah</strong></td>
+        <td><%= idr @donation.amount %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Pesan</strong></td>
+        <td><%= @donation.message %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Response Midtrans</strong></td>
+        <td>
+          <details>
+            <summary>Lihat response</summary>
+
+            <pre class="p-4"><%= JSON.pretty_generate @donation.integration_data %></pre>
+          </details>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

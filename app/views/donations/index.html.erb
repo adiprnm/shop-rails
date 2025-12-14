@@ -1,0 +1,41 @@
+<%= content_for(:title) { "Support saya" } %>
+<%= content_for :head do %>
+  <%= tag.meta name: "description", content: "Berikan uang tip kalau kamu suka dengan karya-karya saya" %>
+  <%= tag.meta name: "og:title", content: "Support saya" %>
+  <% if Current.settings["og_image"].present? %>
+    <%= tag.meta name: "og:image", content: request.base_url + Current.settings["og_image"] %>
+  <% end %>
+  <%= tag.meta name: "og:description", content: "Berikan uang tip kalau kamu suka dengan karya-karya saya" %>
+<% end %>
+
+<div>
+  <%= tag.div flash[:alert], class: "flash-error mb-4" if flash[:alert] %>
+
+  <h1 class="mb-8">Support Saya</h1>
+
+  <p>Suka atau merasa terbantu dengan karya-karya saya? Dukung saya untuk tetap berkarya</p>
+
+  <%= donation_form(@donation) do |f| %>
+    <div>
+      <%= f.label :amount, "Nominal" %>
+      <%= f.number_field :amount,
+        placeholder: "Nominal (minimal Rp5.000)",
+        min: 5000,
+        data: { action: "form-control#perform" }
+      %>
+    </div>
+    <div>
+      <%= f.label :name, "Nama" %>
+      <%= f.text_field :name, placeholder: "Nama kamu (opsional)", value: f.object[:name] %>
+    </div>
+    <div>
+      <%= f.label :message, "Pesan" %>
+      <%= f.text_area :message, placeholder: "Pesan (opsional)" %>
+    </div>
+    <%= f.submit "Support Saya", data: { form_control_target: "submitButton" }, disabled: true %>
+  <% end %>
+
+  <div class="mt-16">
+    <%= maybe_donations(@donations) %>
+  </div>
+</div>
