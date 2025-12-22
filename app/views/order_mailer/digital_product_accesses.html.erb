@@ -12,7 +12,7 @@
       <tr>
         <td><%= item.orderable_name %></td>
         <td>
-          <% prefix = item.productable.url? ? "" : (Setting.site_storage_host&.value.presence || "http://localhost:3000") %>
+          <% prefix = item.productable.url? ? "" : (Setting.site_storage_host&.value.presence || ENV["STORAGE_HOST"].presence || "http://localhost:3000") %>
           <%= link_to "Klik di sini", prefix + item.productable.resource_path %>
         </td>
       </tr>

@@ -56,6 +56,8 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  gem "dotenv"
 end
 
 group :test do
@@ -66,4 +68,4 @@ end
 
 gem "redcarpet", "~> 3.6"
 
-gem "mission_control-jobs", "~> 1.0"
+gem "mission_control-jobs", "~> 1.1"
