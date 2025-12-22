@@ -1,7 +1,3 @@
-.container {
-  max-width: 720px;
-  margin: 0 auto;
-}
 .my-8 {
   margin-top: 2rem;
   margin-bottom: 2rem;
@@ -24,23 +20,33 @@
 .mr-4 { margin-right: 1rem; }
 .mr-2 { margin-right: 0.5rem; }
 .mr-1 { margin-right: 0.25rem; }
+.ml-2 { margin-left: 0.5rem; }
+.p-0 { padding: 0; }
 .p-2 { padding: 0.5rem; }
+.p-4 { padding: 1rem; }
 .pr-2 { padding-right: 0.5rem; }
 .pl-2 { padding-left: 0.5rem; }
 .px-4 { padding-left: 1rem; padding-right: 1rem; }
 .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
 .inline-block { display: inline-block; }
 .inline { display: inline; }
-.block { display: block; }
+.block { display: block!important; }
 .flex { display: flex; }
+.flex-col { flex-direction: column; }
 .items-end { align-items: flex-end; }
 .gap-1 { gap: 0.25rem; }
 .gap-2 { gap: 0.5rem; }
 .gap-4 { gap: 1rem; }
 .text-center { text-align: center; }
-.text-gray { color: gray; }
-.text-red { color: red; }
-.text-green { color:  #008000; }
+.text-xs { font-size: 0.75rem; }
+.text-gray { color: var(--pico-muted-color); }
+.text-red { color: #FF0000; }
+.text-green {
+  color:  green;
+  @media (prefers-color-scheme: dark) {
+    color:  #32CD32;
+  }
+}
 .text-white { color: white; }
 .bg-red { background-color: red; }
 .text-black { color: black; }
@@ -51,29 +57,63 @@
 
 .flex { display: flex; }
 .justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
 .items-center { align-items: center; }
 .h-min { height: min-content; }
+.h-full { height: 100%; }
 .w-1\/2 { width: 50%; }
 .min-w-max { min-width: max-content; }
+.w-max { width: max-content!important; }
 .text-right { text-align: right; }
 .text-sm { font-size: 0.875rem; }
+.text-md { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
 .font-normal { font-weight: 400; }
 .leading-loose { line-height: 2em; }
 .overflow-x-scroll { overflow-x: scroll; }
+.nowrap { white-space: nowrap; }
 
 a:has(> article.product-card) {
   text-decoration: none;
   color: inherit;
 }
+.product-card {
+  margin-bottom: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  & > section {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+}
 .product-title {
   font-size: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  height: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Maximum number of lines to show */
+  line-clamp: 2; /* Standard property for modern browsers */
+  -webkit-box-orient: vertical;
 }
 .product-image {
   width: 100%;
-  max-height: 250px;
+}
+.product-price {
+  font-size: 0.75rem;
+  color: #008000;
+}
+.product-image--square {
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-  border: 1px solid #dfdfdf;
-  margin-bottom: 0.5rem;
 }
 .product-image--full-height {
   max-height: 100%;
@@ -82,9 +122,78 @@ a:has(> article.product-card) {
   color: inherit;
   text-decoration: none;
 }
-.cart-icon { width: 20px; }
+.site-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+.icon, .cart-icon { width: 20px; }
 .main-menu p {
   display: flex;
+  flex-wrap: wrap;
+  line-height: 1.25;
   gap: 0.75rem;
   margin: 0;
+}
+.icon-xlarge {
+  width: 48px;
+}
+.flash-success {
+  background-color: #d1fae5;
+  color: #16a34a;
+  padding: 1rem;
+  border-radius: 4px;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #1a4731;
+    color: #6ee7b7;
+  }
+}
+
+.flash-error {
+  background-color: #FEE2E2;
+  color: #dc2626;
+  padding: 1rem;
+  border-radius: 4px;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #6d0a0a;
+    color: #fca5a5;
+  }
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--pico-muted-color);
+}
+
+.mb-4-on-tablet-and-up {
+  @media (min-width: 480px) {
+    margin-bottom: 1rem;
+  }
+}
+
+.card {
+  border-radius: 8px;
+  border: 1px solid var(--pico-muted-border-color);
+  padding: 1rem;
+  background: var(--pico-card-background-color);
+}
+
+.relative { position: relative }
+
+.cart-filled-indicator {
+  --pico-background-color: #fff;
+
+  @media (prefers-color-scheme: dark) {
+    --pico-background-color: rgb(19, 22.5, 30.5);
+  }
+
+  background-color: red;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  position: absolute;
+  top: 0;
+  outline: 2px solid var(--pico-background-color);
 }

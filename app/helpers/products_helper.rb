@@ -6,6 +6,6 @@ module ProductsHelper
       fenced_code_blocks: true,
       footnotes: true,
     )
-    markdown.render(markdown_text).html_safe
+    markdown.render(markdown_text.to_s).html_safe
   end
 end

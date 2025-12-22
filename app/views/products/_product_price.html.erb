@@ -1,10 +1,14 @@
 <div class="text-green">
-  <% if product.coming_soon? %>
-    <span>Coming soon!</span>
-  <% elsif product.sale_price? %>
-    <small class="text-gray"><del><%= idr product.price %></del></small>
-    <span><%= idr product.sale_price %></span>
-  <% else %>
-    <span><%= idr product.price %></span>
-  <% end %>
+  <small>
+    <% if product.minimum_price.present? %>
+      <span>Mulai dari <%= idr product.minimum_price, text: false %></span>
+    <% elsif product.coming_soon? %>
+      <span>Coming soon!</span>
+    <% elsif product.sale_price? %>
+      <del class="text-gray"><%= idr product.price %></del>
+      <span><%= idr product.sale_price %></span>
+    <% else %>
+      <span><%= idr product.price %></span>
+    <% end %>
+  </small>
 </div>

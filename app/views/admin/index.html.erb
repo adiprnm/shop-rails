@@ -1,0 +1,104 @@
+<%= content_for(:title) { "Dashboard | #{ Current.settings["site_name"] } admin" } %>
+
+<div>
+  <h1 class="mb-8">Dashboard</h1>
+  <h2 class="text-xl">Pendapatan</h2>
+
+  <div class="grid mb-8">
+    <article class="mb-0 mb-4-on-tablet-and-up">
+      <h2>
+        <%= idr(@total_earnings, text: false) %>
+
+        <% if @today_earnings.positive? %>
+          <span class="text-green text-xs">+<%= idr(@today_earnings, text: false) %> hari ini</span>
+        <% end %>
+      </h2>
+
+      <span>total pendapatan</span>
+    </article>
+
+    <article>
+      <h2>
+        <%= idr(@onhold_earnings, text: false) %>
+
+        <% if @today_onhold_earnings.positive? %>
+          <span class="text-green text-xs">+<%= idr(@today_onhold_earnings, text: false) %> hari ini</span>
+        <% end %>
+      </h2>
+
+      <span>pendapatan on hold</span>
+    </article>
+  </div>
+
+  <h2 class="text-xl">Pesanan</h2>
+  <article>
+    <h2>
+      <%= @total_order %>
+
+      <% if @today_total_order.positive? %>
+        <span class="text-green text-xs">+<%= @today_total_order %> hari ini</span>
+      <% end %>
+    </h2>
+
+    <span>total order</span>
+  </article>
+
+  <div class="grid">
+    <article class="mb-0">
+      <h2>
+        <%= @completed_order %>
+
+        <% if @today_completed_order.positive? %>
+          <span class="text-green text-xs">+<%= @today_completed_order %> hari ini</span>
+        <% end %>
+      </h2>
+
+      <span>order selesai</span>
+    </article>
+
+    <article class="mb-0">
+      <h2>
+        <%= @pending_order %>
+
+        <% if @today_pending_order.positive? %>
+          <span class="text-green text-xs">+<%= @today_pending_order %> hari ini</span>
+        <% end %>
+      </h2>
+
+      <span>order belum dibayar</span>
+    </article>
+
+    <article class="mb-0">
+      <h2>
+        <%= @expired_order %>
+
+        <% if @today_expired_order.positive? %>
+          <span class="text-green text-xs">+<%= @today_expired_order %> hari ini</span>
+        <% end %>
+      </h2>
+
+      <span>order kadaluarsa</span>
+    </article>
+  </div>
+
+  <h2 class="text-xl">Produk</h2>
+  <table>
+    <thead>
+      <tr>
+        <td>ID</td>
+        <td>Nama</td>
+        <td>Terjual</td>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @products.each do |product| %>
+        <tr>
+          <td><%= product.id %></td>
+          <td><%= link_to product.name, product_path(product.slug), target: "_blank" %></td>
+          <td><%= product.completed_orders.count %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

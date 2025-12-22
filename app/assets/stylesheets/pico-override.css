@@ -1,0 +1,10 @@
+:root {
+  --pico-font-family: "Figtree", sans-serif;
+}
+
+nav {
+  display: block;
+}
+
+a { text-decoration: none; }
+article { border: 1px solid var(--pico-muted-border-color); }

@@ -1,0 +1,5 @@
+<article>
+  <p><strong><%= donation.name %></strong> memberi dukungan sebesar <strong><%= idr donation.amount %></strong></p>
+  <%= tag.blockquote "\"#{ donation.message }\"", class: "text-gray" if donation.message? %>
+  <p class="text-right mb-0 text-gray"><small><%= time_ago_in_words donation.created_at %> ago</small></p>
+</article>

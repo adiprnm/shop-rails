@@ -8,21 +8,25 @@
   <%= form_with url: admin_settings_path, method: :put do |f| %>
     <h3>Situs</h3>
 
-    <div class="grouped">
-      <div class="form-group">
-        <%= f.label :site_name, "Nama Situs" %>
-        <%= f.text_field :site_name, value: Current.settings["site_name"] %>
-      </div>
+    <div class="form-group">
+      <%= f.label :site_name, "Nama Situs" %>
+      <%= f.text_field :site_name, value: Current.settings["site_name"] %>
+    </div>
 
-      <div class="form-group">
-        <%= f.label :site_favicon, "Favicon" %>
-        <%= f.text_field :site_favicon, value: Current.settings["site_favicon"] %>
-      </div>
+    <div class="form-group" data-controller="image-preview">
+      <%= f.label :site_favicon, "Favicon" %>
+      <%= image_tag Current.settings["site_favicon"].present? ? request.base_url + Current.settings["site_favicon"] : "", data: { image_preview_target: "preview" }, class: "icon-xlarge block" %>
+      <%= f.file_field :site_favicon, data: { action: "image-preview#perform" } %>
     </div>
 
     <div class="form-group">
       <%= f.label :site_storage_host, "Host Storage" %>
       <%= f.text_field :site_storage_host, value: Current.settings["site_storage_host"] %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :site_terms_and_conditions_url, "URL halaman Syarat dan Ketentuan" %>
+      <%= f.text_field :site_terms_and_conditions_url, value: Current.settings["site_terms_and_conditions_url"].presence || "/syarat-dan-ketentuan" %>
     </div>
 
     <div class="form-group" data-controller="image-preview">
@@ -104,6 +108,11 @@
         <%= f.label :admin_password, "Password" %>
         <%= f.text_field :admin_password, value: Current.settings["admin_password"] %>
       </div>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :admin_email, "Email" %>
+      <%= f.email_field :admin_email, value: Current.settings["admin_email"] %>
     </div>
 
     <%= f.submit "Simpan", class: "mt-4" %>

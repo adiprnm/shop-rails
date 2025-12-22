@@ -10,20 +10,45 @@
   <% end %>
 <% end %>
 
-<article class="mb-16">
+<div class="mb-16">
   <div class="form-layout">
     <div>
       <% if @product.featured_image.attached? %>
-        <%= image_tag @product.featured_image, class: "product-image product-image--full-height" %>
+        <%= image_tag @product.featured_image, class: "product-image product-image--full-height mb-4" %>
       <% end %>
     </div>
     <div>
       <%= render "product_price", product: @product %>
+      <p>
+        <%= render "product_sold", product: @product %>
+      </p>
       <h1 class="mt-2"><%= @product.name %></h1>
       <p><%= @product.short_description %></p>
 
       <% unless @product.coming_soon? %>
-        <%= button_to "+ Keranjangin", add_to_cart_product_path(@product.slug), method: :post, form_class: "mb-4" %>
+        <% if @product.minimum_price.present? %>
+          <%= form_with url: add_to_cart_product_path(@product.slug),
+            method: :post,
+            data: {
+              controller: "busy-handler form-control",
+              form_control_required_fields_value: ["price"]
+            } do |f| %>
+            <%= f.number_field :price,
+              required: true,
+              min: @product.minimum_price,
+              placeholder: "Masukkan harga (min: #{ idr @product.minimum_price, text: false })",
+              data: { action: "form-control#perform" }
+            %>
+            <%= tag.small flash[:alert], class: "text-red" if flash[:alert] %>
+            <button type="submit" data-action="busy-handler#handle" disabled data-form-control-target="submitButton" >+ Keranjangin</button>
+          <% end %>
+        <% else %>
+          <%= button_to "+ Keranjangin", add_to_cart_product_path(@product.slug), method: :post, form: { data: { controller: "busy-handler" } }, data: { action: "busy-handler#handle" } %>
+        <% end %>
+
+        <% if @product.productable.sample.attached? %>
+          <%= link_to "Unduh Sampel", rails_blob_path(@product.productable.sample), role: "button", class: "secondary outline w-full block" %>
+        <% end %>
       <% end %>
     </div>
   </div>
@@ -32,4 +57,4 @@
     <h2>Deskripsi</h2>
     <%= render_markdown_as_html @product.description %>
   </div>
-</article>
+</div>

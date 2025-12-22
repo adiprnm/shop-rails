@@ -16,7 +16,7 @@ class Transaction
       @order.line_items.create(
         orderable: line_item.cartable,
         orderable_name: line_item.cartable.name,
-        orderable_price: line_item.cartable.actual_price,
+        orderable_price: line_item.price,
         productable: line_item.cartable.productable,
       )
     end

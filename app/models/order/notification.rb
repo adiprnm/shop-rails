@@ -1,0 +1,34 @@
+class Order::Notification
+  attr_reader :order, :line_items
+
+  def self.with(order:)
+    new(order)
+  end
+
+  def initialize(order)
+    @order = order
+    @line_items = order.line_items.to_a
+  end
+
+  def notify
+    notify_admin
+    notify_customer
+  end
+
+  private
+    def notify_admin
+      OrderMailer
+        .with(order: order, products: line_items)
+        .admin_notification
+        .deliver_later
+    end
+
+    def notify_customer
+      OrderMailer.with(order: order, products: line_items).order_invoice.deliver_later
+
+      digital_products = line_items.select(&:digital_product?)
+      if digital_products.present?
+        OrderMailer.with(order: order, products: digital_products).digital_product_accesses.deliver_later
+      end
+    end
+end

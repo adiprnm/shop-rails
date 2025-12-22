@@ -1,6 +1,6 @@
 module ApplicationHelper
-  def idr(amount)
-    return "Gratis" if amount.zero?
+  def idr(amount, text: true)
+    return "Gratis" if amount.zero? && text
 
     number_to_currency(amount, unit: "Rp", separator: ".", delimiter: ".", precision: 0)
   end
@@ -13,4 +13,9 @@ module ApplicationHelper
     file.to_html.html_safe
   end
 
+  def font_files
+    Dir.glob(Rails.root.join("public/fonts/*.ttf")).to_a.tap do |files|
+      files.map! { |file| "/fonts/#{ File.basename(file) }" }
+    end
+  end
 end

@@ -3,19 +3,21 @@ class Integrations::MidtransController < ApplicationController
   skip_before_action :set_current_cart
 
   def payment
-    return render json: { "message" => "Fraud detected!" }, status: :unauthorized if fraud?
+    return render json: { "message" => "OK" } if test_payment?
     return render json: { "message" => "Invalid signature" }, status: :unauthorized unless valid_signature?
+    return render json: { "message" => "Fraud detected!" }, status: :unauthorized if fraud?
 
-    @order = Order.find_by!(order_id: params[:order_id])
-    @updated = @order.update(state: state, integration_data: params.as_json)
+    @payable = Order.find_by(order_id: params[:order_id])
+    @payable ||= Donation.find_by(donation_id: params[:order_id])
+    return render json: { "message" => "Order/donation not found!" }, status: :not_found unless @payable
+
+    @updated = @payable.update(state: state, integration_data: params.as_json)
 
     if @updated
-      render json: @subscription
+      render json: @payable
     else
-      render json: { errors: @subscription.errors }, status: :unprocessable_entity
+      render json: { errors: @payable.errors }, status: :unprocessable_entity
     end
-  rescue ActiveRecord::RecordNotFound
-    render json: { "message" => "Order tidak ditemukan" }, status: :not_found
   end
 
   private
@@ -40,8 +42,12 @@ class Integrations::MidtransController < ApplicationController
     when "pending", "authorize" then "pending"
     when "deny", "failure" then "failed"
     when "cancel" then "pending"
-    when "expire" then "pending"
+    when "expire" then "expired"
     else "failed"
     end
+  end
+
+  def test_payment?
+    params[:order_id].to_s.downcase.starts_with?("payment_notif_test")
   end
 end

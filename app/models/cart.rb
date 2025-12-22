@@ -2,8 +2,10 @@ class Cart < ApplicationRecord
   has_many :line_items, class_name: "CartLineItem", dependent: :delete_all
   has_many :orders
 
-  def add_item(cartable)
-    line_items.find_or_create_by(cartable: cartable)
+  def add_item(cartable, price = nil)
+    line_item = line_items.find_or_initialize_by(cartable: cartable)
+    line_item.price = price
+    line_item.save!
   end
 
   def remove_item(item_id)
@@ -11,6 +13,6 @@ class Cart < ApplicationRecord
   end
 
   def total_price
-    line_items.sum { |item| item.cartable.actual_price }
+    line_items.sum { |item| item.price }
   end
 end
