@@ -62,17 +62,23 @@
     <div class="form-group">
       <%= f.label :product_type %>
       <div>
-        <div>
+        <div class="mb-2">
           <%= f.radio_button :productable_type, "DigitalProduct", id: "product_digital_product" %>
           <%= f.label :digital_product %>
 
           <%= f.fields_for :productable do |pf| %>
-            <fieldset class="mb-4 mt-2">
-              <legend class="px-2">Digital Product</legend>
-
+            <fieldset class="mb-4 mt-4 card">
               <div class="form-group">
+                <div class="form-group mb-2">
+                  <%= pf.label :sample %>
+                  <% if @product.productable&.sample&.attached? %>
+                    <small>File sekarang: <%= @product.productable.sample.filename.to_s %></small>
+                  <% end %>
+                  <%= pf.file_field :sample %>
+                </div>
+
                 <%= pf.label :resource_type %>
-                <div>
+                <div class="mb-2">
                   <%= pf.radio_button :resource_type, "file", id: "product_productable_file", checked: @product.productable&.file? %>
                   <%= pf.label :file %>
 
@@ -91,7 +97,7 @@
                   <%= pf.label :url %>
 
                   <div class="resource">
-                    <div class="form-group">
+                    <div class="form-group mt-2">
                       <%= pf.label :resource_url %>
                       <%= pf.url_field :resource_url, value: @product.productable&.resource_url %>
                     </div>
@@ -101,14 +107,12 @@
             </fieldset>
           <% end %>
         </div>
-        <div>
+        <div class="mb-4">
           <%= f.radio_button :productable_type, "PhysicalProduct", id: "product_physical_product" %>
           <%= f.label :physical_product %>
 
           <%= f.fields_for :productable do |pf| %>
-            <fieldset class="mb-4 mt-2">
-              <legend class="px-2">Physical Product</legend>
-
+            <fieldset class="mb-4 mt-4 card">
               <span>Coming soon</span>
             </fieldset>
           <% end %>

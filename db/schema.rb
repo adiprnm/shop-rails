@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_29_215952) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_14_122722) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -71,6 +71,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_29_215952) do
   create_table "digital_products", force: :cascade do |t|
     t.integer "resource_type", default: 0
     t.string "resource_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "donations", force: :cascade do |t|
+    t.string "name"
+    t.string "message"
+    t.integer "amount", null: false
+    t.string "state", null: false
+    t.datetime "state_updated_at"
+    t.string "donation_id", null: false
+    t.json "integration_data", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

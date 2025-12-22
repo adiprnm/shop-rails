@@ -1,0 +1,33 @@
+<%= content_for(:title) { "Donasi | #{ Current.settings["site_name"] } admin" } %>
+
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Donasi</h1>
+
+  <div class="full-width overflow-x-scroll mt-8">
+    <table style="min-width: 500px;">
+      <thead>
+        <th>ID</th>
+        <th>Nama</th>
+        <th>Jumlah</th>
+        <th>Status</th>
+        <th>Aksi</th>
+      </thead>
+      <tbody>
+        <% @donations.each do |donation| %>
+          <tr>
+            <td><%= donation.id %></td>
+            <td><%= link_to donation.name, admin_donation_path(donation) %></td>
+            <td><%= idr donation.amount %></td>
+            <td><%= donation.state %></td>
+            <td>
+              <%= link_to "Edit", edit_admin_donation_path(donation) %>
+              <%= link_to "Hapus", admin_donation_path(donation), data: { turbo_method: :delete, turbo_confirm: "Kamu yakin?" }, class: "text-red" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

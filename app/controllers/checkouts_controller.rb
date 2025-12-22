@@ -20,7 +20,7 @@ class CheckoutsController < ApplicationController
         end
 
         payment = Transaction::Payment.new(@order)
-        redirect_to payment.payment_url(url: root_url, name: checkout_params[:name]), allow_other_host: true
+        redirect_to payment.payment_url, allow_other_host: true
       end
     rescue StandardError => e
       # capture exception to sentry

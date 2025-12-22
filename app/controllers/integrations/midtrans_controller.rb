@@ -4,21 +4,20 @@ class Integrations::MidtransController < ApplicationController
 
   def payment
     return render json: { "message" => "OK" } if test_payment?
-
-    @order = Order.find_by(order_id: params[:order_id])
-    return render json: { "message" => "Order not found!"}, status: :not_found unless @order
     return render json: { "message" => "Invalid signature" }, status: :unauthorized unless valid_signature?
     return render json: { "message" => "Fraud detected!" }, status: :unauthorized if fraud?
 
-    @updated = @order.update(state: state, integration_data: params.as_json)
+    @payable = Order.find_by(order_id: params[:order_id])
+    @payable ||= Donation.find_by(donation_id: params[:order_id])
+    return render json: { "message" => "Order/donation not found!" }, status: :not_found unless @payable
+
+    @updated = @payable.update(state: state, integration_data: params.as_json)
 
     if @updated
-      render json: @order
+      render json: @payable
     else
-      render json: { errors: @order.errors }, status: :unprocessable_entity
+      render json: { errors: @payable.errors }, status: :unprocessable_entity
     end
-  rescue ActiveRecord::RecordNotFound
-    render json: { "message" => "Order tidak ditemukan" }, status: :not_found
   end
 
   private
