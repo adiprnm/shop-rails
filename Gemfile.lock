@@ -390,6 +390,7 @@ DEPENDENCIES
   brakeman
   capybara
   debug
+  dotenv
   hotwire-spark
   importmap-rails
   jbuilder

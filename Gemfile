@@ -51,6 +51,8 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   gem "hotwire-spark"
+
+  gem "dotenv"
 end
 
 group :development do

@@ -15,9 +15,9 @@
 
     <% favicon = Setting.site_favicon %>
     <% if favicon.present? %>
-      <link rel="icon" type="<%= favicon.file.content_type %>" href="<%= request.base_url + favicon.value %>">
+      <link rel="shortcut icon" type="<%= favicon.file.content_type %>" href="<%= favicon.value %>">
+      <link rel="apple-touch-icon" href="<%= favicon.value %>">
     <% end %>
-    <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
