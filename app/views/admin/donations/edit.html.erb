@@ -1,0 +1,33 @@
+<%= content_for(:title) { "Edit Donasi ##{ @donation.id } | #{ Current.settings["site_name"] } admin" } %>
+
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Edit Donasi #<%= @donation.id %></h1>
+
+  <%= form_for [ :admin, @donation ] do |f| %>
+    <div class="grouped">
+      <div class="form-group">
+        <%= f.label :name %>
+        <%= f.text_field :name %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :amount %>
+        <%= f.number_field :amount %>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :message %>
+      <%= f.text_area :message %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :state %>
+      <%= f.select :state, Order.states.keys.map { |key| [ key.titleize, key ] }.to_h %>
+    </div>
+
+    <%= f.submit "Simpan" %>
+  <% end %>
+</div>

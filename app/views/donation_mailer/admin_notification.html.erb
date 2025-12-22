@@ -1,0 +1,28 @@
+<h2>Yuhuu!</h2>
+
+<p style="line-height: 1.5; margin-bottom: 2rem;">Seseorang baru saja memberikan donasi! Berikut rinciannya:</p>
+
+<table>
+  <tr>
+    <td style="background-color: #f2f2f2"><strong>Waktu Donasi</strong></td>
+    <td><%= l @donation.created_at.in_time_zone("Asia/Jakarta"), locale: :id, format: :long %></td>
+  </tr>
+  <tr>
+    <td style="background-color: #f2f2f2"><strong>ID Donasi</strong></td>
+    <td><%= @donation.donation_id %></td>
+  </tr>
+  <tr>
+    <td style="background-color: #f2f2f2"><strong>Nama</strong></td>
+    <td><%= @donation.name %></td>
+  </tr>
+  <tr>
+    <td style="background-color: #f2f2f2"><strong>Jumlah</strong></td>
+    <td><%= idr @donation.amount %></td>
+  </tr>
+  <tr>
+    <td style="background-color: #f2f2f2"><strong>Pesan</strong></td>
+    <td><%= @donation.message %></td>
+  </tr>
+</table>
+
+<p style="line-height: 1.5; margin-top: 2rem;">Tetap semangat! Semoga makin laris dan makin semangat jualannya. Aamiin.</p>

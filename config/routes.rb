@@ -21,11 +21,13 @@ Rails.application.routes.draw do
     resources :line_items, controller: "cart_line_items", only: %w[ destroy ]
   end
   resource :checkout, only: %w[ create ]
+  resources :supports, controller: "donations", only: %w[ index create ]
 
   resources :admin, controller: "admin", only: %w[ index ]
   namespace :admin do
     resources :products
     resources :categories
+    resources :donations, only: %w[ index show edit update destroy ]
     resources :emails, only: %w[ index ] do
       collection do
         post :test

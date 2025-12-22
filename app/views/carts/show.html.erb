@@ -4,8 +4,12 @@
 <% end %>
 
 <div class="mb-16">
-  <% if @show_message %>
-    <p class="flash-success mt-8">Pembelian berhasil! Harap periksa email kakak ya, kami sudah mengirimkan akses terhadap produk yang kakak beli.</p>
+  <% if @payable&.paid? %>
+    <% if @payable.is_a?(Order) %>
+      <p class="flash-success mt-8">Pembelian berhasil! Harap periksa email kakak ya, kami sudah mengirimkan akses terhadap produk yang kakak beli.</p>
+    <% elsif @payable.is_a?(Donation) %>
+      <p class="flash-success mt-8">Support berhasil dilakukan! Terima kasih banyak ya, kak <%= @payable.name %>! Semoga sehat selalu dan banyak rezekinya, aamiin.</p>
+    <% end %>
   <% end %>
 
   <%= tag.div flash[:alert], class: "flash-error mb-4" if flash[:alert] %>
@@ -48,7 +52,7 @@
         </div>
         <div class="form-group">
           <%= f.label :customer_email_address, "Email" %>
-          <%= f.text_field :customer_email_address, required: true, data: { action: "auto-filler#save" } %>
+          <%= f.email_field :customer_email_address, required: true, data: { action: "auto-filler#save" } %>
         </div>
       </div>
 

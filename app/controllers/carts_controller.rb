@@ -1,8 +1,8 @@
 class CartsController < ApplicationController
   def show
     if params[:order_id].present?
-      @order = Order.find_or_initialize_by(order_id: params[:order_id])
-      @show_message = @order.paid?
+      @payable = Order.find_or_initialize_by(order_id: params[:order_id])
+      @payable = Donation.find_or_initialize_by(donation_id: params[:order_id]) if @payable.new_record?
     end
   end
 end
