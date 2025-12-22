@@ -20,7 +20,7 @@ class ApplicationMailer < ActionMailer::Base
     end
 
     def delivery_method_options
-      settings = Setting.where(key: ["smtp_host", "smtp_port", "smtp_username", "smtp_password"])
+      settings = Setting.where(key: [ "smtp_host", "smtp_port", "smtp_username", "smtp_password" ])
                         .map { |setting| [ setting.key, setting.value ] }.to_h
       {
         delivery_method_options: {
