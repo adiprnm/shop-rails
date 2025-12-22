@@ -1,0 +1,51 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Redirect",
+      "warning_code": 18,
+      "fingerprint": "0198912ac36797114efdd328d8fb525cb1ce745966fd903df8dc56a26e39e6f7",
+      "check_name": "Redirect",
+      "message": "Possible unprotected redirect",
+      "file": "app/controllers/donations_controller.rb",
+      "line": 21,
+      "link": "https://brakemanscanner.org/docs/warning_types/redirect/",
+      "code": "redirect_to(Transaction::Payment.new(Donation.pending.create(donation_params)).payment_url, :allow_other_host => true)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "DonationsController",
+        "method": "create"
+      },
+      "user_input": "Transaction::Payment.new(Donation.pending.create(donation_params)).payment_url",
+      "confidence": "Weak",
+      "cwe_id": [
+        601
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Redirect",
+      "warning_code": 18,
+      "fingerprint": "9650a931c15b0b5dad354112150128e9f58ee90c2d2824d6cb1593e9b4686fbf",
+      "check_name": "Redirect",
+      "message": "Possible unprotected redirect",
+      "file": "app/controllers/checkouts_controller.rb",
+      "line": 23,
+      "link": "https://brakemanscanner.org/docs/warning_types/redirect/",
+      "code": "redirect_to(Transaction::Payment.new(Transaction.new(Current.cart).create(checkout_params)).payment_url, :allow_other_host => true)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "CheckoutsController",
+        "method": "create"
+      },
+      "user_input": "Transaction::Payment.new(Transaction.new(Current.cart).create(checkout_params)).payment_url",
+      "confidence": "Weak",
+      "cwe_id": [
+        601
+      ],
+      "note": ""
+    }
+  ],
+  "brakeman_version": "7.1.1"
+}

@@ -3,6 +3,14 @@ class Admin::OrdersController < AdminController
 
   def index
     all_orders = Order.all.order(created_at: :desc)
+    if params[:product_id].present?
+      all_orders = all_orders.joins(:line_items).merge(OrderLineItem.where(orderable_id: params[:product_id]))
+    end
+
+    if params[:state].present?
+      all_orders = all_orders.where(state: params[:state])
+    end
+
     page = (params[:page] || 1).to_i
     @orders, @pagination = Pagination.new(all_orders).paginate(page: page)
   end
