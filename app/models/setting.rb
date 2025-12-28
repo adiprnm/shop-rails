@@ -10,6 +10,7 @@ class Setting < ApplicationRecord
     site_storage_host
     site_terms_and_conditions_url
     og_image
+    payment_provider
     payment_client_id
     payment_client_secret
     payment_api_host
