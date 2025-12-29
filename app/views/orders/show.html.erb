@@ -18,7 +18,7 @@
 
     <% end %>
 
-    <% if @order.has_unchecked_payment_evidence? %>
+    <% if @order.latest_payment_evidence && !@order.latest_payment_evidence.checked? %>
       <p class="mt-8 mb-8">Bukti pembayaran sudah berhasil diunggah. Kami akan memverifikasi pembayaran maksimal dalam 1 x 24 jam.</p>
     <% else %>
       <p class="mt-8"><a role="button" href="<%= new_order_payment_evidence_path(@order.order_id) %>">Unggah Bukti Pembayaran</a></p>

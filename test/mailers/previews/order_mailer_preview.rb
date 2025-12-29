@@ -24,4 +24,10 @@ class OrderMailerPreview < ActionMailer::Preview
     products = order.line_items
     OrderMailer.with(order: order, products: products).order_failed
   end
+
+  def admin_notification
+    order = Order.last
+    products = order.line_items
+    OrderMailer.with(order: order, products: products).admin_notification
+  end
 end

@@ -29,9 +29,12 @@ class Admin::OrdersController < AdminController
         :customer_agree_to_receive_newsletter,
         :state,
         :remark,
-        :has_unchecked_payment_evidence
       )
     )
+
+    if @order.saved_change_to_state?
+      @order.mark_evidences_as_checked
+    end
 
     redirect_to admin_order_path(@order)
   end

@@ -92,7 +92,6 @@
                   <%= f.text_area :remark, rows: 4, required: true, value: "" %>
                 </div>
                 <%= f.hidden_field :state, value: "failed" %>
-                <%= f.hidden_field :has_unchecked_payment_evidence, value: false %>
                 <%= f.submit "Tolak" %>
               <% end %>
               <button data-action="modal#close" class="outline full-width">Batalkan</button>

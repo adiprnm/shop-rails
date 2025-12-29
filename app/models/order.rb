@@ -29,6 +29,10 @@ class Order < ApplicationRecord
     (created_at + 1.day).in_time_zone(Current.time_zone)
   end
 
+  def mark_evidences_as_checked
+    payment_evidences.where(checked: false).update_all(checked: true)
+  end
+
   private
     def send_order_successful_notification
       Notification.with(order: self).notify
