@@ -1,0 +1,59 @@
+<div class="text-center">
+  <%= order_status_tag(@order) %>
+
+  <h1 class="mt-4" style="font-size: 2rem; font-weight: 800;"><%= idr @order.total_price %></h1>
+
+  <% if @order.pending? || @order.failed? %>
+    <p class="mb-8">Bayar sebelum <%= tag.strong l(@order.will_expire_at, format: :long, locale: :id) %></p>
+  <% end %>
+
+  <% if @order.pending? || @order.failed? %>
+    <% if @order.failed? %>
+      <p>Pesanan kamu belum bisa kami proses dikarenakan alasan sebagai berikut:</p>
+      <article class="w-max mx-auto">
+        <%= tag.strong @order.remark %>
+      </article>
+      <p class="mt-4 mb-0">Harap lakukan aksi perbaikan sesuai dengan keterangan tersebut. Mohon maaf atas ketidaknyamanan ini.</p>
+      <hr class="mt-8 mb-8">
+
+    <% end %>
+
+    <% if @order.has_unchecked_payment_evidence? %>
+      <p class="mt-8 mb-8">Bukti pembayaran sudah berhasil diunggah. Kami akan memverifikasi pembayaran maksimal dalam 1 x 24 jam.</p>
+    <% else %>
+      <p class="mt-8"><a role="button" href="<%= new_order_payment_evidence_path(@order.order_id) %>">Unggah Bukti Pembayaran</a></p>
+      <p class="mt-8 mb-8">Silahkan lakukan pembayaran melalui salah satu dari metode pembayaran berikut ini:</p>
+
+      <% if Current.settings["payment_qris"].present? %>
+        <div class="mx-auto">
+          <article>
+            <h2 class="payment-method-name">QRIS</h2>
+            <%= image_tag Current.settings["payment_qris"], class: "qris" %>
+          </article>
+        </div>
+      <% end %>
+
+      <% if Current.settings["payment_account_name"].present? && Current.settings["payment_account_number"].present? %>
+        <article class="mt-8" data-controller="copy-text">
+          <h2 class="payment-method-name"><%= Current.settings["payment_account_name"] %></h2>
+          <p style="font-size: 1.5rem; font-weight: bold;"><%= Current.settings["payment_account_number"] %></p>
+          <button data-account-number="<%= Current.settings["payment_account_number"] %>" data-action="copy-text#perform">Salin</button>
+          <dialog data-copy-text-target="modal">
+            <article>
+              <p>Nomor rekening berhasi disalin!</p>
+              <button data-action="copy-text#closeModal">Tutup</button>
+            </article>
+          </dialog>
+        </article>
+      <% end %>
+    <% end %>
+  <% elsif @order.paid? %>
+    <p>Pembayaran berhasil diverifikasi. Harap cek inbox email untuk mendapatkan akses terhadap produk yang kamu beli.</p>
+    <p>Terima kasih sudah belanja di <%= tag.strong Current.settings["site_name"] %>!</p>
+    <%= link_to "Kembali ke Beranda", products_path, role: "button" %>
+  <% elsif @order.expired? %>
+    <p>Oops! Pesanan kamu sudah kadaluarsa. Silahkan pesan lagi produk yang hendak kamu beli.</p>
+  <% end %>
+
+</div>
+

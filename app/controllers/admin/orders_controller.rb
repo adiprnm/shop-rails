@@ -27,7 +27,9 @@ class Admin::OrdersController < AdminController
         :customer_email_address,
         :customer_agree_to_terms,
         :customer_agree_to_receive_newsletter,
-        :state
+        :state,
+        :remark,
+        :has_unchecked_payment_evidence
       )
     )
 

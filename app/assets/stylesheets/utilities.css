@@ -73,6 +73,7 @@
 .leading-loose { line-height: 2em; }
 .overflow-x-scroll { overflow-x: scroll; }
 .nowrap { white-space: nowrap; }
+.rounded-full { border-radius: 9999px; }
 
 a:has(> article.product-card) {
   text-decoration: none;
@@ -162,9 +163,84 @@ a:has(> article.product-card) {
 }
 
 .badge {
+  --badge-color: var(--pico-color);
+  --badge-background-color: var(--pico-background-color);
+  --badge-border-color: var(--pico-muted-color);
+  --pending-h: 100;
+  --paid-h: 145;
+  --expired-h: 250;
+  --failed-h: 25;
+
   border-radius: 999px;
   padding: 0.25rem 0.75rem;
-  border: 1px solid var(--pico-muted-color);
+  border: 1px solid var(--badge-border-color);
+  color: var(--badge-color);
+  background-color: var(--badge-background-color);
+}
+
+/* State: Pending */
+.badge__order-pending {
+    --badge-background-color: oklch(96% 0.05 var(--pending-h));
+    --badge-border-color: oklch(90% 0.1 var(--pending-h));
+    --badge-color: oklch(50% 0.15 var(--pending-h));
+  }
+
+/* State: Paid */
+.badge__order-paid {
+  --badge-background-color: oklch(96% 0.05 var(--paid-h));
+  --badge-border-color: oklch(90% 0.1 var(--paid-h));
+  --badge-color: oklch(50% 0.15 var(--paid-h));
+}
+
+/* State: Expired */
+.badge__order-expired {
+  --badge-background-color: oklch(96% 0.01 var(--expired-h));
+  --badge-border-color: oklch(90% 0.03 var(--expired-h));
+  --badge-color: oklch(50% 0.05 var(--expired-h));
+}
+
+/* State: Failed */
+.badge__order-failed {
+  --badge-background-color: oklch(96% 0.05 var(--failed-h));
+  --badge-border-color: oklch(90% 0.1 var(--failed-h));
+  --badge-color: oklch(50% 0.15 var(--failed-h));
+}
+
+@media (prefers-color-scheme: dark) {
+  .badge__order-pending {
+    --badge-background-color: oklch(25% 0.06 var(--pending-h));
+    --badge-border-color: oklch(35% 0.08 var(--pending-h));
+    --badge-color: oklch(85% 0.12 var(--pending-h));
+  }
+
+  .badge__order-paid {
+    --badge-background-color: oklch(25% 0.06 var(--paid-h));
+    --badge-border-color: oklch(35% 0.08 var(--paid-h));
+    --badge-color: oklch(85% 0.12 var(--paid-h));
+  }
+
+  .badge__order-expired {
+    --badge-background-color: oklch(25% 0.02 var(--expired-h));
+    --badge-border-color: oklch(35% 0.03 var(--expired-h));
+    --badge-color: oklch(85% 0.04 var(--expired-h));
+  }
+
+  .badge__order-failed {
+    --badge-background-color: oklch(25% 0.06 var(--failed-h));
+    --badge-border-color: oklch(35% 0.08 var(--failed-h));
+    --badge-color: oklch(85% 0.12 var(--failed-h));
+  }
+}
+
+.payment-method-name {
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.qris {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .mb-4-on-tablet-and-up {
@@ -196,4 +272,12 @@ a:has(> article.product-card) {
   position: absolute;
   top: 0;
   outline: 2px solid var(--pico-background-color);
+}
+
+.danger {
+  color: red;
+  border-color: red;
+}
+.mx-auto {
+  margin: 0 auto;
 }

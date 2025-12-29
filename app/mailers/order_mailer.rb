@@ -17,6 +17,18 @@ class OrderMailer < ApplicationMailer
       subject: "Seseorang membeli produk kita!"
   end
 
+  def order_created
+    mail from: from_email,
+      to: @order.customer_email_address,
+      subject: "Order berhasil dibuat!"
+  end
+
+  def order_failed
+    mail from: from_email,
+      to: @order.customer_email_address,
+      subject: "Order kamu belum bisa kami proses"
+  end
+
   def digital_product_accesses
     mail from: from_email,
       to: @order.customer_email_address,

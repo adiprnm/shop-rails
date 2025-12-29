@@ -44,7 +44,7 @@
 
     <h2 class="mt-8">Checkout</h2>
 
-    <%= form_with url: checkout_path, method: :post, data: { turbo: false, controller: "auto-filler", auto_filler_fields_value: %w[ customer_name customer_email_address ] } do |f| %>
+    <%= form_with url: orders_path, method: :post, data: { turbo: false, controller: "auto-filler", auto_filler_fields_value: %w[ customer_name customer_email_address ] } do |f| %>
       <div class="grouped mb-4">
         <div class="form-group">
           <%= f.label :customer_name, "Nama" %>

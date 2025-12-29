@@ -14,6 +14,11 @@ class Setting < ApplicationRecord
     payment_client_id
     payment_client_secret
     payment_api_host
+    payment_provider
+    payment_qris
+    payment_account_name
+    payment_account_user_name
+    payment_account_number
     email_sender_email
     email_sender_name
     smtp_host
@@ -24,7 +29,7 @@ class Setting < ApplicationRecord
     admin_password
     admin_email
   ].freeze
-  ATTACHABLE_KEYS = %i[ site_favicon og_image ].freeze
+  ATTACHABLE_KEYS = %i[ site_favicon og_image payment_qris ].freeze
 
   KEYS.each do |key|
     define_singleton_method key do

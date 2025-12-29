@@ -23,6 +23,10 @@ Rails.application.routes.draw do
   resource :checkout, only: %w[ create ]
   resources :supports, controller: "donations", only: %w[ index create ]
 
+  resources :orders, only: %w[ show create ] do
+    resource :payment_evidence, only: %w[ new create ], controller: "orders/payment_evidences"
+  end
+
   resources :admin, controller: "admin", only: %w[ index ]
   namespace :admin do
     resources :products

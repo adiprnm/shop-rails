@@ -11,24 +11,31 @@ class Order::Notification
   end
 
   def notify
-    notify_admin
+    notify_admin if Current.settings["payment_provider"] == "midtrans"
     notify_customer
   end
 
-  private
-    def notify_admin
-      OrderMailer
-        .with(order: order, products: line_items)
-        .admin_notification
-        .deliver_later
-    end
+  def notify_created
+    OrderMailer.with(order: order, products: line_items).order_created.deliver_later
+  end
 
-    def notify_customer
-      OrderMailer.with(order: order, products: line_items).order_invoice.deliver_later
+  def notify_failed
+    OrderMailer.with(order: order, products: line_items).order_failed.deliver_later
+  end
 
-      digital_products = line_items.select(&:digital_product?)
-      if digital_products.present?
-        OrderMailer.with(order: order, products: digital_products).digital_product_accesses.deliver_later
-      end
+  def notify_admin
+    OrderMailer
+      .with(order: order, products: line_items)
+      .admin_notification
+      .deliver_later
+  end
+
+  def notify_customer
+    OrderMailer.with(order: order, products: line_items).order_invoice.deliver_later
+
+    digital_products = line_items.select(&:digital_product?)
+    if digital_products.present?
+      OrderMailer.with(order: order, products: digital_products).digital_product_accesses.deliver_later
     end
+  end
 end
