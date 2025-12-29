@@ -1,5 +1,16 @@
+<% title = "Pembayaran Donasi | #{ Current.settings["site_name"] }" %>
+<% description = "Pembayaran donasi di #{ Current.settings["site_name"] }" %>
+
+<%= content_for(:title) { title } %>
+<%= content_for(:head) do %>
+  <%= tag.meta name: "robots", content: "noindex" %>
+  <%= tag.meta name: "description", content: description %>
+  <%= tag.meta name: "og:title", content: title %>
+  <%= tag.meta name: "og:description", content: description %>
+<% end %>
+
 <div class="text-center">
-  <%= order_status_tag(@order) %>
+  <%= status_tag(@order) %>
 
   <h1 class="mt-4" style="font-size: 2rem; font-weight: 800;"><%= idr @order.total_price %></h1>
 

@@ -179,53 +179,53 @@ a:has(> article.product-card) {
 }
 
 /* State: Pending */
-.badge__order-pending {
+.badge__status-pending {
     --badge-background-color: oklch(96% 0.05 var(--pending-h));
     --badge-border-color: oklch(90% 0.1 var(--pending-h));
     --badge-color: oklch(50% 0.15 var(--pending-h));
   }
 
 /* State: Paid */
-.badge__order-paid {
+.badge__status-paid {
   --badge-background-color: oklch(96% 0.05 var(--paid-h));
   --badge-border-color: oklch(90% 0.1 var(--paid-h));
   --badge-color: oklch(50% 0.15 var(--paid-h));
 }
 
 /* State: Expired */
-.badge__order-expired {
+.badge__status-expired {
   --badge-background-color: oklch(96% 0.01 var(--expired-h));
   --badge-border-color: oklch(90% 0.03 var(--expired-h));
   --badge-color: oklch(50% 0.05 var(--expired-h));
 }
 
 /* State: Failed */
-.badge__order-failed {
+.badge__status-failed {
   --badge-background-color: oklch(96% 0.05 var(--failed-h));
   --badge-border-color: oklch(90% 0.1 var(--failed-h));
   --badge-color: oklch(50% 0.15 var(--failed-h));
 }
 
 @media (prefers-color-scheme: dark) {
-  .badge__order-pending {
+  .badge__status-pending {
     --badge-background-color: oklch(25% 0.06 var(--pending-h));
     --badge-border-color: oklch(35% 0.08 var(--pending-h));
     --badge-color: oklch(85% 0.12 var(--pending-h));
   }
 
-  .badge__order-paid {
+  .badge__status-paid {
     --badge-background-color: oklch(25% 0.06 var(--paid-h));
     --badge-border-color: oklch(35% 0.08 var(--paid-h));
     --badge-color: oklch(85% 0.12 var(--paid-h));
   }
 
-  .badge__order-expired {
+  .badge__status-expired {
     --badge-background-color: oklch(25% 0.02 var(--expired-h));
     --badge-border-color: oklch(35% 0.03 var(--expired-h));
     --badge-color: oklch(85% 0.04 var(--expired-h));
   }
 
-  .badge__order-failed {
+  .badge__status-failed {
     --badge-background-color: oklch(25% 0.06 var(--failed-h));
     --badge-border-color: oklch(35% 0.08 var(--failed-h));
     --badge-color: oklch(85% 0.12 var(--failed-h));
