@@ -14,6 +14,7 @@ ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=
 ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=
 SECRET_KEY_BASE=
 STORAGE_HOST=
+APP_HOST=
 ```
 
 Encryption is applied to the site settings values. To generate the encryption keys, run `rails db:encryption:init`.
