@@ -20,7 +20,6 @@ Rails.application.routes.draw do
   resource :cart, only: %w[ show ] do
     resources :line_items, controller: "cart_line_items", only: %w[ destroy ]
   end
-  resource :checkout, only: %w[ create ]
   resources :supports, controller: "donations", only: %w[ index show create ] do
     resource :payment_evidence, only: %w[ new create ], controller: "donations/payment_evidences"
   end
