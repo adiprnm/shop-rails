@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_29_113901) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -75,6 +75,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_113901) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "donation_payment_evidences", force: :cascade do |t|
+    t.integer "donation_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["donation_id"], name: "index_donation_payment_evidences_on_donation_id"
+  end
+
   create_table "donations", force: :cascade do |t|
     t.string "name"
     t.string "message"
@@ -85,6 +92,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_113901) do
     t.json "integration_data", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "remark"
+    t.string "email_address"
   end
 
   create_table "order_line_items", force: :cascade do |t|
@@ -102,13 +111,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_113901) do
     t.index ["productable_type", "productable_id"], name: "index_order_line_items_on_productable"
   end
 
-  create_table "order_payment_evidences", force: :cascade do |t|
-    t.integer "order_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["order_id"], name: "index_order_payment_evidences_on_order_id"
-  end
-
   create_table "orders", force: :cascade do |t|
     t.integer "cart_id", null: false
     t.string "order_id", null: false
@@ -123,8 +125,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_113901) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "remark"
-    t.boolean "has_unchecked_payment_evidence", default: false
     t.index ["cart_id"], name: "index_orders_on_cart_id"
+  end
+
+  create_table "payment_evidences", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "payable_id", null: false
+    t.string "payable_type", null: false
+    t.boolean "checked", default: false, null: false
   end
 
   create_table "products", force: :cascade do |t|
@@ -154,7 +163,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_113901) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cart_line_items", "carts"
+  add_foreign_key "donation_payment_evidences", "donations"
   add_foreign_key "order_line_items", "orders"
-  add_foreign_key "order_payment_evidences", "orders"
   add_foreign_key "orders", "carts"
 end

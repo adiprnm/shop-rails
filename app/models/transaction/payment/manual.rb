@@ -6,8 +6,10 @@ class Transaction::Payment::Manual
   end
 
   def redirect_url
-    id = payable.is_a?(Order) ? payable.order_id : payable.donation_id
-
-    Rails.application.routes.url_helpers.order_url(id, only_path: true)
+    if payable.is_a?(Order)
+      Rails.application.routes.url_helpers.order_url(payable.order_id, only_path: true)
+    elsif payable.is_a?(Donation)
+      Rails.application.routes.url_helpers.support_url(payable.donation_id, only_path: true)
+    end
   end
 end

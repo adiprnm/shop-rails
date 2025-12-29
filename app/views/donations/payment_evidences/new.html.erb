@@ -1,0 +1,33 @@
+<div>
+  <h1>Unggah Bukti Pembayaran</h1>
+
+  <table>
+    <tr>
+      <td>Donation ID</td>
+      <td>:</td>
+      <td><%= @donation.donation_id %></td>
+    </tr>
+    <tr>
+      <td>Nama Pemesan</td>
+      <td>:</td>
+      <td><%= @donation.name %></td>
+    </tr>
+    <tr>
+      <td>Nominal</td>
+      <td>:</td>
+      <td><%= idr @donation.amount %></td>
+    </tr>
+  </table>
+
+  <h2>Bukti Pembayaran</h2>
+
+  <% if @payment_evidence.errors.any? %>
+    <p class="flash-error"><%= @payment_evidence.errors.full_messages.first %></p>
+  <% end %>
+
+  <%= form_with model: @payment_evidence, url: support_payment_evidence_path, method: :post, data: { controller: "image-preview" } do |f| %>
+    <%= image_tag "", class: "block", data: { image_preview_target: "preview" } %>
+    <%= f.file_field :file, accept: "image/jpg,image/jpeg,image/webp,image/png", data: { action: "image-preview#perform" } %>
+    <%= f.submit "Kirim Bukti Pembayaran" %>
+  <% end %>
+</div>

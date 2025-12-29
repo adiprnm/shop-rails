@@ -1,6 +1,6 @@
 require "test_helper"
 
-class OrderPaymentEvidenceTest < ActiveSupport::TestCase
+class PaymentEvidenceTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

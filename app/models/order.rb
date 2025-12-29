@@ -2,7 +2,7 @@ class Order < ApplicationRecord
   belongs_to :cart
 
   has_many :line_items, class_name: "OrderLineItem", dependent: :delete_all
-  has_many :payment_evidences, -> { order(created_at: :desc) }, class_name: "OrderPaymentEvidence", dependent: :destroy
+  has_many :payment_evidences, -> { order(created_at: :desc) }, as: :payable, dependent: :destroy
 
   enum :state, %w[ pending paid failed expired ]
 
