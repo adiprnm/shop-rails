@@ -1,0 +1,11 @@
+<h2>Halo orang baik!</h2>
+
+<p style="line-height: 1.5; margin-bottom: 2rem;">Donasi kamu sebesar <%= tag.strong idr(@donation.amount) %> di <%= Setting.site_name.value %> berhasil dibuat. Harap lakukan pembayaran supaya donasi bisa kami proses secepatnya.</p>
+
+<p style="line-height: 1.5; margin-bottom: 2rem;">Sebagai informasi, kamu dapat mengakses informasi mengenai donasimu di <%= link_to "halaman ini", support_url(@donation.donation_id) %>. <strong>Jangan sebarkan link tersebut</strong>, karena siapapun yang memiliki link tersebut dapat melihat informasi donasi kamu.</p>
+
+<p style="line-height: 1.5; margin-top: 3rem;">
+  Salam,<br>
+  <%= Setting.email_sender_name.value %>
+</p>
+

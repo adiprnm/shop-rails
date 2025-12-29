@@ -16,20 +16,28 @@ class ApplicationMailer < ActionMailer::Base
     end
 
     def from_email
-      Setting.email_sender_email.value
+      if Rails.env.development?
+        email_address_with_name("noreply@adipurnm.my.id", "Adi Purnama")
+      else
+        Setting.email_sender_email.value
+      end
     end
 
     def delivery_method_options
-      settings = Setting.where(key: [ "smtp_host", "smtp_port", "smtp_username", "smtp_password" ])
-                        .map { |setting| [ setting.key, setting.value ] }.to_h
-      {
-        delivery_method_options: {
-          address:         settings["smtp_host"],
-          port:            settings["smtp_port"].to_i,
-          authentication:  "plain",
-          user_name:       settings["smtp_username"],
-          password:        settings["smtp_password"]
+      if Rails.env.development?
+        {}
+      else
+        settings = Setting.where(key: [ "smtp_host", "smtp_port", "smtp_username", "smtp_password" ])
+                          .map { |setting| [ setting.key, setting.value ] }.to_h
+        {
+          delivery_method_options: {
+            address:         settings["smtp_host"],
+            port:            settings["smtp_port"].to_i,
+            authentication:  "plain",
+            user_name:       settings["smtp_username"],
+            password:        settings["smtp_password"]
+          }
         }
-      }
+      end
     end
 end

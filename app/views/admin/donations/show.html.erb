@@ -19,8 +19,16 @@
         <td><%= @donation.name %></td>
       </tr>
       <tr>
+        <td class="min-w-max"><strong>Email</strong></td>
+        <td><%= @donation.email_address %></td>
+      </tr>
+      <tr>
         <td class="min-w-max"><strong>Status</strong></td>
         <td class="min-w-max"><%= @donation.state %></td>
+      </tr>
+      <tr>
+        <td class="min-w-max"><strong>Keterangan</strong></td>
+        <td class="min-w-max"><%= @donation.remark %></td>
       </tr>
       <tr>
         <td class="min-w-max"><strong>Status Diperbarui pada</strong></td>
@@ -34,16 +42,58 @@
         <td class="min-w-max"><strong>Pesan</strong></td>
         <td><%= @donation.message %></td>
       </tr>
-      <tr>
-        <td class="min-w-max"><strong>Response Midtrans</strong></td>
-        <td>
-          <details>
-            <summary>Lihat response</summary>
+      <% if Current.settings["payment_provider"] == "midtrans" %>
+        <tr>
+          <td class="min-w-max"><strong>Response Midtrans</strong></td>
+          <td>
+            <details>
+              <summary>Lihat response</summary>
 
-            <pre class="p-4"><%= JSON.pretty_generate @donation.integration_data %></pre>
-          </details>
-        </td>
-      </tr>
+              <pre class="p-4"><%= JSON.pretty_generate @donation.integration_data %></pre>
+            </details>
+          </td>
+        </tr>
+      <% end %>
     </table>
   </div>
+
+  <% if Current.settings["payment_provider"] == "manual" %>
+    <h2 class="mt-8">Bukti Pembayaran</h2>
+
+    <% if @donation.latest_payment_evidence&.file&.attached? %>
+      <%= image_tag @donation.latest_payment_evidence.file %>
+
+      <% if @donation.pending? || @donation.failed? %>
+        <div data-controller="modal">
+          <%= button_to "Setujui", admin_donation_path(@donation), method: :put, params: { donation: { state: "paid" } }, class: "mt-4" %>
+          <button class="outline full-width danger" data-action="modal#open">Tolak</button>
+
+          <dialog data-modal-target="modal">
+            <article>
+              <%= form_for [ :admin, @donation ] do |f| %>
+                <div>
+                  <%= f.label :remark, "Alasan" %>
+                  <%= f.text_area :remark, rows: 4, required: true, value: "" %>
+                </div>
+                <%= f.hidden_field :state, value: "failed" %>
+                <%= f.submit "Tolak" %>
+              <% end %>
+              <button data-action="modal#close" class="outline full-width">Batalkan</button>
+            </article>
+          </dialog>
+        </div>
+      <% end %>
+
+      <details class="mt-8">
+        <summary>Lihat semua bukti pembayaran</summary>
+
+        <% @donation.payment_evidences.each do |evidence| %>
+          <p class="mb-2 mt-4"><%= l evidence.created_at, format: :long %></p>
+          <%= image_tag evidence.file if evidence.file.attached? %>
+        <% end %>
+      </details>
+    <% else %>
+      <p>Belum ada bukti pembayaran.</p>
+    <% end %>
+  <% end %>
 </div>

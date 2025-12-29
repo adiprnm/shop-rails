@@ -42,4 +42,8 @@
   </tbody>
 </table>
 
-<p style="line-height: 1.5; margin-top: 2rem;">Congrats! Semoga makin laris dan makin semangat jualannya. Aamiin.</p>
+<% if Setting.payment_provider.value == "manual" %>
+  <p style="line-height: 1.5; margin-top: 2rem;">Harap lakukan verifikasi pembayaran di halaman admin secepatnya.</p>
+<% else %>
+  <p style="line-height: 1.5; margin-top: 2rem;">Congrats! Semoga makin laris dan makin semangat jualannya. Aamiin.</p>
+<% end %>

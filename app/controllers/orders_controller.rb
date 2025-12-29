@@ -1,4 +1,4 @@
-class CheckoutsController < ApplicationController
+class OrdersController < ApplicationController
   def create
     ActiveRecord::Base.transaction do
       @order = Transaction.new(Current.cart).create(checkout_params)
@@ -10,23 +10,20 @@ class CheckoutsController < ApplicationController
         @order.paid!
         redirect_to cart_path(order_id: @order.order_id)
       else
-        begin
-          Transaction::Payment.cancel(@order.order_id)
-        rescue MidtransClient::Error => e
-          raise StandardError, e if e.message.exclude?("404")
-        ensure
-          @order.order_id = SecureRandom.uuid
-          @order.save
-        end
-
-        payment = Transaction::Payment.new(@order)
-        redirect_to payment.payment_url, allow_other_host: true
+        redirect_url = Transaction::Payment.for(@order).redirect_url
+        redirect_to redirect_url, allow_other_host: true
       end
     rescue StandardError => e
       # capture exception to sentry
       message = Rails.env.development?? e.message : "Error terjadi ketika memproses pesanan kakak. Silahkan coba lagi nanti."
+      debugger
       raise ActiveRecord::Rollback, message
     end
+  end
+
+  def show
+    @order = Order.find_by!(order_id: params[:id])
+    @order.expired! if @order.expire?
   end
 
   private

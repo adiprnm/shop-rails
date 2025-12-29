@@ -9,7 +9,11 @@ class Admin::DonationsController < AdminController
   def edit; end
 
   def update
-    @donation.update(params.require(:donation).permit(:name, :amount, :message, :state))
+    @donation.update(params.require(:donation).permit(:name, :amount, :message, :state, :remark))
+
+    if @donation.saved_change_to_state?
+      @donation.mark_evidences_as_checked
+    end
 
     redirect_to admin_donation_path(@donation)
   end

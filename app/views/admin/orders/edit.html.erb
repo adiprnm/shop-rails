@@ -35,6 +35,11 @@
       <%= f.select :state, Order.states.keys.map { |key| [ key.titleize, key ] }.to_h %>
     </div>
 
+    <div class="form-group">
+      <%= f.label :remark %>
+      <%= f.text_area :remark %>
+    </div>
+
     <%= f.submit "Simpan" %>
   <% end %>
 </div>

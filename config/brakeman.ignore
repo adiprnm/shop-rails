@@ -3,20 +3,20 @@
     {
       "warning_type": "Redirect",
       "warning_code": 18,
-      "fingerprint": "0198912ac36797114efdd328d8fb525cb1ce745966fd903df8dc56a26e39e6f7",
+      "fingerprint": "d66e611feff9c8ad0d7a3e0072e89c8e0a0f52fdf7c24e6ea05be544dd08f346",
       "check_name": "Redirect",
       "message": "Possible unprotected redirect",
       "file": "app/controllers/donations_controller.rb",
-      "line": 21,
+      "line": 12,
       "link": "https://brakemanscanner.org/docs/warning_types/redirect/",
-      "code": "redirect_to(Transaction::Payment.new(Donation.pending.create(donation_params)).payment_url, :allow_other_host => true)",
+      "code": "redirect_to(Transaction::Payment.for(Donation.pending.create(donation_params)).redirect_url, :allow_other_host => true)",
       "render_path": null,
       "location": {
         "type": "method",
         "class": "DonationsController",
         "method": "create"
       },
-      "user_input": "Transaction::Payment.new(Donation.pending.create(donation_params)).payment_url",
+      "user_input": "Transaction::Payment.for(Donation.pending.create(donation_params)).redirect_url",
       "confidence": "Weak",
       "cwe_id": [
         601
@@ -26,20 +26,20 @@
     {
       "warning_type": "Redirect",
       "warning_code": 18,
-      "fingerprint": "9650a931c15b0b5dad354112150128e9f58ee90c2d2824d6cb1593e9b4686fbf",
+      "fingerprint": "e19066f569fe98bd8b253e01b56f46f6f85ebe71402a0089479a155fe0525148",
       "check_name": "Redirect",
       "message": "Possible unprotected redirect",
-      "file": "app/controllers/checkouts_controller.rb",
-      "line": 23,
+      "file": "app/controllers/orders_controller.rb",
+      "line": 14,
       "link": "https://brakemanscanner.org/docs/warning_types/redirect/",
-      "code": "redirect_to(Transaction::Payment.new(Transaction.new(Current.cart).create(checkout_params)).payment_url, :allow_other_host => true)",
+      "code": "redirect_to(Transaction::Payment.for(Transaction.new(Current.cart).create(checkout_params)).redirect_url, :allow_other_host => true)",
       "render_path": null,
       "location": {
         "type": "method",
-        "class": "CheckoutsController",
+        "class": "OrdersController",
         "method": "create"
       },
-      "user_input": "Transaction::Payment.new(Transaction.new(Current.cart).create(checkout_params)).payment_url",
+      "user_input": "Transaction::Payment.for(Transaction.new(Current.cart).create(checkout_params)).redirect_url",
       "confidence": "Weak",
       "cwe_id": [
         601
@@ -47,5 +47,5 @@
       "note": ""
     }
   ],
-  "brakeman_version": "7.1.1"
+  "brakeman_version": "7.1.2"
 }

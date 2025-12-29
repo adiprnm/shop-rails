@@ -28,6 +28,13 @@
       <%= f.label :name, "Nama" %>
       <%= f.text_field :name, placeholder: "Nama kamu (opsional)", value: f.object[:name] %>
     </div>
+    <% if Current.settings["payment_provider"] == "manual" %>
+      <div>
+        <%= f.label :email_address, "Email" %>
+        <%= f.email_field :email_address, placeholder: "Email kamu", required: true, value: f.object[:email_address] %>
+        <small>*diperlukan untuk mengirim notifikasi status donasi kamu.</small>
+      </div>
+    <% end %>
     <div>
       <%= f.label :message, "Pesan" %>
       <%= f.text_area :message, placeholder: "Pesan (opsional)" %>

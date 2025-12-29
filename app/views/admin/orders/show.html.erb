@@ -27,6 +27,12 @@
         <td class="min-w-max"><strong>Status</strong></td>
         <td class="min-w-max"><%= @order.state %></td>
       </tr>
+      <% if Current.settings["payment_provider"] == "manual" %>
+        <tr>
+          <td class="min-w-max"><strong>Keterangan</strong></td>
+          <td class="min-w-max"><%= @order.remark %></td>
+        </tr>
+      <% end %>
       <tr>
         <td class="min-w-max"><strong>Status Diperbarui pada</strong></td>
         <td><%= l @order.state_updated_at, format: :long %></td>
@@ -35,16 +41,18 @@
         <td class="min-w-max"><strong>Total Harga</strong></td>
         <td><%= idr @order.total_price %></td>
       </tr>
-      <tr>
-        <td class="min-w-max"><strong>Response Midtrans</strong></td>
-        <td>
-          <details>
-            <summary>Lihat response</summary>
+      <% if Current.settings["payment_provider"] == "midtrans" %>
+        <tr>
+          <td class="min-w-max"><strong>Response Midtrans</strong></td>
+          <td>
+            <details>
+              <summary>Lihat response</summary>
 
-            <pre><%= JSON.pretty_generate @order.integration_data %></pre>
-          </details>
-        </td>
-      </tr>
+              <pre><%= JSON.pretty_generate @order.integration_data %></pre>
+            </details>
+          </td>
+        </tr>
+      <% end %>
     </table>
   </div>
 
@@ -64,4 +72,44 @@
       <% end %>
     </tbody>
   </table>
+
+  <% if Current.settings["payment_provider"] == "manual" %>
+    <h2 class="mt-8">Bukti Pembayaran</h2>
+
+    <% if @order.latest_payment_evidence&.file&.attached? %>
+      <%= image_tag @order.latest_payment_evidence.file %>
+
+      <% if @order.pending? || @order.failed? %>
+        <div data-controller="modal">
+          <%= button_to "Setujui", admin_order_path(@order), method: :put, params: { order: { state: "paid" } }, class: "mt-4" %>
+          <button class="outline full-width danger" data-action="modal#open">Tolak</button>
+
+          <dialog data-modal-target="modal">
+            <article>
+              <%= form_for [ :admin, @order ] do |f| %>
+                <div>
+                  <%= f.label :remark, "Alasan" %>
+                  <%= f.text_area :remark, rows: 4, required: true, value: "" %>
+                </div>
+                <%= f.hidden_field :state, value: "failed" %>
+                <%= f.submit "Tolak" %>
+              <% end %>
+              <button data-action="modal#close" class="outline full-width">Batalkan</button>
+            </article>
+          </dialog>
+        </div>
+      <% end %>
+
+      <details class="mt-8">
+        <summary>Lihat semua bukti pembayaran</summary>
+
+        <% @order.payment_evidences.each do |evidence| %>
+          <p class="mb-2 mt-4"><%= l evidence.created_at, format: :long %></p>
+          <%= image_tag evidence.file if evidence.file.attached? %>
+        <% end %>
+      </details>
+    <% else %>
+      <p>Belum ada bukti pembayaran.</p>
+    <% end %>
+  <% end %>
 </div>

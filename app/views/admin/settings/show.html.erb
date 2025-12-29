@@ -40,6 +40,34 @@
       <%= f.text_area :site_main_menu, style: "min-height: 40px; font-family: monospace", value: Current.settings["site_main_menu"] %>
     </div>
 
+    <div class="form-group">
+      <%= f.label :payment_provider, "Provider Pembayaran" %>
+      <%= f.select :payment_provider, [ [ "Midtrans", "midtrans" ], [ "Manual", "manual" ] ], { selected: Current.settings["payment_provider"] } %>
+    </div>
+
+    <h3>QRIS dan Nomor Rekening</h1>
+
+    <div class="form-group" data-controller="image-preview">
+      <%= f.label :payment_qris, "QRIS" %>
+      <%= image_tag Current.settings["payment_qris"].present? ? request.base_url + Current.settings["payment_qris"] : "", data: { image_preview_target: "preview" }, class: "block" %>
+      <%= f.file_field :payment_qris, data: { action: "image-preview#perform" } %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :payment_account_name, "Nama Bank/E-wallet" %>
+      <%= f.text_field :payment_account_name, value: Current.settings["payment_account_name"].presence %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :payment_account_number, "Nomor Rekening Bank/E-wallet" %>
+      <%= f.text_field :payment_account_number, value: Current.settings["payment_account_number"].presence %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :payment_account_user_name, "Nama Pemilik Rekening/E-wallet" %>
+      <%= f.text_field :payment_account_user_name, value: Current.settings["payment_account_user_name"].presence %>
+    </div>
+
     <h3>Integrasi Midtrans</h3>
 
     <div class="form-group">

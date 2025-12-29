@@ -11,4 +11,23 @@ class OrderMailerPreview < ActionMailer::Preview
     products = order.line_items.where(productable_type: "DigitalProduct")
     OrderMailer.with(order: order, products: products).digital_product_accesses
   end
+
+  def order_created
+    order = Order.last
+    products = order.line_items
+    OrderMailer.with(order: order, products: products).order_created
+  end
+
+  def order_failed
+    order = Order.last
+    order.remark = "Data tidak sesuai dengan jumlah uang yang masuk"
+    products = order.line_items
+    OrderMailer.with(order: order, products: products).order_failed
+  end
+
+  def admin_notification
+    order = Order.last
+    products = order.line_items
+    OrderMailer.with(order: order, products: products).admin_notification
+  end
 end
