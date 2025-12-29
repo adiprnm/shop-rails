@@ -9,7 +9,7 @@
 
   <% if @donation.pending? || @donation.failed? %>
     <% if @donation.failed? %>
-      <p>Pesanan kamu belum bisa kami proses dikarenakan alasan sebagai berikut:</p>
+      <p>Donasi kamu belum bisa kami proses dikarenakan alasan sebagai berikut:</p>
       <article class="w-max mx-auto">
         <%= tag.strong @donation.remark %>
       </article>
@@ -48,11 +48,10 @@
       <% end %>
     <% end %>
   <% elsif @donation.paid? %>
-    <p>Pembayaran berhasil diverifikasi. Harap cek inbox email untuk mendapatkan akses terhadap produk yang kamu beli.</p>
-    <p>Terima kasih sudah belanja di <%= tag.strong Current.settings["site_name"] %>!</p>
-    <%= link_to "Kembali ke Beranda", products_path, role: "button" %>
+    <p>Donasi berhasil diverifikasi dan sudah ditampilkan di <%= link_to "halaman ini", supports_path %>. Terima kasih, orang baik!</p>
   <% elsif @donation.expired? %>
-    <p>Oops! Pesanan kamu sudah kadaluarsa. Silahkan pesan lagi produk yang hendak kamu beli.</p>
+    <p>Oops! Donasi kamu sudah kadaluarsa. Silahkan lakukan donasi kembali.</p>
+    <%= link_to "Kembali ke Beranda", products_path, role: "button" %>
   <% end %>
 
 </div>
