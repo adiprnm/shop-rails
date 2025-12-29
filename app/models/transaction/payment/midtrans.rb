@@ -10,7 +10,11 @@ class Transaction::Payment::Midtrans
   end
 
   def redirect_url
-    self.class.cancel(id)
+    begin
+      self.class.cancel(id)
+    rescue MidtransClient::Error => e
+      raise StandardError, e if e.message.exclude?("404")
+    end
 
     uuid = SecureRandom.uuid
 
@@ -22,8 +26,6 @@ class Transaction::Payment::Midtrans
     payable.save
 
     MidtransClient.new("snap").snap_redirect_url(payment_url_params)
-  rescue MidtransClient::Error => e
-    raise StandardError, e if e.message.exclude?("404")
   end
 
   def payment_url_params
@@ -112,8 +114,8 @@ class Transaction::Payment::Midtrans
   def id
     if payable.is_a? Order
       payable.order_id
-    elsif payable.is_a? Dontaion
-      payale.donation_id
+    elsif payable.is_a? Donation
+      payable.donation_id
     end
   end
 end
