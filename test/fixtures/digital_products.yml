@@ -1,9 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  resource_type: MyString
-  resource_url: MyString
+programming_book:
+  resource_type: file
+  resource_url: https://example.com/ruby-programming-guide.pdf
 
-two:
-  resource_type: MyString
-  resource_url: MyString
+design_kit:
+  resource_type: url
+  resource_url: https://example.com/design-kit-zip
+
+business_audio:
+  resource_type: file
+  resource_url: https://example.com/business-audio-course.mp3

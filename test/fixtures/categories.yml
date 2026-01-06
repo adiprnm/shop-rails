@@ -1,9 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  slug: MyString
+programming_ebook:
+  name: Programming
+  slug: programming
 
-two:
-  name: MyString
-  slug: MyString
+design_template:
+  name: Design Templates
+  slug: design-templates
+
+business_course:
+  name: Business Courses
+  slug: business-courses

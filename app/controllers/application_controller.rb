@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
 
   private
     def set_settings
+      debugger
       Current.settings = Setting.all.with_attached_file.to_a.map { |setting| [ setting.key, setting.value ] }.to_h
     end
 

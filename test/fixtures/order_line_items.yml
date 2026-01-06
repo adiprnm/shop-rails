@@ -1,15 +1,22 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  order: one
-  cartable: one
-  cartable_type: Cartable
-  cartable_name: MyString
-  cartable_price: 1
+ruby_guide_order_item:
+  order: pending_order
+  orderable: ruby_guide (Product)
+  orderable_name: Ruby Programming Guide
+  orderable_price: 99000
+  productable: programming_book (DigitalProduct)
 
-two:
-  order: two
-  cartable: two
-  cartable_type: Cartable
-  cartable_name: MyString
-  cartable_price: 1
+business_course_order_item:
+  order: paid_order
+  orderable: business_audio_course (Product)
+  orderable_name: Business Audio Course
+  orderable_price: 149000
+  productable: business_audio (DigitalProduct)
+
+design_collection_order_item:
+  order: expired_order
+  orderable: design_collection (Product)
+  orderable_name: Design Collection
+  orderable_price: 299000
+  productable: design_kit (DigitalProduct)

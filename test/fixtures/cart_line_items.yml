@@ -1,11 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  cart: one
-  cartable: one
-  cartable_type: Cartable
+ruby_guide_in_cart:
+  cart: user_one_cart
+  cartable: ruby_guide (Product)
+  price: 99000
 
-two:
-  cart: two
-  cartable: two
-  cartable_type: Cartable
+design_collection_in_cart:
+  cart: user_one_cart
+  cartable: design_collection (Product)
+  price: 299000
+
+business_course_in_cart:
+  cart: user_two_cart
+  cartable: business_audio_course (Product)
+  price: 149000
