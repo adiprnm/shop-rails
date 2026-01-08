@@ -59,7 +59,8 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should show product" do
-    skip "Skipping due to fixture loading issue"
+    get admin_product_path(@product), headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    assert_response :success
   end
 
   test "should update productable" do

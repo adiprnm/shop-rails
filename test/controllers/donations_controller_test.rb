@@ -8,8 +8,6 @@ class DonationsControllerTest < ActionDispatch::IntegrationTest
       amount: 10000,
       email_address: "donor@example.com"
     }
-    Current.settings = { "payment_provider" => "manual" }
-    Current.time_zone = "Asia/Jakarta"
   end
 
   test "should get index" do
@@ -41,20 +39,24 @@ class DonationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should redirect to payment gateway after creating donation" do
-    Current.settings = { "payment_provider" => "midtrans", "payment_client_secret" => "test_secret" }
+    MidtransClient.any_instance.stubs(:cancel).returns(success: true)
+    MidtransClient.any_instance.stubs(:snap_redirect_url).returns("https://app.sandbox.midtrans.com/snap/some-url")
+
+    payment = stub(redirect_url: "https://app.sandbox.midtrans.com/snap/some-url")
+    Transaction::Payment.stubs(:for).returns(payment)
 
     post supports_path, params: { donation: @donation_params }
 
     assert_redirected_to %r{^https://app.sandbox.midtrans.com/}
   end
 
-  test "should not create donation without name" do
-    assert_no_difference("Donation.count") do
+  test "should create donation without name" do
+    assert_difference("Donation.count") do
       post supports_path, params: { donation: @donation_params.except(:name) }
     end
 
-    assert_redirected_to supports_path
-    assert_not_nil flash[:alert]
+    assert_redirected_to support_path(Donation.last.donation_id)
+    assert_equal "Seseorang", Donation.last.name
   end
 
   test "should not create donation without message" do

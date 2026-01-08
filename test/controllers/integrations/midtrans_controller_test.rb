@@ -131,11 +131,10 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should skip verify_authenticity_token" do
-    assert_no_difference("ActionController::RequestForgeryProtection") do
-      post payment_integrations_midtrans_path, params: {
-        order_id: "payment_notif_test_order_id"
-      }
-    end
+    post payment_integrations_midtrans_path, params: {
+      order_id: "payment_notif_test_order_id"
+    }
+    assert_response :success
   end
 
   test "should update integration_data" do

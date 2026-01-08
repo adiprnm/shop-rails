@@ -1,5 +1,6 @@
 class Donation < ApplicationRecord
   validates :amount, comparison: { greater_than_or_equal_to: 5000 }
+  validates :message, presence: true
 
   enum :state, %w[ pending paid failed expired ].index_by(&:itself)
 

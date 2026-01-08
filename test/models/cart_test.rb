@@ -49,7 +49,7 @@ class CartTest < ActiveSupport::TestCase
   end
 
   test "should delete line_items when cart is destroyed" do
-    cart = carts(:guest_cart)
+    cart = Cart.create!(session_id: SecureRandom.uuid)
     line_item = cart.line_items.create(cartable: products(:design_collection), price: 10000)
 
     assert_difference("CartLineItem.count", -1) do

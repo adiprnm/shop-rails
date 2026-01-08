@@ -24,7 +24,7 @@ class Orders::PaymentEvidencesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("PaymentEvidence.count") do
       post order_payment_evidence_path(@order.order_id), params: {
         payment_evidence: {
-          file: File.open(Rails.root.join("test/fixtures/files/test.pdf"))
+          file: fixture_file_upload("test.pdf", "application/pdf")
         }
       }
     end
@@ -33,7 +33,7 @@ class Orders::PaymentEvidencesControllerTest < ActionDispatch::IntegrationTest
   test "should redirect to order after creating payment evidence" do
     post order_payment_evidence_path(@order.order_id), params: {
       payment_evidence: {
-        file: File.open(Rails.root.join("test/fixtures/files/test.pdf"))
+        file: fixture_file_upload("test.pdf", "application/pdf")
       }
     }
 
@@ -43,7 +43,7 @@ class Orders::PaymentEvidencesControllerTest < ActionDispatch::IntegrationTest
   test "should attach payment evidence to order" do
     post order_payment_evidence_path(@order.order_id), params: {
       payment_evidence: {
-        file: File.open(Rails.root.join("test/fixtures/files/test.pdf"))
+        file: fixture_file_upload("test.pdf", "application/pdf")
       }
     }
 

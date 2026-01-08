@@ -27,8 +27,7 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should add product to cart" do
-    Current.cart = carts(:guest_cart)
-    post add_to_cart_product_path(@product.slug), params: { price: 10000 }
+    post add_to_cart_product_path(@product.slug), params: { price: 75000 }
 
     assert_redirected_to product_path(@product.slug)
     assert_equal "Produk berhasil ditambahkan ke keranjang!", flash[:notice]
@@ -36,25 +35,21 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should not add coming soon product to cart" do
-    @product.productable.update(resource: nil)
-    Current.cart = carts(:guest_cart)
-
+    @product.productable.update(resource_url: nil)
     post add_to_cart_product_path(@product.slug), params: { price: 10000 }
 
     assert_redirected_to root_path
   end
 
   test "should not add product if price below minimum" do
-    Current.cart = carts(:guest_cart)
     post add_to_cart_product_path(@product.slug), params: { price: 40000 }
 
     assert_redirected_to product_path(@product.slug)
     assert_not_nil flash[:alert]
+    assert_equal "Harga yang kamu masukkan di bawah harga minimal!", flash[:alert]
   end
 
   test "should add product when price equals minimum" do
-    Current.cart = carts(:guest_cart)
-
     assert_difference("CartLineItem.count") do
       post add_to_cart_product_path(@product.slug), params: { price: 50000 }
     end
@@ -63,26 +58,23 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should add product when no minimum price set" do
-    product2 = products(:design_collection)
-    Current.cart = carts(:guest_cart)
+    product2 = products(:business_audio_course)
 
     assert_difference("CartLineItem.count") do
-      post add_to_cart_product_path(product2.slug), params: { price: 10000 }
+      post add_to_cart_product_path(product2.slug), params: { price: 80000 }
     end
 
     assert_redirected_to product_path(product2.slug)
   end
 
   test "should add product with custom price" do
-    Current.cart = carts(:guest_cart)
     post add_to_cart_product_path(@product.slug), params: { price: 75000 }
 
     assert_equal 75000, CartLineItem.last.price
   end
 
   test "should redirect to referer after trying to add coming soon product" do
-    @product.productable.update(resource: nil)
-    Current.cart = carts(:guest_cart)
+    @product.productable.update(resource_url: nil)
 
     post add_to_cart_product_path(@product.slug), params: { price: 10000 }, headers: { "HTTP_REFERER" => products_path }
 

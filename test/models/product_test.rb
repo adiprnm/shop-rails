@@ -71,7 +71,8 @@ class ProductTest < ActiveSupport::TestCase
       name: "New Product",
       slug: "new-product",
       price: 10000,
-      state: "active"
+      state: "active",
+      productable_type: "DigitalProduct"
     }
     productable_params = {
       resource_type: "file",
