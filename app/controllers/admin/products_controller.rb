@@ -1,5 +1,5 @@
 class Admin::ProductsController < AdminController
-  before_action :set_product, only: %i[ edit update destroy ]
+  before_action :set_product, only: %i[ show edit update destroy ]
 
   def index
     @products = Product.order(id: :desc)
@@ -14,12 +14,15 @@ class Admin::ProductsController < AdminController
     redirect_to admin_products_path
   end
 
+  def show
+  end
+
   def edit
   end
 
   def update
     @product.update(product_params)
-    @product.productable.update(productable_params)
+    @product.productable.update(productable_params) if productable_params
 
     redirect_to edit_admin_product_path(@product), notice: "Update berhasil!"
   end
@@ -40,11 +43,18 @@ class Admin::ProductsController < AdminController
     end
 
     def productable_params
-      case params[:product][:productable_type]
-      when "DigitalProduct"
-        params.require(:product).require(:productable).permit(
-          :resource_type, :resource_url, :resource, :sample
-        )
+      productable_type = params[:product][:productable_type] || @product.productable_type
+
+      if productable_type == "DigitalProduct"
+        if params[:productable]
+          params.require(:productable).permit(
+            :resource_type, :resource_url, :resource, :sample
+          )
+        elsif params[:product][:productable]
+          params.require(:product).require(:productable).permit(
+            :resource_type, :resource_url, :resource, :sample
+          )
+        end
       end
     end
 

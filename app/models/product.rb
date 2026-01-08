@@ -23,7 +23,8 @@ class Product < ApplicationRecord
       DigitalProduct.new(**productable_params)
     end
 
-    Product.create(productable: productable, **product_params)
+    product = Product.create!(productable: productable, **product_params)
+    product
   end
 
   def sale_price?

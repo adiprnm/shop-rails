@@ -1,9 +1,21 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  key: MyString
-  value: 
+site_name_setting:
+  key: site_name
+  value: My Shop
 
-two:
-  key: MyString
-  value: 
+payment_provider_setting:
+  key: payment_provider
+  value: manual
+
+payment_client_secret_setting:
+  key: payment_client_secret
+  value: test_secret
+
+admin_username_setting:
+  key: admin_username
+  value: admin
+
+admin_password_setting:
+  key: admin_password
+  value: admin123

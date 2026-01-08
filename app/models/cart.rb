@@ -6,6 +6,7 @@ class Cart < ApplicationRecord
     line_item = line_items.find_or_initialize_by(cartable: cartable)
     line_item.price = price
     line_item.save!
+    line_item
   end
 
   def remove_item(item_id)

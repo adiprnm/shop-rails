@@ -51,19 +51,20 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   gem "hotwire-spark"
+  gem "dotenv"
 end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-
-  gem "dotenv"
 end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  gem "mocha"
+  gem "rails-controller-testing"
 end
 
 gem "redcarpet", "~> 3.6"

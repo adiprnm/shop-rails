@@ -6,4 +6,8 @@ class Current < ActiveSupport::CurrentAttributes
   def time_zone
     super.presence || "Asia/Jakarta"
   end
+
+  def settings
+    super.to_h
+  end
 end

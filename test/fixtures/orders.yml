@@ -1,21 +1,38 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  cart: one
-  order_id: MyString
-  customer_name: MyString
-  customer_email_address: MyString
-  state: 1
-  state_updated_at: 2025-06-14 22:32:57
-  total_price: 1
-  integration_data: 
+pending_order:
+  cart: user_one_cart
+  order_id: <%= SecureRandom.uuid %>
+  customer_name: John Doe
+  customer_email_address: john.doe@example.com
+  customer_agree_to_terms: true
+  customer_agree_to_receive_newsletter: true
+  state: pending
+  state_updated_at: <%= Time.now %>
+  total_price: 99000
+  integration_data: "{}"
 
-two:
-  cart: two
-  order_id: MyString
-  customer_name: MyString
-  customer_email_address: MyString
-  state: 1
-  state_updated_at: 2025-06-14 22:32:57
-  total_price: 1
-  integration_data: 
+paid_order:
+  cart: user_two_cart
+  order_id: <%= SecureRandom.uuid %>
+  customer_name: Jane Smith
+  customer_email_address: jane.smith@example.com
+  customer_agree_to_terms: true
+  customer_agree_to_receive_newsletter: false
+  state: paid
+  state_updated_at: <%= Time.now %>
+  total_price: 149000
+  integration_data: "{}"
+
+expired_order:
+  cart: guest_cart
+  order_id: <%= SecureRandom.uuid %>
+  customer_name: Guest User
+  customer_email_address: guest@example.com
+  customer_agree_to_terms: true
+  customer_agree_to_receive_newsletter: false
+  state: expired
+  state_updated_at: <%= 2.days.ago %>
+  total_price: 50000
+  integration_data: "{}"
+  created_at: <%= 2.days.ago %>

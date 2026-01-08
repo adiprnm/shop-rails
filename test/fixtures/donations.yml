@@ -1,19 +1,41 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  message: MyString
-  amount: 1
-  state: MyString
-  state_updated_at: 2025-12-14 19:27:22
-  donation_id: MyString
-  integration_data: 
+anonymous_donation:
+  name:
+  message: Thank you for your great work!
+  amount: 50000
+  state: paid
+  state_updated_at: <%= Time.now %>
+  donation_id: <%= SecureRandom.uuid %>
+  email_address:
+  integration_data: "{}"
 
-two:
-  name: MyString
-  message: MyString
-  amount: 1
-  state: MyString
-  state_updated_at: 2025-12-14 19:27:22
-  donation_id: MyString
-  integration_data: 
+named_donation:
+  name: Alice Johnson
+  message: Keep up good work!
+  amount: 100000
+  state: paid
+  state_updated_at: <%= 1.day.ago %>
+  donation_id: <%= SecureRandom.uuid %>
+  email_address: alice@example.com
+  integration_data: "{}"
+
+pending_donation:
+  name: Bob Wilson
+  message: Looking forward to more content!
+  amount: 75000
+  state: pending
+  state_updated_at: <%= Time.now %>
+  donation_id: <%= SecureRandom.uuid %>
+  email_address: bob@example.com
+  integration_data: "{}"
+
+expired_donation:
+  name: Charlie Brown
+  message: Great project!
+  amount: 25000
+  state: expired
+  state_updated_at: <%= 2.days.ago %>
+  donation_id: <%= SecureRandom.uuid %>
+  email_address: charlie@example.com
+  integration_data: "{}"

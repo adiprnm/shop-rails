@@ -1,25 +1,40 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  short_description: MyString
-  description: MyText
-  price: 1
-  sale_price: 1
-  sale_price_starts_at: 2025-06-13 23:59:50
-  sale_price_ends_at: 2025-06-13 23:59:50
-  slug: MyString
-  productable_id: 1
-  productable_type: MyString
+ruby_guide:
+  name: Ruby Programming Guide
+  slug: ruby-programming-guide
+  short_description: Comprehensive Ruby programming guide
+  description: Learn Ruby from scratch with this comprehensive guide. Covers all basic and advanced concepts.
+  price: 150000
+  sale_price: 99000
+  sale_price_starts_at: <%= 1.month.ago %>
+  sale_price_ends_at: <%= 1.month.from_now %>
+  state: active
+  productable: programming_book (DigitalProduct)
+  minimum_price: 50000
 
-two:
-  name: MyString
-  short_description: MyString
-  description: MyText
-  price: 1
-  sale_price: 1
-  sale_price_starts_at: 2025-06-13 23:59:50
-  sale_price_ends_at: 2025-06-13 23:59:50
-  slug: MyString
-  productable_id: 1
-  productable_type: MyString
+design_collection:
+  name: Design Collection
+  slug: design-collection
+  short_description: Premium design templates collection
+  description: 100+ premium design templates for your next project. Includes PSD, AI, and Sketch files.
+  price: 299000
+  sale_price:
+  sale_price_starts_at:
+  sale_price_ends_at:
+  state: active
+  productable: design_kit (DigitalProduct)
+  minimum_price: 100000
+
+business_audio_course:
+  name: Business Audio Course
+  slug: business-audio-course
+  short_description: Learn business strategies through audio
+  description: Comprehensive audio course covering business strategies, marketing, and management.
+  price: 200000
+  sale_price: 149000
+  sale_price_starts_at: <%= 2.weeks.ago %>
+  sale_price_ends_at: <%= 2.weeks.from_now %>
+  state: active
+  productable: business_audio (DigitalProduct)
+  minimum_price: 75000
