@@ -3,35 +3,37 @@ require "test_helper"
 class OrdersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @cart = carts(:guest_cart)
-    @product = products(:ruby_guide)
-    Current.cart = @cart
-    Current.settings = { "payment_provider" => "manual" }
-    Current.time_zone = "Asia/Jakarta"
+    @product = products(:design_collection)
+    @default_headers = { headers: { "CF-Connecting-IP" => "10.0.0.1" } }
   end
 
   test "should create order successfully" do
-    @cart.line_items.create(cartable: @product, price: 99000)
+    result = @cart.line_items.create(cartable: @product, price: 99000)
 
     assert_difference("Order.count") do
-      post orders_path, params: {
-        customer_name: "Test User",
-        customer_email_address: "test@example.com",
-        customer_agree_to_terms: "1"
-      }
-    end
+      post orders_path,
+        params: {
+          customer_name: "Test User",
+          customer_email_address: "test@example.com",
+          customer_agree_to_terms: "1"
+        },
+        **@default_headers
 
-    assert_redirected_to order_path(Order.last.order_id)
+      assert_redirected_to order_path(Order.last.order_id)
+    end
   end
 
   test "should redirect to payment gateway when total_price > 0" do
     @cart.line_items.create(cartable: @product, price: 99000)
-    Current.settings = { "payment_provider" => "midtrans", "payment_client_secret" => "test_secret" }
+    Setting.payment_provider.update value: "midtrans"
+    Transaction::Payment::Midtrans.any_instance.stubs(:redirect_url).returns("https://app.sandbox.midtrans.com/testing")
 
     post orders_path, params: {
-      customer_name: "Test User",
-      customer_email_address: "test@example.com",
-      customer_agree_to_terms: "1"
-    }
+        customer_name: "Test User",
+        customer_email_address: "test@example.com",
+        customer_agree_to_terms: "1"
+      },
+      **@default_headers
 
     assert_redirected_to %r{^https://app.sandbox.midtrans.com/}
   end
@@ -44,7 +46,8 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
         customer_name: "Test User",
         customer_email_address: "test@example.com",
         customer_agree_to_terms: "1"
-      }
+      },
+      **@default_headers
     end
 
     assert_redirected_to cart_path
@@ -58,7 +61,8 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
       post orders_path, params: {
         customer_email_address: "test@example.com",
         customer_agree_to_terms: "1"
-      }
+      },
+      **@default_headers
     end
 
     assert_redirected_to cart_path
@@ -71,8 +75,10 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference("Order.count") do
       post orders_path, params: {
         customer_name: "Test User",
-        customer_email_address: "test@example.com"
-      }
+        customer_email_address: "test@example.com",
+        customer_agree_to_terms: "0"
+      },
+      **@default_headers
     end
 
     assert_redirected_to cart_path
@@ -87,7 +93,8 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
         customer_name: "Test User",
         customer_email_address: "test@example.com",
         customer_agree_to_terms: "1"
-      }
+      },
+      **@default_headers
     end
   end
 
@@ -97,9 +104,10 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should mark order as expired if past expiry time" do
-    get order_path(orders(:expired_order).order_id)
+    order = orders(:expired_order)
+    get order_path(order.order_id)
     assert_response :success
-    assert orders(:expired_order).expired?
+    assert order.reload.expired?
   end
 
   test "should not modify state if not expired" do
@@ -116,7 +124,8 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
       customer_email_address: "test@example.com",
       customer_agree_to_terms: "1",
       customer_agree_to_receive_newsletter: "1"
-    }
+    },
+    **@default_headers
 
     assert Order.last.customer_agree_to_receive_newsletter
   end
@@ -128,7 +137,8 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
       customer_name: "Test User",
       customer_email_address: "test@example.com",
       customer_agree_to_terms: "1"
-    }
+    },
+    **@default_headers
 
     assert_not Order.last.customer_agree_to_receive_newsletter
   end

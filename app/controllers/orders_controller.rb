@@ -1,23 +1,30 @@
 class OrdersController < ApplicationController
   def create
-    ActiveRecord::Base.transaction do
-      @order = Transaction.new(Current.cart).create(checkout_params)
-      if @order.invalid?
-        redirect_to cart_path, alert: @order.errors.full_messages.first
-      end
+    begin
+      ActiveRecord::Base.transaction do
+        @order = Transaction.new(Current.cart).create(checkout_params)
+        if @order.invalid?
+          redirect_to cart_path, alert: @order.errors.full_messages.first
+          return
+        end
 
-      if @order.total_price.zero?
-        @order.paid!
-        redirect_to cart_path(order_id: @order.order_id)
-      else
-        redirect_url = Transaction::Payment.for(@order).redirect_url
-        redirect_to redirect_url, allow_other_host: true
+        if @order.total_price.zero?
+          @order.paid!
+          redirect_to cart_path
+        else
+          redirect_url = Transaction::Payment.for(@order).redirect_url
+          redirect_to redirect_url, allow_other_host: true
+        end
       end
     rescue StandardError => e
       # capture exception to sentry
-      message = Rails.env.development?? e.message : "Error terjadi ketika memproses pesanan kakak. Silahkan coba lagi nanti."
-      debugger
-      raise ActiveRecord::Rollback, message
+      message = if Rails.env.production?
+        "Error terjadi ketika memproses pesanan kakak. Silahkan coba lagi nanti."
+      else
+        e.message
+      end
+
+      redirect_to cart_path, alert: message
     end
   end
 
