@@ -166,8 +166,7 @@ GEM
     marcel (1.0.4)
     matrix (0.4.2)
     mini_mime (1.1.5)
-    minitest (6.0.0)
-      prism (~> 1.5)
+    minitest (5.27.0)
     mission_control-jobs (1.1.0)
       actioncable (>= 7.1)
       actionpack (>= 7.1)
@@ -404,6 +403,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kamal
+  minitest (~> 5.0)
   mission_control-jobs (~> 1.1)
   mocha
   propshaft
