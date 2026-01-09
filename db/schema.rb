@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_09_165152) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_09_165828) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -74,6 +74,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_165152) do
     t.integer "province_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_cities_on_name"
     t.index ["province_id"], name: "index_cities_on_province_id"
     t.index ["rajaongkir_id"], name: "index_cities_on_rajaongkir_id", unique: true
   end
@@ -92,6 +93,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_165152) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["city_id"], name: "index_districts_on_city_id"
+    t.index ["name"], name: "index_districts_on_name"
     t.index ["rajaongkir_id"], name: "index_districts_on_rajaongkir_id", unique: true
   end
 
@@ -197,6 +199,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_165152) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_provinces_on_name"
     t.index ["rajaongkir_id"], name: "index_provinces_on_rajaongkir_id", unique: true
   end
 
@@ -214,6 +217,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_165152) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["district_id"], name: "index_subdistricts_on_district_id"
+    t.index ["name"], name: "index_subdistricts_on_name"
     t.index ["rajaongkir_id"], name: "index_subdistricts_on_rajaongkir_id", unique: true
   end
 
