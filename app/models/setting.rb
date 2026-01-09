@@ -14,7 +14,6 @@ class Setting < ApplicationRecord
     payment_client_id
     payment_client_secret
     payment_api_host
-    payment_provider
     payment_qris
     payment_account_name
     payment_account_user_name
@@ -28,6 +27,12 @@ class Setting < ApplicationRecord
     admin_username
     admin_password
     admin_email
+    rajaongkir_api_key
+    rajaongkir_api_host
+    default_origin_province_id
+    default_origin_city_id
+    default_origin_district_id
+    default_origin_subdistrict_id
   ].freeze
   ATTACHABLE_KEYS = %i[ site_favicon og_image payment_qris ].freeze
 
