@@ -13,6 +13,9 @@ class Cart < ApplicationRecord
       unless product_variant.product_id == cartable.productable.id
         raise ArgumentError, "Variant does not belong to this product"
       end
+      unless product_variant.stock.positive?
+        raise ArgumentError, "Selected variant is out of stock"
+      end
     end
 
     line_item = line_items.find_or_initialize_by(cartable: cartable)

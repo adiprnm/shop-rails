@@ -9,6 +9,7 @@ class Order < ApplicationRecord
   before_save -> { self.state_updated_at = Time.now }, if: :state_changed?
   before_create -> { self.order_id = SecureRandom.uuid }
 
+  after_save_commit :decrement_variant_stock, if: -> { saved_change_to_state? && paid? }
   after_save_commit :send_order_successful_notification, if: -> { saved_change_to_state? && paid? }
   after_save_commit :send_order_failed_notification, if: -> { saved_change_to_state? && failed? }
   after_create_commit :send_order_created_notification, if: -> { Current.settings["payment_provider"] == "manual" }
@@ -41,6 +42,16 @@ class Order < ApplicationRecord
 
   def mark_evidences_as_checked
     payment_evidences.where(checked: false).update_all(checked: true)
+  end
+
+  def decrement_variant_stock
+    line_items.each do |line_item|
+      next unless line_item.product_variant
+
+      line_item.product_variant.with_lock do
+        line_item.product_variant.decrement!(:stock)
+      end
+    end
   end
 
   private
