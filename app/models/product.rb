@@ -44,4 +44,8 @@ class Product < ApplicationRecord
   def coming_soon?
     productable.resource_path.blank?
   end
+
+  def physical_product?
+    productable_type == "PhysicalProduct"
+  end
 end
