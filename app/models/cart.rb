@@ -30,6 +30,22 @@ class Cart < ApplicationRecord
     line_items.sum { |item| item.price }
   end
 
+  def digital_items
+    line_items.reject(&:physical_product?)
+  end
+
+  def physical_items
+    line_items.select(&:physical_product?)
+  end
+
+  def digital_items_total
+    digital_items.sum { |item| item.price }
+  end
+
+  def physical_items_total
+    physical_items.sum { |item| item.price }
+  end
+
   def contains_physical_product?
     line_items.any?(&:physical_product?)
   end
