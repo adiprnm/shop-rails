@@ -7,4 +7,10 @@ class CartLineItem < ApplicationRecord
 
     cartable.actual_price
   end
+
+  def physical_product?
+    return false unless cartable.is_a?(Product)
+
+    cartable.physical_product?
+  end
 end

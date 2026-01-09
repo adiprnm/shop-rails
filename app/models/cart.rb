@@ -16,4 +16,8 @@ class Cart < ApplicationRecord
   def total_price
     line_items.sum { |item| item.price }
   end
+
+  def contains_physical_product?
+    line_items.any?(&:physical_product?)
+  end
 end
