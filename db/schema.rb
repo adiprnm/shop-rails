@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_09_164101) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_09_165152) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -68,11 +68,31 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_164101) do
     t.integer "product_id", null: false
   end
 
+  create_table "cities", force: :cascade do |t|
+    t.string "rajaongkir_id", null: false
+    t.string "name", null: false
+    t.integer "province_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["province_id"], name: "index_cities_on_province_id"
+    t.index ["rajaongkir_id"], name: "index_cities_on_rajaongkir_id", unique: true
+  end
+
   create_table "digital_products", force: :cascade do |t|
     t.integer "resource_type", default: 0
     t.string "resource_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "districts", force: :cascade do |t|
+    t.string "rajaongkir_id", null: false
+    t.string "name", null: false
+    t.integer "city_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["city_id"], name: "index_districts_on_city_id"
+    t.index ["rajaongkir_id"], name: "index_districts_on_rajaongkir_id", unique: true
   end
 
   create_table "donation_payment_evidences", force: :cascade do |t|
@@ -172,6 +192,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_164101) do
     t.integer "minimum_price"
   end
 
+  create_table "provinces", force: :cascade do |t|
+    t.string "rajaongkir_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["rajaongkir_id"], name: "index_provinces_on_rajaongkir_id", unique: true
+  end
+
   create_table "settings", force: :cascade do |t|
     t.string "key"
     t.json "value"
@@ -179,11 +207,24 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_164101) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "subdistricts", force: :cascade do |t|
+    t.string "rajaongkir_id", null: false
+    t.string "name", null: false
+    t.integer "district_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["district_id"], name: "index_subdistricts_on_district_id"
+    t.index ["rajaongkir_id"], name: "index_subdistricts_on_rajaongkir_id", unique: true
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cart_line_items", "carts"
+  add_foreign_key "cities", "provinces"
+  add_foreign_key "districts", "cities"
   add_foreign_key "donation_payment_evidences", "donations"
   add_foreign_key "order_line_items", "orders"
   add_foreign_key "orders", "carts"
   add_foreign_key "product_variants", "products"
+  add_foreign_key "subdistricts", "districts"
 end
