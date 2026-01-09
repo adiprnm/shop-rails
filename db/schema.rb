@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_09_170028) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_09_170303) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -224,6 +224,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_170028) do
     t.json "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "shipping_costs", force: :cascade do |t|
+    t.string "origin_type"
+    t.integer "origin_id"
+    t.string "destination_type"
+    t.integer "destination_id"
+    t.integer "weight"
+    t.string "courier"
+    t.string "service"
+    t.string "description"
+    t.integer "cost"
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["origin_type", "origin_id", "destination_type", "destination_id", "weight", "courier", "service"], name: "index_shipping_costs_unique", unique: true
   end
 
   create_table "subdistricts", force: :cascade do |t|
