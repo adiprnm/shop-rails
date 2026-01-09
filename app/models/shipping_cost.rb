@@ -11,6 +11,7 @@ class ShippingCost < ApplicationRecord
   validates :cost, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   scope :fresh, -> { where("created_at > ?", CACHE_TTL.ago) }
+  scope :expired, -> { where("created_at <= ?", CACHE_TTL.ago) }
 
   def self.find_or_fetch(origin, destination, weight, courier, service)
     origin_type = origin.class.name
@@ -33,6 +34,17 @@ class ShippingCost < ApplicationRecord
     new_cost = yield
     new_cost&.save
     new_cost
+  end
+
+  def self.purge_expired
+    expired.delete_all
+  end
+
+  def self.clear_for_destination(destination)
+    destination_type = destination.class.name
+    destination_id = destination.id
+
+    where(destination_type: destination_type, destination_id: destination_id).delete_all
   end
 
   def calculate
