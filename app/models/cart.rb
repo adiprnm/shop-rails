@@ -2,8 +2,21 @@ class Cart < ApplicationRecord
   has_many :line_items, class_name: "CartLineItem", dependent: :delete_all
   has_many :orders
 
-  def add_item(cartable, price = nil)
+  def add_item(cartable, price = nil, product_variant = nil)
+    if cartable.is_a?(Product) && cartable.physical_product?
+      unless product_variant
+        raise ArgumentError, "Variant must be specified for physical products"
+      end
+      unless product_variant.is_active
+        raise ArgumentError, "Selected variant is not available"
+      end
+      unless product_variant.product_id == cartable.productable.id
+        raise ArgumentError, "Variant does not belong to this product"
+      end
+    end
+
     line_item = line_items.find_or_initialize_by(cartable: cartable)
+    line_item.product_variant = product_variant
     line_item.price = price
     line_item.save!
     line_item

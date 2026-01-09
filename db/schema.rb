@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_09_170303) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_09_171226) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -46,8 +46,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_170303) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "price"
+    t.integer "product_variant_id"
     t.index ["cart_id"], name: "index_cart_line_items_on_cart_id"
     t.index ["cartable_type", "cartable_id"], name: "index_cart_line_items_on_cartable"
+    t.index ["product_variant_id"], name: "index_cart_line_items_on_product_variant_id"
   end
 
   create_table "carts", force: :cascade do |t|
@@ -256,6 +258,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_170303) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cart_line_items", "carts"
+  add_foreign_key "cart_line_items", "product_variants"
   add_foreign_key "cities", "provinces"
   add_foreign_key "districts", "cities"
   add_foreign_key "donation_payment_evidences", "donations"
