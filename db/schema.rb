@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_09_171818) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_09_174530) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -131,6 +131,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_171818) do
     t.string "productable_type"
     t.integer "productable_id"
     t.integer "product_variant_id"
+    t.integer "weight"
     t.index ["order_id"], name: "index_order_line_items_on_order_id"
     t.index ["orderable_type", "orderable_id"], name: "index_order_line_items_on_cartable"
     t.index ["product_variant_id"], name: "index_order_line_items_on_product_variant_id"
