@@ -16,6 +16,16 @@ class Order < ApplicationRecord
   scope :today, -> { where(state_updated_at: Time.now.all_day) }
 
   validates :customer_agree_to_terms, acceptance: true
+  validates :customer_phone, presence: true, if: :contains_physical_products?
+  validates :address_line, presence: true, if: :contains_physical_products?
+  validates :shipping_province_id, presence: true, if: :contains_physical_products?
+  validates :shipping_city_id, presence: true, if: :contains_physical_products?
+  validates :shipping_district_id, presence: true, if: :contains_physical_products?
+  validates :shipping_subdistrict_id, presence: true, if: :contains_physical_products?
+
+  def contains_physical_products?
+    has_physical_products == true
+  end
 
   def latest_payment_evidence
     payment_evidences.first

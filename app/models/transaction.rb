@@ -8,6 +8,7 @@ class Transaction
   def create(params)
     @order = cart.orders.pending.create(
       total_price: cart.total_price,
+      has_physical_products: cart.contains_physical_product?,
       **params,
     )
     return @order if @order.invalid?
@@ -18,6 +19,7 @@ class Transaction
         orderable_name: line_item.cartable.name,
         orderable_price: line_item.price,
         productable: line_item.cartable.productable,
+        product_variant: line_item.product_variant,
       )
     end
     cart.line_items.delete_all

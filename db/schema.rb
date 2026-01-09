@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_09_171226) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_09_171818) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -130,8 +130,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_171226) do
     t.datetime "updated_at", null: false
     t.string "productable_type"
     t.integer "productable_id"
+    t.integer "product_variant_id"
     t.index ["order_id"], name: "index_order_line_items_on_order_id"
     t.index ["orderable_type", "orderable_id"], name: "index_order_line_items_on_cartable"
+    t.index ["product_variant_id"], name: "index_order_line_items_on_product_variant_id"
     t.index ["productable_type", "productable_id"], name: "index_order_line_items_on_productable"
   end
 
@@ -159,7 +161,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_171226) do
     t.string "shipping_provider"
     t.string "shipping_method"
     t.integer "shipping_cost"
+    t.boolean "has_physical_products"
     t.index ["cart_id"], name: "index_orders_on_cart_id"
+    t.index ["has_physical_products"], name: "index_orders_on_has_physical_products"
     t.index ["shipping_city_id"], name: "index_orders_on_shipping_city_id"
     t.index ["shipping_district_id"], name: "index_orders_on_shipping_district_id"
     t.index ["shipping_method"], name: "index_orders_on_shipping_method"
@@ -263,6 +267,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_171226) do
   add_foreign_key "districts", "cities"
   add_foreign_key "donation_payment_evidences", "donations"
   add_foreign_key "order_line_items", "orders"
+  add_foreign_key "order_line_items", "product_variants"
   add_foreign_key "orders", "carts"
   add_foreign_key "orders", "cities", column: "shipping_city_id"
   add_foreign_key "orders", "districts", column: "shipping_district_id"
