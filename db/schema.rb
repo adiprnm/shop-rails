@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_09_165828) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_09_170028) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -147,7 +147,23 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_165828) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "remark"
+    t.string "customer_phone"
+    t.text "address_line"
+    t.integer "shipping_province_id"
+    t.integer "shipping_city_id"
+    t.integer "shipping_district_id"
+    t.integer "shipping_subdistrict_id"
+    t.text "order_notes"
+    t.string "shipping_provider"
+    t.string "shipping_method"
+    t.integer "shipping_cost"
     t.index ["cart_id"], name: "index_orders_on_cart_id"
+    t.index ["shipping_city_id"], name: "index_orders_on_shipping_city_id"
+    t.index ["shipping_district_id"], name: "index_orders_on_shipping_district_id"
+    t.index ["shipping_method"], name: "index_orders_on_shipping_method"
+    t.index ["shipping_provider"], name: "index_orders_on_shipping_provider"
+    t.index ["shipping_province_id"], name: "index_orders_on_shipping_province_id"
+    t.index ["shipping_subdistrict_id"], name: "index_orders_on_shipping_subdistrict_id"
   end
 
   create_table "payment_evidences", force: :cascade do |t|
@@ -229,6 +245,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_09_165828) do
   add_foreign_key "donation_payment_evidences", "donations"
   add_foreign_key "order_line_items", "orders"
   add_foreign_key "orders", "carts"
+  add_foreign_key "orders", "cities", column: "shipping_city_id"
+  add_foreign_key "orders", "districts", column: "shipping_district_id"
+  add_foreign_key "orders", "provinces", column: "shipping_province_id"
+  add_foreign_key "orders", "subdistricts", column: "shipping_subdistrict_id"
   add_foreign_key "product_variants", "products"
   add_foreign_key "subdistricts", "districts"
 end
