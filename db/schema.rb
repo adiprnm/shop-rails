@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_09_160520) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -136,6 +136,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
     t.boolean "checked", default: false, null: false
   end
 
+  create_table "physical_products", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "product_variants", force: :cascade do |t|
+    t.integer "product_id", null: false
+    t.string "name"
+    t.integer "price"
+    t.integer "weight"
+    t.integer "stock"
+    t.boolean "is_active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_product_variants_on_product_id"
+  end
+
   create_table "products", force: :cascade do |t|
     t.string "name", null: false
     t.string "short_description"
@@ -166,4 +183,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
   add_foreign_key "donation_payment_evidences", "donations"
   add_foreign_key "order_line_items", "orders"
   add_foreign_key "orders", "carts"
+  add_foreign_key "product_variants", "products"
 end

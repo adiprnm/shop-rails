@@ -1,5 +1,5 @@
 class Product < ApplicationRecord
-  delegated_type :productable, types: %w[ DigitalProduct ]
+  delegated_type :productable, types: %w[ DigitalProduct PhysicalProduct ]
 
   has_one_attached :featured_image
   has_and_belongs_to_many :categories
@@ -21,6 +21,8 @@ class Product < ApplicationRecord
     productable = case productable_type
     when "DigitalProduct"
       DigitalProduct.new(**productable_params)
+    when "PhysicalProduct"
+      PhysicalProduct.new(**productable_params)
     end
 
     product = Product.create!(productable: productable, **product_params)
