@@ -52,6 +52,13 @@ Rails.application.routes.draw do
       post :fetch_provinces
       post :clear_shipping_cache
     end
+    resources :provinces, only: %w[ ] do
+      resources :cities, only: %w[ ] do
+        resources :districts, only: %w[ ] do
+          resources :subdistricts, only: %w[ ]
+        end
+      end
+    end
   end
 
   resources :addresses, only: %w[] do
