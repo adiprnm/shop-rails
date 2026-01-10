@@ -18,12 +18,7 @@ class Admin::ProductsController < AdminController
   end
 
   def create
-    product_params_with_variants = product_params
-    if productable_params&.dig(:product_variants_attributes)
-      product_params_with_variants = product_params.merge(product_variants_attributes: productable_params[:product_variants_attributes])
-    end
-
-    @product = Product.create_with_productable(product_params_with_variants, productable_params&.except(:product_variants_attributes) || {})
+    @product = Product.create_with_productable(product_params, productable_params || {})
 
     redirect_to admin_products_path
   end
@@ -35,15 +30,10 @@ class Admin::ProductsController < AdminController
   end
 
   def update
-    product_params_with_variants = product_params
-    if productable_params&.dig(:product_variants_attributes)
-      product_params_with_variants = product_params.merge(product_variants_attributes: productable_params[:product_variants_attributes])
-    end
-
-    @product.update(product_params_with_variants)
+    @product.update(product_params)
 
     if productable_params
-      @product.productable.update(productable_params.except(:product_variants_attributes).to_h)
+      @product.productable.update(productable_params)
     end
 
     redirect_to edit_admin_product_path(@product), notice: "Update berhasil!"
@@ -56,14 +46,15 @@ class Admin::ProductsController < AdminController
   end
 
   private
-    def product_params
-      params.require(:product).permit(
-        :name, :slug, :short_description, :description,
-        :price, :sale_price, :sale_price_starts_at, :sale_price_ends_at, :minimum_price,
-        :productable_type, :featured_image, category_ids: [],
-        product_variants_attributes: [ :id, :name, :price, :weight, :stock, :is_active, :_destroy ]
-      )
-    end
+
+  def product_params
+    params.require(:product).permit(
+      :name, :slug, :short_description, :description,
+      :price, :sale_price, :sale_price_starts_at, :sale_price_ends_at, :minimum_price,
+      :productable_type, :featured_image, category_ids: [],
+      product_variants_attributes: [ :id, :name, :price, :weight, :stock, :is_active, :_destroy ]
+    )
+  end
 
   def productable_params
     productable_type = params[:product][:productable_type] || @product.productable_type
@@ -72,11 +63,11 @@ class Admin::ProductsController < AdminController
     if productable_type == "DigitalProduct" && productable
       productable.permit(:resource_type, :resource_url, :resource, :sample)
     elsif productable_type == "PhysicalProduct" && productable
-      productable.permit(:weight, :requires_shipping, product_variants_attributes: [ :id, :name, :price, :weight, :stock, :is_active, :_destroy ])
+      productable.permit(:weight, :requires_shipping)
     end
   end
 
-    def set_product
-      @product = Product.find(params[:id])
-    end
+  def set_product
+    @product = Product.find(params[:id])
+  end
 end

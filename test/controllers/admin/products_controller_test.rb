@@ -174,12 +174,12 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
               productable_type: "PhysicalProduct",
               productable: {
                 weight: 500,
-                requires_shipping: true,
-                product_variants_attributes: [
-                  { name: "Red", price: 150000, weight: 500, stock: 10, is_active: true },
-                  { name: "Blue", price: 150000, weight: 500, stock: 10, is_active: true }
-                ]
-              }
+                requires_shipping: true
+              },
+              product_variants_attributes: [
+                { name: "Red", price: 150000, weight: 500, stock: 10, is_active: true },
+                { name: "Blue", price: 150000, weight: 500, stock: 10, is_active: true }
+              ]
             }
           }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
         end
@@ -192,16 +192,16 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
 
   test "should update physical product" do
     physical_product = products(:premium_t_shirt)
-    assert_difference("PhysicalProduct.last.product_variants.count", 1) do
+    assert_difference("physical_product.product_variants.count", 1) do
       patch admin_product_path(physical_product), params: {
         product: {
           name: "Updated T-Shirt",
           productable: {
-            weight: 300,
-            product_variants_attributes: [
-              { name: "New Variant", price: 160000, weight: 300, stock: 5, is_active: true }
-            ]
-          }
+            weight: 300
+          },
+          product_variants_attributes: [
+            { name: "New Variant", price: 160000, weight: 300, stock: 5, is_active: true }
+          ]
         }
       }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
     end
@@ -236,11 +236,9 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
       patch admin_product_path(physical_product), params: {
         product: {
           name: "T-Shirt",
-          productable: {
-            product_variants_attributes: [
-              { name: "Yellow", price: 150000, weight: 250, stock: 20, is_active: true }
-            ]
-          }
+          product_variants_attributes: [
+            { name: "Yellow", price: 150000, weight: 250, stock: 20, is_active: true }
+          ]
         }
       }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
     end
@@ -256,12 +254,10 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     patch admin_product_path(physical_product), params: {
       product: {
         name: "T-Shirt",
-        productable: {
-          product_variants_attributes: [
-            { id: variant1.id, name: "Red Small Updated", price: 155000, weight: 260, stock: 25, is_active: true },
-            { id: variant2.id, name: "Blue Medium Updated", price: 155000, weight: 260, stock: 35, is_active: true }
-          ]
-        }
+        product_variants_attributes: [
+          { id: variant1.id, name: "Red Small Updated", price: 155000, weight: 260, stock: 25, is_active: true },
+          { id: variant2.id, name: "Blue Medium Updated", price: 155000, weight: 260, stock: 35, is_active: true }
+        ]
       }
     }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
 
@@ -283,11 +279,9 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     patch admin_product_path(physical_product), params: {
       product: {
         name: "T-Shirt",
-        productable: {
-          product_variants_attributes: [
-            { id: variant.id, name: "Red - Small", price: 150000, weight: 250, stock: 50, is_active: false }
-          ]
-        }
+        product_variants_attributes: [
+          { id: variant.id, name: "Red - Small", price: 150000, weight: 250, stock: 50, is_active: false }
+        ]
       }
     }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
 
@@ -301,11 +295,9 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
       patch admin_product_path(physical_product), params: {
         product: {
           name: "T-Shirt",
-          productable: {
-            product_variants_attributes: [
-              { name: "", price: 150000, weight: 250, stock: 10, is_active: true }
-            ]
-          }
+          product_variants_attributes: [
+            { name: "", price: 150000, weight: 250, stock: 10, is_active: true }
+          ]
         }
       }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
     end
@@ -318,11 +310,9 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
       patch admin_product_path(physical_product), params: {
         product: {
           name: "T-Shirt",
-          productable: {
-            product_variants_attributes: [
-              { name: "Invalid", price: -100, weight: -50, stock: -5, is_active: true }
-            ]
-          }
+          product_variants_attributes: [
+            { name: "Invalid", price: -100, weight: -50, stock: -5, is_active: true }
+          ]
         }
       }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
     end
@@ -336,12 +326,10 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     patch admin_product_path(physical_product), params: {
       product: {
         name: "T-Shirt",
-        productable: {
-          product_variants_attributes: [
-            { id: variant1.id, name: "Red - Small", price: 150000, weight: 250, stock: 50, is_active: false },
-            { id: variant2.id, name: "Blue - Medium", price: 150000, weight: 250, stock: 30, is_active: false }
-          ]
-        }
+        product_variants_attributes: [
+          { id: variant1.id, name: "Red - Small", price: 150000, weight: 250, stock: 50, is_active: false },
+          { id: variant2.id, name: "Blue - Medium", price: 150000, weight: 250, stock: 30, is_active: false }
+        ]
       }
     }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
 
@@ -380,11 +368,9 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     patch admin_product_path(physical_product), params: {
       product: {
         name: "T-Shirt",
-        productable: {
-          product_variants_attributes: [
-            { id: variant.id, name: "Red Small", price: 160000, stock: 15, is_active: true }
-          ]
-        }
+        product_variants_attributes: [
+          { id: variant.id, name: "Red Small", price: 160000, stock: 15, is_active: true }
+        ]
       }
     }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
 
@@ -401,11 +387,9 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
       patch admin_product_path(physical_product), params: {
         product: {
           name: "T-Shirt",
-          productable: {
-            product_variants_attributes: [
-              { id: variant.id, _destroy: "1" }
-            ]
-          }
+          product_variants_attributes: [
+            { id: variant.id, _destroy: "1" }
+          ]
         }
       }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
     end

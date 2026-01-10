@@ -121,43 +121,43 @@
                 <%= pf.check_box :requires_shipping %>
                 <%= pf.label :requires_shipping %>
               </div>
-
-              <div class="mt-4" data-controller="variants">
-                <h3>Variants</h3>
-                <div id="variants-container">
-                  <%= pf.fields_for :product_variants do |variant_fields| %>
-                    <div class="variant-form mb-4" data-variants-target="variant">
-                      <div class="form-group">
-                        <%= variant_fields.label :name %>
-                        <%= variant_fields.text_field :name %>
-                      </div>
-                      <div class="form-group">
-                        <%= variant_fields.label :price %>
-                        <%= variant_fields.number_field :price, step: 0.01, min: 0 %>
-                      </div>
-                      <div class="form-group">
-                        <%= variant_fields.label :weight, "Weight (override, grams)" %>
-                        <%= variant_fields.number_field :weight, step: 1, min: 0 %>
-                      </div>
-                      <div class="form-group">
-                        <%= variant_fields.label :stock %>
-                        <%= variant_fields.number_field :stock, step: 1, min: 0 %>
-                      </div>
-                      <div class="form-group check-boxes">
-                        <%= variant_fields.check_box :is_active %>
-                        <%= variant_fields.label :is_active %>
-                      </div>
-                      <%= variant_fields.hidden_field :_destroy, value: "0", data: { variants_target: "destroyInput" } %>
-                      <button type="button" data-action="click->variants#remove" class="button-as-text text-red mt-8 underline">Remove</button>
-                    </div>
-                  <% end %>
-                </div>
-                <div>
-                  <button type="button" data-action="click->variants#add" class="btn">Add Variant</button>
-                </div>
-              </div>
             </fieldset>
           <% end %>
+
+          <div class="mt-4" data-controller="variants">
+            <h3>Variants</h3>
+            <div id="variants-container">
+              <%= f.fields_for :product_variants do |variant_fields| %>
+                <div class="variant-form mb-4" data-variants-target="variant">
+                  <div class="form-group">
+                    <%= variant_fields.label :name %>
+                    <%= variant_fields.text_field :name %>
+                  </div>
+                  <div class="form-group">
+                    <%= variant_fields.label :price %>
+                    <%= variant_fields.number_field :price, step: 0.01, min: 0 %>
+                  </div>
+                  <div class="form-group">
+                    <%= variant_fields.label :weight, "Weight (override, grams)" %>
+                    <%= variant_fields.number_field :weight, step: 1, min: 0 %>
+                  </div>
+                  <div class="form-group">
+                    <%= variant_fields.label :stock %>
+                    <%= variant_fields.number_field :stock, step: 1, min: 0 %>
+                  </div>
+                  <div class="form-group check-boxes">
+                    <%= variant_fields.check_box :is_active %>
+                    <%= variant_fields.label :is_active %>
+                  </div>
+                  <%= variant_fields.hidden_field :_destroy, value: "0", data: { variants_target: "destroyInput" } %>
+                  <button type="button" data-action="click->variants#remove" class="button-as-text text-red mt-8 underline">Remove</button>
+                </div>
+              <% end %>
+            </div>
+            <div>
+              <button type="button" data-action="click->variants#add" class="btn">Add Variant</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
