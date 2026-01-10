@@ -261,6 +261,38 @@ bd sync
 6. **Verify**: Run tests, linters, and security scans
 7. **Update bead**: Mark progress, record decisions, close when complete
 
+## Plan Approval Workflow
+
+**CRITICAL: When user approves a plan, IMMEDIATELY create beads based on that plan.**
+
+1. **Present plan**: Show implementation breakdown before starting work
+2. **Await approval**: Stop and wait for user to approve the plan
+3. **Create beads on approval**: Once user says "approved" or similar, immediately create beads:
+   - Create individual beads for each major task in the plan
+   - Set appropriate priority (P0, P1, P2, P3, P4)
+   - Set appropriate type (task, bug, feature, epic, question, docs)
+   - Add dependencies using `bd dep add <child> <parent>` for task ordering
+   - Include acceptance criteria in bead descriptions
+4. **Confirm creation**: List all created beads with their IDs and purposes
+5. **Begin execution**: Set first bead to `in_progress` and start work
+
+**Example:**
+
+```bash
+# After plan approval, create beads immediately
+bd create "Add user authentication" -p 1 -t feature -d "Implement login/signup with Devise"
+bd create "Create users table migration" -p 0 -t task -d "Add users table with email/password" --deps parent-of:first-bead-id
+bd create "Set up Devise configuration" -p 1 -t task --deps parent-of:first-bead-id
+bd create "Build login form" -p 1 -t task --deps parent-of:first-bead-id
+bd create "Add authentication tests" -p 2 -t task --deps parent-of:first-bead-id
+
+# Link dependencies
+bd dep add <users-table-bead> <authentication-bead>
+bd dep add <devise-config-bead> <authentication-bead>
+bd dep add <login-form-bead> <authentication-bead>
+bd dep add <auth-tests-bead> <authentication-bead>
+```
+
 ## Order of Operations
 
 1. Locate or create bead for the work

@@ -152,4 +152,110 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal 30000, @product.reload.minimum_price
   end
+
+  test "should create physical product with variants" do
+    assert_difference("Product.count") do
+      assert_difference("PhysicalProduct.count") do
+        assert_difference("ProductVariant.count", 2) do
+          post admin_products_path, params: {
+            product: {
+              name: "Physical Product",
+              slug: "physical-product",
+              price: 150000,
+              short_description: "Short desc",
+              description: "Description",
+              state: "active",
+              productable_type: "PhysicalProduct",
+              productable: {
+                weight: 500,
+                requires_shipping: true,
+                product_variants_attributes: [
+                  { name: "Red", price: 150000, weight: 500, stock: 10, is_active: true },
+                  { name: "Blue", price: 150000, weight: 500, stock: 10, is_active: true }
+                ]
+              }
+            }
+          }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+        end
+      end
+    end
+
+    assert_redirected_to admin_products_path
+    assert_equal 2, PhysicalProduct.last.product_variants.count
+  end
+
+  test "should update physical product" do
+    physical_product = products(:premium_t_shirt)
+    assert_difference("PhysicalProduct.last.product_variants.count", 1) do
+      patch admin_product_path(physical_product), params: {
+        product: { name: "Updated T-Shirt" },
+        productable: {
+          weight: 300,
+          product_variants_attributes: [
+            { name: "New Variant", price: 160000, weight: 300, stock: 5, is_active: true }
+          ]
+        }
+      }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    end
+
+    assert_equal "Updated T-Shirt", physical_product.reload.name
+  end
+
+  test "should filter products by type" do
+    get admin_products_path, params: { product_type: "PhysicalProduct" }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    assert_response :success
+    assert_equal [ products(:premium_t_shirt), products(:ebook_reader) ], assigns(:products).to_a
+  end
+
+  test "should filter products by digital type" do
+    get admin_products_path, params: { product_type: "DigitalProduct" }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    assert_response :success
+    assert assigns(:products).to_a.all?(&:digital?)
+  end
+
+  test "should sort products by stock for physical products" do
+    get admin_products_path, params: { sort_by: "stock" }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    assert_response :success
+    products = assigns(:products).to_a
+
+    physical_products = products.select(&:physical?)
+    assert physical_products.any?
+
+    physical_stocks = physical_products.map { |p| p.productable.product_variants.sum(:stock) }
+    assert_equal physical_stocks.sort, physical_stocks
+  end
+
+  test "should update physical product variant" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+
+    patch admin_product_path(physical_product), params: {
+      product: { name: "T-Shirt" },
+      productable: {
+        product_variants_attributes: [
+          { id: variant.id, name: "Red Small", price: 160000, stock: 15, is_active: true }
+        ]
+      }
+    }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_equal "Red Small", variant.reload.name
+    assert_equal 160000, variant.reload.price
+    assert_equal 15, variant.reload.stock
+  end
+
+  test "should destroy physical product variant" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+
+    assert_difference("physical_product.productable.product_variants.count", -1) do
+      patch admin_product_path(physical_product), params: {
+        product: { name: "T-Shirt" },
+        productable: {
+          product_variants_attributes: [
+            { id: variant.id, _destroy: "1" }
+          ]
+        }
+      }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    end
+  end
 end

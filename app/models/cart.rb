@@ -10,7 +10,7 @@ class Cart < ApplicationRecord
       unless product_variant.is_active
         raise ArgumentError, "Selected variant is not available"
       end
-      unless product_variant.product_id == cartable.productable.id
+      unless product_variant.product_id == cartable.id
         raise ArgumentError, "Variant does not belong to this product"
       end
       unless product_variant.stock.positive?

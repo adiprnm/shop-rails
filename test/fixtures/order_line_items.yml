@@ -20,3 +20,12 @@ design_collection_order_item:
   orderable_name: Design Collection
   orderable_price: 299000
   productable: design_kit (DigitalProduct)
+
+t_shirt_order_item:
+  order: paid_order
+  orderable: premium_t_shirt (Product)
+  orderable_name: Premium T-Shirt
+  orderable_price: 150000
+  productable: t_shirt (PhysicalProduct)
+  product_variant: t_shirt_red_small
+  weight: 250

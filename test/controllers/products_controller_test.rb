@@ -80,4 +80,74 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to products_path
   end
+
+  test "should add physical product with variant to cart" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+
+    assert_difference("CartLineItem.count") do
+      post add_to_cart_product_path(physical_product.slug), params: { product_variant_id: variant.id }
+    end
+
+    assert_redirected_to product_path(physical_product.slug)
+    assert_equal "Produk berhasil ditambahkan ke keranjang!", flash[:notice]
+  end
+
+  test "should not add physical product without variant" do
+    physical_product = products(:premium_t_shirt)
+
+    assert_no_difference("CartLineItem.count") do
+      post add_to_cart_product_path(physical_product.slug), params: {}
+    end
+
+    assert_redirected_to product_path(physical_product.slug)
+    assert_equal "Variant must be specified for physical products", flash[:alert]
+  end
+
+  test "should not add physical product with inactive variant" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_discontinued)
+
+    assert_no_difference("CartLineItem.count") do
+      post add_to_cart_product_path(physical_product.slug), params: { product_variant_id: variant.id }
+    end
+
+    assert_redirected_to product_path(physical_product.slug)
+    assert_equal "Selected variant is not available", flash[:alert]
+  end
+
+  test "should not add physical product with out of stock variant" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_green_large)
+
+    assert_no_difference("CartLineItem.count") do
+      post add_to_cart_product_path(physical_product.slug), params: { product_variant_id: variant.id }
+    end
+
+    assert_redirected_to product_path(physical_product.slug)
+    assert_equal "Selected variant is out of stock", flash[:alert]
+  end
+
+  test "should not add physical product with invalid variant" do
+    physical_product = products(:premium_t_shirt)
+    invalid_variant = product_variants(:ebook_black)
+
+    assert_no_difference("CartLineItem.count") do
+      post add_to_cart_product_path(physical_product.slug), params: { product_variant_id: invalid_variant.id }
+    end
+
+    assert_redirected_to product_path(physical_product.slug)
+    assert_equal "Variant does not belong to this product", flash[:alert]
+  end
+
+  test "should add physical product with variant and correct price" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+
+    assert_difference("CartLineItem.count") do
+      post add_to_cart_product_path(physical_product.slug), params: { product_variant_id: variant.id }
+    end
+
+    assert_equal variant.price, CartLineItem.last.price
+  end
 end

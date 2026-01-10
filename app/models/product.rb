@@ -42,6 +42,7 @@ class Product < ApplicationRecord
   end
 
   def coming_soon?
+    return false if physical_product?
     productable.resource_path.blank?
   end
 
