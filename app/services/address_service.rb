@@ -95,35 +95,35 @@ class AddressService
   end
 
   def self.find_province(id)
-    Province.find_by(id: id) || yield&.tap { |province| province&.save }
+    Province.find_by(id: id) || (block_given? ? yield.tap { |province| province&.save } : nil)
   end
 
   def self.find_city(id)
-    City.find_by(id: id) || yield&.tap { |city| city&.save }
+    City.find_by(id: id) || (block_given? ? yield.tap { |city| city&.save } : nil)
   end
 
   def self.find_district(id)
-    District.find_by(id: id) || yield&.tap { |district| district&.save }
+    District.find_by(id: id) || (block_given? ? yield.tap { |district| district&.save } : nil)
   end
 
   def self.find_subdistrict(id)
-    Subdistrict.find_by(id: id) || yield&.tap { |subdistrict| subdistrict&.save }
+    Subdistrict.find_by(id: id) || (block_given? ? yield.tap { |subdistrict| subdistrict&.save } : nil)
   end
 
   def self.find_province_by_rajaongkir_id(rajaongkir_id)
-    Province.find_by_rajaongkir_id(rajaongkir_id) || yield&.tap { |province| province&.save }
+    Province.find_by_rajaongkir_id(rajaongkir_id) || (block_given? ? yield.tap { |province| province&.save } : nil)
   end
 
   def self.find_city_by_rajaongkir_id(rajaongkir_id)
-    City.find_by_rajaongkir_id(rajaongkir_id) || yield&.tap { |city| city&.save }
+    City.find_by_rajaongkir_id(rajaongkir_id) || (block_given? ? yield.tap { |city| city&.save } : nil)
   end
 
   def self.find_district_by_rajaongkir_id(rajaongkir_id)
-    District.find_by_rajaongkir_id(rajaongkir_id) || yield&.tap { |district| district&.save }
+    District.find_by_rajaongkir_id(rajaongkir_id) || (block_given? ? yield.tap { |district| district&.save } : nil)
   end
 
   def self.find_subdistrict_by_rajaongkir_id(rajaongkir_id)
-    Subdistrict.find_by_rajaongkir_id(rajaongkir_id) || yield&.tap { |subdistrict| subdistrict&.save }
+    Subdistrict.find_by_rajaongkir_id(rajaongkir_id) || (block_given? ? yield.tap { |subdistrict| subdistrict&.save } : nil)
   end
 
   def self.cities_for_province(province_id)
