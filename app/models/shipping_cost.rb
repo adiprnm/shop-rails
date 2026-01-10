@@ -1,6 +1,9 @@
 class ShippingCost < ApplicationRecord
   CACHE_TTL = 24.hours
 
+  belongs_to :origin, polymorphic: true
+  belongs_to :destination, polymorphic: true
+
   validates :origin_type, presence: true
   validates :origin_id, presence: true
   validates :destination_type, presence: true

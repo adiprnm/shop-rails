@@ -2,9 +2,9 @@
 
 jne_yes:
   origin_type: Province
-  origin_id: 1
+  origin: jawa_barat
   destination_type: City
-  destination_id: 1
+  destination: jakarta_barat
   weight: 1000
   courier: jne
   service: YES
@@ -13,20 +13,31 @@ jne_yes:
 
 jne_oke_fresh:
   origin_type: Province
-  origin_id: 1
+  origin: jawa_barat
   destination_type: City
-  destination_id: 1
+  destination: jakarta_barat
   weight: 500
   courier: jne
   service: OKE
   cost: 8000
   created_at: <%= 1.hour.ago %>
 
+jne_oke_expired:
+  origin_type: Province
+  origin: jawa_barat
+  destination_type: City
+  destination: jakarta_barat
+  weight: 501
+  courier: jne
+  service: OKE
+  cost: 8000
+  created_at: <%= 25.hours.ago %>
+
 jne_reg_fresh:
   origin_type: Province
-  origin_id: 1
+  origin: jawa_barat
   destination_type: City
-  destination_id: 1
+  destination: jakarta_barat
   weight: 750
   courier: jne
   service: REG
@@ -35,9 +46,9 @@ jne_reg_fresh:
 
 jne_reg_expired:
   origin_type: Province
-  origin_id: 1
+  origin: jawa_barat
   destination_type: City
-  destination_id: 1
+  destination: jakarta_barat
   weight: 751
   courier: jne
   service: REG
@@ -46,10 +57,10 @@ jne_reg_expired:
 
 tiki_ons_fresh:
   origin_type: Province
-  origin_id: 1
+  origin: jawa_barat
   destination_type: City
-  destination_id: 1
-  weight: 1000
+  destination: jakarta_barat
+  weight: 1001
   courier: tiki
   service: ONS
   cost: 12000

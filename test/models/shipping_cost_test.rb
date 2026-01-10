@@ -72,17 +72,17 @@ class ShippingCostTest < ActiveSupport::TestCase
   end
 
   test "purge_expired deletes old records" do
-    expired = shipping_costs(:jne_oke_expired)
-    assert_difference -> { ShippingCost.expired.count }, -1 do
+    expired_count = ShippingCost.expired.count
+    assert_difference -> { ShippingCost.expired.count }, -expired_count do
       ShippingCost.purge_expired
     end
   end
 
   test "clear_for_destination deletes records for specific destination" do
     city = cities(:jakarta_barat)
-    shipping_cost = shipping_costs(:jne_yes)
+    records_count = ShippingCost.where(destination_type: "City", destination_id: city.id).count
 
-    assert_difference -> { ShippingCost.where(destination_type: "City", destination_id: city.id).count }, -1 do
+    assert_difference -> { ShippingCost.where(destination_type: "City", destination_id: city.id).count }, -records_count do
       ShippingCost.clear_for_destination(city)
     end
   end
