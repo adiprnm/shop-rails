@@ -38,7 +38,7 @@ jne_reg_expired:
   origin_id: 1
   destination_type: City
   destination_id: 1
-  weight: 750
+  weight: 751
   courier: jne
   service: REG
   cost: 9000
