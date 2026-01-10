@@ -44,74 +44,58 @@ class PhysicalProductTest < ActiveSupport::TestCase
     assert @physical_product.valid?
   end
 
-  test "should accept nested attributes for product_variants" do
-    assert_respond_to @physical_product, :product_variants_attributes=
-  end
-
   test "should be valid with at least one active variant" do
     @physical_product.weight = 100
     @physical_product.requires_shipping = true
-    @physical_product.product_variants.build(name: "Red", price: 100, stock: 10, is_active: true)
+    @product = Product.create!(name: "Test Product", slug: "test-product", price: 10000, state: "active", productable: @physical_product)
+    @product.product_variants.create!(name: "Red", price: 100, stock: 10, is_active: true)
     assert @physical_product.valid?
   end
 
   test "should be invalid with variants but no active ones" do
     @physical_product.weight = 100
     @physical_product.requires_shipping = true
-    @physical_product.product_variants.build(name: "Red", price: 100, stock: 10, is_active: false)
-    @physical_product.product_variants.build(name: "Blue", price: 100, stock: 10, is_active: false)
+    @product = Product.create!(name: "Test Product", slug: "test-product", price: 10000, state: "active", productable: @physical_product)
+    @product.product_variants.create!(name: "Red", price: 100, stock: 10, is_active: false)
+    @product.product_variants.create!(name: "Blue", price: 100, stock: 10, is_active: false)
+    @physical_product.reload
     assert_not @physical_product.valid?
     assert_includes @physical_product.errors[:product_variants], "must have at least one active variant"
   end
 
-  test "should be valid when only marked for destruction variants are inactive" do
+  test "should be valid with active variant present" do
     @physical_product.weight = 100
     @physical_product.requires_shipping = true
-    variant = @physical_product.product_variants.build(name: "Red", price: 100, stock: 10, is_active: false)
-    variant.mark_for_destruction
-    @physical_product.product_variants.build(name: "Blue", price: 100, stock: 10, is_active: true)
+    @product = Product.create!(name: "Test Product", slug: "test-product", price: 10000, state: "active", productable: @physical_product)
+    @product.product_variants.create!(name: "Red", price: 100, stock: 10, is_active: true)
+    @product.product_variants.create!(name: "Blue", price: 100, stock: 10, is_active: false)
+    @physical_product.reload
     assert @physical_product.valid?
   end
 
-  test "should be invalid with mix of active and inactive variants when only inactive remain after destruction" do
+  test "should be invalid when all variants become inactive" do
     @physical_product.weight = 100
     @physical_product.requires_shipping = true
-    active_variant = @physical_product.product_variants.build(name: "Red", price: 100, stock: 10, is_active: true)
-    @physical_product.product_variants.build(name: "Blue", price: 100, stock: 10, is_active: false)
-    active_variant.mark_for_destruction
+    @product = Product.create!(name: "Test Product", slug: "test-product", price: 10000, state: "active", productable: @physical_product)
+    active_variant = @product.product_variants.create!(name: "Red", price: 100, stock: 10, is_active: true)
+    @product.product_variants.create!(name: "Blue", price: 100, stock: 10, is_active: false)
+
+    active_variant.update!(is_active: false)
+    @physical_product.reload
     assert_not @physical_product.valid?
     assert_includes @physical_product.errors[:product_variants], "must have at least one active variant"
   end
 
-  test "should allow creating variants via nested attributes" do
+  test "should access variants through product" do
     @physical_product.weight = 100
     @physical_product.requires_shipping = true
-    assert_difference "@physical_product.product_variants.count", 2 do
-      @physical_product.update(
-        product_variants_attributes: [
-          { name: "Red", price: 100, stock: 10, is_active: true },
-          { name: "Blue", price: 100, stock: 10, is_active: true }
-        ]
-      )
-    end
-  end
+    @product = Product.create!(name: "Test Product", slug: "test-product", price: 10000, state: "active", productable: @physical_product)
 
-  test "should allow destroying variants via nested attributes" do
-    @physical_product.weight = 100
-    @physical_product.requires_shipping = true
-    variant = @physical_product.product_variants.create!(name: "Red", price: 100, stock: 10, is_active: true)
-    assert_difference "@physical_product.product_variants.count", -1 do
-      @physical_product.update(product_variants_attributes: [ { id: variant.id, _destroy: "1" } ])
-    end
-  end
+    variant1 = @product.product_variants.create!(name: "Red", price: 100, stock: 10, is_active: true)
+    variant2 = @product.product_variants.create!(name: "Blue", price: 100, stock: 10, is_active: true)
 
-  test "should allow destroying variants via nested attributes when other active variants exist" do
-    @physical_product.weight = 100
-    @physical_product.requires_shipping = true
-    active_variant = @physical_product.product_variants.create!(name: "Red", price: 100, stock: 10, is_active: true)
-    @physical_product.product_variants.create!(name: "Blue", price: 100, stock: 10, is_active: true)
-    assert_difference "@physical_product.product_variants.count", -1 do
-      @physical_product.update(product_variants_attributes: [ { id: active_variant.id, _destroy: "1" } ])
-    end
+    assert_equal 2, @physical_product.product_variants.count
+    assert_includes @physical_product.product_variants, variant1
+    assert_includes @physical_product.product_variants, variant2
   end
 end

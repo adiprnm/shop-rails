@@ -18,7 +18,14 @@ class Admin::ProductsController < AdminController
   end
 
   def create
-    @product = Product.create_with_productable(product_params, productable_params)
+    @product = Product.create_with_productable(product_params, productable_params.except(:product_variants_attributes))
+
+    if productable_params[:product_variants_attributes]
+      productable_params[:product_variants_attributes].each do |attrs|
+        @product.product_variants.create(attrs) unless attrs[:_destroy]
+      end
+    end
+
     redirect_to admin_products_path
   end
 
@@ -30,7 +37,23 @@ class Admin::ProductsController < AdminController
 
   def update
     @product.update(product_params)
-    @product.productable.update(productable_params) if productable_params
+
+    if productable_params
+      @product.productable.update(productable_params.except(:product_variants_attributes))
+
+      if productable_params[:product_variants_attributes]
+        productable_params[:product_variants_attributes].each do |attrs|
+          if attrs[:_destroy] == "1" && attrs[:id]
+            @product.product_variants.find(attrs[:id]).destroy
+          elsif attrs[:id]
+            variant = @product.product_variants.find(attrs[:id])
+            variant.update(attrs.except(:_destroy))
+          elsif !attrs[:id]
+            @product.product_variants.create(attrs)
+          end
+        end
+      end
+    end
 
     redirect_to edit_admin_product_path(@product), notice: "Update berhasil!"
   end

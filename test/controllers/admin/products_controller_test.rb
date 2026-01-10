@@ -245,9 +245,9 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
 
   test "should destroy physical product variant" do
     physical_product = products(:premium_t_shirt)
-    variant = product_variants(:t_shirt_red_small)
+    variant = physical_product.product_variants.create!(name: "Test Variant", price: 160000, weight: 250, stock: 5, is_active: true)
 
-    assert_difference("physical_product.productable.product_variants.count", -1) do
+    assert_difference("physical_product.product_variants.count", -1) do
       patch admin_product_path(physical_product), params: {
         product: { name: "T-Shirt" },
         productable: {
