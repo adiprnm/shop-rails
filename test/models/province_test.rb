@@ -2,7 +2,7 @@ require "test_helper"
 
 class ProvinceTest < ActiveSupport::TestCase
   test "has many cities" do
-    province = provinces(:one)
+    province = provinces(:jawa_barat)
     assert_respond_to province, :cities
   end
 
@@ -13,14 +13,14 @@ class ProvinceTest < ActiveSupport::TestCase
   end
 
   test "validates rajaongkir_id uniqueness" do
-    existing = provinces(:one)
+    existing = provinces(:jawa_barat)
     province = Province.new(rajaongkir_id: existing.rajaongkir_id, name: "Jawa Tengah")
     assert_not province.valid?
     assert_includes province.errors[:rajaongkir_id], "has already been taken"
   end
 
   test "validates name presence" do
-    province = Province.new(rajaongkir_id: 1)
+    province = Province.new(rajaongkir_id: "1")
     assert_not province.valid?
     assert_includes province.errors[:name], "can't be blank"
   end

@@ -31,24 +31,24 @@ class ShippingCostTest < ActiveSupport::TestCase
   end
 
   test "fresh scope returns records created within CACHE_TTL" do
-    fresh = shipping_costs(:fresh)
+    fresh = shipping_costs(:jne_yes)
     fresh_shipping_costs = ShippingCost.fresh
 
     assert_includes fresh_shipping_costs, fresh
   end
 
   test "expired scope returns records older than CACHE_TTL" do
-    expired = shipping_costs(:expired)
+    expired = shipping_costs(:jne_reg_expired)
     expired_shipping_costs = ShippingCost.expired
 
     assert_includes expired_shipping_costs, expired
   end
 
   test "find_or_fetch returns fresh record if exists" do
-    existing = shipping_costs(:fresh)
+    existing = shipping_costs(:jne_yes)
     result = ShippingCost.find_or_fetch(
-      provinces(:one),
-      cities(:one),
+      provinces(:jawa_barat),
+      cities(:jakarta_barat),
       existing.weight,
       existing.courier,
       existing.service
@@ -67,20 +67,20 @@ class ShippingCostTest < ActiveSupport::TestCase
   end
 
   test "calculate returns cost" do
-    shipping_cost = shipping_costs(:fresh)
+    shipping_cost = shipping_costs(:jne_yes)
     assert_equal shipping_cost.cost, shipping_cost.calculate
   end
 
   test "purge_expired deletes old records" do
-    expired = shipping_costs(:expired)
+    expired = shipping_costs(:jne_oke_expired)
     assert_difference -> { ShippingCost.expired.count }, -1 do
       ShippingCost.purge_expired
     end
   end
 
   test "clear_for_destination deletes records for specific destination" do
-    city = cities(:one)
-    shipping_cost = shipping_costs(:fresh, destination: city)
+    city = cities(:jakarta_barat)
+    shipping_cost = shipping_costs(:jne_yes)
 
     assert_difference -> { ShippingCost.where(destination_type: "City", destination_id: city.id).count }, -1 do
       ShippingCost.clear_for_destination(city)

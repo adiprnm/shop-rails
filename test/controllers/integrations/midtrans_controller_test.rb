@@ -8,7 +8,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return OK for test payment" do
-    post payment_integrations_midtrans_path, params: {
+    post "/integrations/midtrans/payment", params: {
       order_id: "payment_notif_test_order_id"
     }
 
@@ -20,7 +20,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
     @order.update(state: "pending")
     valid_signature = Digest::SHA2.new(512).hexdigest("#{@order.order_id}200149000test_secret")
 
-    post payment_integrations_midtrans_path, params: {
+    post "/integrations/midtrans/payment", params: {
       order_id: @order.order_id,
       status_code: "200",
       gross_amount: 149000,
@@ -37,7 +37,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
     @donation.update(state: "pending")
     valid_signature = Digest::SHA2.new(512).hexdigest("#{@donation.donation_id}200100000test_secret")
 
-    post payment_integrations_midtrans_path, params: {
+    post "/integrations/midtrans/payment", params: {
       order_id: @donation.donation_id,
       status_code: "200",
       gross_amount: 100000,
@@ -54,7 +54,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
     @order.update(state: "pending")
     valid_signature = Digest::SHA2.new(512).hexdigest("#{@order.order_id}202149000test_secret")
 
-    post payment_integrations_midtrans_path, params: {
+    post "/integrations/midtrans/payment", params: {
       order_id: @order.order_id,
       status_code: "202",
       gross_amount: 149000,
@@ -71,7 +71,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
     @order.update(state: "pending")
     valid_signature = Digest::SHA2.new(512).hexdigest("#{@order.order_id}202149000test_secret")
 
-    post payment_integrations_midtrans_path, params: {
+    post "/integrations/midtrans/payment", params: {
       order_id: @order.order_id,
       status_code: "202",
       gross_amount: 149000,
@@ -85,7 +85,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return unauthorized for invalid signature" do
-    post payment_integrations_midtrans_path, params: {
+    post "/integrations/midtrans/payment", params: {
       order_id: @order.order_id,
       status_code: "200",
       gross_amount: 149000,
@@ -101,7 +101,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
   test "should return unauthorized for fraud detected" do
     valid_signature = Digest::SHA2.new(512).hexdigest("#{@order.order_id}200149000test_secret")
 
-    post payment_integrations_midtrans_path, params: {
+    post "/integrations/midtrans/payment", params: {
       order_id: @order.order_id,
       status_code: "200",
       gross_amount: 149000,
@@ -117,7 +117,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
   test "should return not found for non-existent order" do
     valid_signature = Digest::SHA2.new(512).hexdigest("non-existent-id200149000test_secret")
 
-    post payment_integrations_midtrans_path, params: {
+    post "/integrations/midtrans/payment", params: {
       order_id: "non-existent-id",
       status_code: "200",
       gross_amount: 149000,
@@ -131,7 +131,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should skip verify_authenticity_token" do
-    post payment_integrations_midtrans_path, params: {
+    post "/integrations/midtrans/payment", params: {
       order_id: "payment_notif_test_order_id"
     }
     assert_response :success
@@ -150,7 +150,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
       payment_type: "credit_card"
     }
 
-    post payment_integrations_midtrans_path, params: params
+    post "/integrations/midtrans/payment", params: params
 
     assert_not_nil @order.reload.integration_data
     assert_equal "credit_card", @order.reload.integration_data["payment_type"]
@@ -160,7 +160,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
     @order.update(state: "pending")
     valid_signature = Digest::SHA2.new(512).hexdigest("#{@order.order_id}201149000test_secret")
 
-    post payment_integrations_midtrans_path, params: {
+    post "/integrations/midtrans/payment", params: {
       order_id: @order.order_id,
       status_code: "201",
       gross_amount: 149000,
@@ -177,7 +177,7 @@ class Integrations::MidtransControllerTest < ActionDispatch::IntegrationTest
     @order.update(state: "pending")
     valid_signature = Digest::SHA2.new(512).hexdigest("#{@order.order_id}201149000test_secret")
 
-    post payment_integrations_midtrans_path, params: {
+    post "/integrations/midtrans/payment", params: {
       order_id: @order.order_id,
       status_code: "201",
       gross_amount: 149000,

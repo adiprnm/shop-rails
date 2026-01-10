@@ -48,4 +48,12 @@ class Product < ApplicationRecord
   def physical_product?
     productable_type == "PhysicalProduct"
   end
+
+  def physical?
+    productable_type == "PhysicalProduct"
+  end
+
+  def digital?
+    productable_type == "DigitalProduct"
+  end
 end
