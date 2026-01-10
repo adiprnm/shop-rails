@@ -1,0 +1,16 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+gedong_pancoran:
+  rajaongkir_id: "1"
+  name: Gedong Pancoran
+  district: tebet
+
+kuningan_tebet:
+  rajaongkir_id: "2"
+  name: Kuningan
+  district: tebet
+
+cawang:
+  rajaongkir_id: "3"
+  name: Cawang
+  district: cakung

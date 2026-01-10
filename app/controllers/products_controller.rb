@@ -10,12 +10,25 @@ class ProductsController < ApplicationController
 
   def add_to_cart
     return redirect_to(request.referer.presence || root_url) if @product.coming_soon?
-    return redirect_to product_path(@product.slug), alert: "Harga yang kamu masukkan di bawah harga minimal!" if below_minimum_price?
+    return redirect_to product_path(@product.slug), alert: "Harga yang kamu masukkan di bawah harga minimal!" if below_minimum_price? && !@product.physical_product?
 
-    Current.cart.add_item(@product, params[:price])
+    product_variant = @product.physical_product? ? ProductVariant.find_by(id: params[:product_variant_id]) : nil
+    price = if product_variant
+              product_variant.price
+    elsif params[:price]
+              params[:price]
+    else
+              @product.actual_price
+    end
+
+    quantity = params[:quantity].to_i.positive? ? params[:quantity].to_i : 1
+
+    Current.cart.add_item(@product, price, product_variant, quantity)
 
     flash[:action] = "add_product_to_cart"
     redirect_to product_path(@product.slug), notice: "Produk berhasil ditambahkan ke keranjang!"
+  rescue ArgumentError => e
+    redirect_to product_path(@product.slug), alert: e.message
   end
 
   private

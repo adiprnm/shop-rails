@@ -5,7 +5,7 @@
 
   <h1>Pengaturan</h1>
 
-  <%= form_with url: admin_settings_path, method: :put do |f| %>
+  <%= form_with url: admin_settings_path, method: :put, data: { controller: "settings-origin" } do |f| %>
     <h3>Situs</h3>
 
     <div class="form-group">
@@ -94,6 +94,113 @@
         <%= f.label :email_sender_name, "Nama Pengirim" %>
         <%= f.text_field :email_sender_name, value: Current.settings["email_sender_name"] %>
       </div>
+
+      <div class="form-group">
+        <%= f.label :email_sender_email, "Email Pengirim" %>
+        <%= f.text_field :email_sender_email, value: Current.settings["email_sender_email"] %>
+      </div>
+    </div>
+
+    <div class="grouped">
+      <div class="form-group">
+        <%= f.label :smtp_host, "Host" %>
+        <%= f.text_field :smtp_host, value: Current.settings["smtp_host"] %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :smtp_port, "Port" %>
+        <%= f.text_field :smtp_port, value: Current.settings["smtp_port"] %>
+      </div>
+    </div>
+
+    <div class="grouped">
+      <div class="form-group">
+        <%= f.label :smtp_username, "Username" %>
+        <%= f.text_field :smtp_username, value: Current.settings["smtp_username"] %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :smtp_password, "Password" %>
+        <%= f.text_field :smtp_password, value: Current.settings["smtp_password"] %>
+      </div>
+    </div>
+
+    <h3>RajaOngkir API</h3>
+
+    <div class="grouped">
+      <div class="form-group">
+        <%= f.label :rajaongkir_api_key, "API Key" %>
+        <%= f.text_field :rajaongkir_api_key, value: Current.settings["rajaongkir_api_key"] %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :rajaongkir_api_host, "API Host" %>
+        <%= f.text_field :rajaongkir_api_host, value: Current.settings["rajaongkir_api_host"] %>
+      </div>
+    </div>
+
+    <h3>Lokasi Asal Pengiriman (Default)</h3>
+
+    <div class="grouped">
+      <div class="form-group">
+        <%= f.label :default_origin_province_id, "Provinsi" %>
+        <%= f.select :default_origin_province_id,
+          options_for_select(Province.all.map { |p| [p.name, p.id] }, selected: Current.settings["default_origin_province_id"]),
+          { include_blank: "Pilih Provinsi" },
+          data: { settings_origin_target: "provinceSelect", action: "change->settings-origin#onProvinceChange" }
+        %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :default_origin_city_id, "Kota/Kabupaten" %>
+        <%= f.select :default_origin_city_id,
+          options_for_select(
+            if Current.settings["default_origin_province_id"].present?
+              Province.find_by(id: Current.settings["default_origin_province_id"])&.cities&.map { |c| [c.name, c.id] } || []
+            else
+              []
+            end,
+            selected: Current.settings["default_origin_city_id"]
+          ),
+          { include_blank: "Pilih Kota/Kabupaten" },
+          data: { settings_origin_target: "citySelect", action: "change->settings-origin#onCityChange" }
+        %>
+      </div>
+    </div>
+
+    <div class="grouped">
+      <div class="form-group">
+        <%= f.label :default_origin_district_id, "Kecamatan" %>
+        <%= f.select :default_origin_district_id,
+          options_for_select(
+            if Current.settings["default_origin_city_id"].present?
+              City.find_by(id: Current.settings["default_origin_city_id"])?.districts&.map { |d| [d.name, d.id] } || []
+            else
+              []
+            end,
+            selected: Current.settings["default_origin_district_id"]
+          ),
+          { include_blank: "Pilih Kecamatan" },
+          data: { settings_origin_target: "districtSelect", action: "change->settings-origin#onDistrictChange" }
+        %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :default_origin_subdistrict_id, "Kelurahan" %>
+        <%= f.select :default_origin_subdistrict_id,
+          options_for_select(
+            if Current.settings["default_origin_district_id"].present?
+              District.find_by(id: Current.settings["default_origin_district_id"])?.subdistricts&.map { |s| [s.name, s.id] } || []
+            else
+              []
+            end,
+            selected: Current.settings["default_origin_subdistrict_id"]
+          ),
+          { include_blank: "Pilih Kelurahan" },
+          data: { settings_origin_target: "subdistrictSelect" }
+        %>
+      </div>
+    </div>
       <div class="form-group">
         <%= f.label :email_sender_email, "Email Pengirim" %>
         <%= f.text_field :email_sender_email, value: Current.settings["email_sender_email"] %>

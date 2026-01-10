@@ -38,3 +38,29 @@ business_audio_course:
   state: active
   productable: business_audio (DigitalProduct)
   minimum_price: 75000
+
+premium_t_shirt:
+  name: Premium T-Shirt
+  slug: premium-t-shirt
+  short_description: High quality cotton t-shirt
+  description: Comfortable and durable 100% cotton t-shirt available in multiple colors and sizes.
+  price: 150000
+  sale_price:
+  sale_price_starts_at:
+  sale_price_ends_at:
+  state: active
+  productable: t_shirt (PhysicalProduct)
+  minimum_price: 100000
+
+ebook_reader:
+  name: EBook Reader
+  slug: ebook-reader
+  short_description: Portable digital reading device
+  description: Lightweight e-reader with e-ink display and long battery life. Perfect for reading anywhere.
+  price: 1500000
+  sale_price: 1200000
+  sale_price_starts_at: <%= 1.week.ago %>
+  sale_price_ends_at: <%= 1.week.from_now %>
+  state: active
+  productable: ebook_device (PhysicalProduct)
+  minimum_price: 500000

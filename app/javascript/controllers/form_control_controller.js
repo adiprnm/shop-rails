@@ -10,12 +10,14 @@ export default class extends Controller {
 
     this.submitButtonTarget.disabled = !this.requiredFieldsValue.every(field => {
       if (this.hasModelValue) {
-        element = this.element.querySelector(`input[id="${this.modelValue}_${field}"]`)
+        element = this.element.querySelector(`[id="${this.modelValue}_${field}"]`)
       } else {
-        element = this.element.querySelector(`input[name="${field}"]`)
+        element = this.element.querySelector(`[name="${field}"]`)
       }
 
-      let match = element.value.trim().length > 0
+      if (!element) return false
+
+      let match = element.value && element.value.toString().trim().length > 0
       const min = parseInt(element.min)
       if (Number.isInteger(min)) {
         match &&= parseInt(element.value) >= min

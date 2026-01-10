@@ -1,0 +1,1 @@
+<%= tag.option("Select City", value: "") + cities.map { |city| tag.option(city.name, value: city.id) }.join("\n").html_safe %>

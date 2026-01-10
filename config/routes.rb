@@ -30,7 +30,15 @@ Rails.application.routes.draw do
 
   resources :admin, controller: "admin", only: %w[ index ]
   namespace :admin do
-    resources :products
+    resources :products do
+      resources :product_variants, only: %w[ index new create ]
+    end
+    resources :product_variants, only: %w[ edit update destroy ] do
+      collection do
+        post :bulk_activate
+        post :bulk_deactivate
+      end
+    end
     resources :categories
     resources :donations, only: %w[ index show edit update destroy ]
     resources :emails, only: %w[ index ] do
@@ -40,6 +48,26 @@ Rails.application.routes.draw do
     end
     resources :orders
     resource :settings, only: %w[ show update ]
+    resource :cache, only: %w[ show ] do
+      post :fetch_provinces
+      post :clear_shipping_cache
+    end
+    resources :provinces, only: %w[ ] do
+      resources :cities, only: %w[ ] do
+        resources :districts, only: %w[ ] do
+          resources :subdistricts, only: %w[ ]
+        end
+      end
+    end
+  end
+
+  resources :addresses, only: %w[] do
+    collection do
+      get :provinces
+      get :cities
+      get :districts
+      get :subdistricts
+    end
   end
 
   namespace :integrations do
@@ -47,6 +75,8 @@ Rails.application.routes.draw do
       post :payment
     end
   end
+
+  resources :shipping_costs, only: %w[ index ]
 
   get "syarat-dan-ketentuan" => "pages#terms_and_conditions"
 

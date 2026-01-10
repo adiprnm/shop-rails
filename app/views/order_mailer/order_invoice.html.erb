@@ -25,6 +25,23 @@
   </tr>
 </table>
 
+<% if @order.contains_physical_products? && @order.shipping_cost.present? %>
+  <table style="margin-top: 1rem;">
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Subtotal Produk</strong></td>
+      <td><%= idr (@order.total_price - @order.shipping_cost) %></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Ongkos Kirim</strong></td>
+      <td><%= idr @order.shipping_cost %></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Total</strong></td>
+      <td><%= idr @order.total_price %></td>
+    </tr>
+  </table>
+<% end %>
+
 <h3>Rincian</h3>
 
 <table style="margin-top: 1rem;">
@@ -42,11 +59,53 @@
   </tbody>
 </table>
 
-
+<% if @order.contains_physical_products? %>
+  <h3>Informasi Pengiriman</h3>
+  <table style="margin-top: 1rem;">
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Kurir</strong></td>
+      <td><%= "#{@order.shipping_provider&.upcase} - #{@order.shipping_method}" %></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Alamat</strong></td>
+      <td><%= @order.address_line %></td>
+    </tr>
+    <% if @order.shipping_subdistrict %>
+      <tr>
+        <td style="background-color: #f2f2f2"><strong>Kelurahan</strong></td>
+        <td><%= @order.shipping_subdistrict.name %></td>
+      </tr>
+    <% end %>
+    <% if @order.shipping_district %>
+      <tr>
+        <td style="background-color: #f2f2f2"><strong>Kecamatan</strong></td>
+        <td><%= @order.shipping_district.name %></td>
+      </tr>
+    <% end %>
+    <% if @order.shipping_city %>
+      <tr>
+        <td style="background-color: #f2f2f2"><strong>Kota/Kabupaten</strong></td>
+        <td><%= @order.shipping_city.name %></td>
+      </tr>
+    <% end %>
+    <% if @order.shipping_province %>
+      <tr>
+        <td style="background-color: #f2f2f2"><strong>Provinsi</strong></td>
+        <td><%= @order.shipping_province.name %></td>
+      </tr>
+    <% end %>
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Nomor Resi</strong></td>
+      <td>Belum tersedia</td>
+    </tr>
+  </table>
+<% end %>
+ 
 <p style="line-height: 1.5; margin-top: 2rem;">Terima kasih sudah belanja di <%= Setting.site_name.value %> yaa!</p>
 
 <p style="line-height: 1.5; margin-top: 3rem;">
   Salam,<br>
   <%= Setting.email_sender_name.value %>
 </p>
+ 
 

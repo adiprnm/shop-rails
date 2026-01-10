@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+t_shirt:
+  weight: 250
+  requires_shipping: true
+
+ebook_device:
+  weight: 500
+  requires_shipping: true

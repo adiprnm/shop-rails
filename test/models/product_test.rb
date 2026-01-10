@@ -86,6 +86,36 @@ class ProductTest < ActiveSupport::TestCase
     assert_not_nil product.productable
   end
 
+  test "self.create_with_productable should create product with PhysicalProduct" do
+    product_params = {
+      name: "Physical Product",
+      slug: "physical-product",
+      price: 150000,
+      state: "active",
+      productable_type: "PhysicalProduct"
+    }
+    productable_params = {
+      weight: 500,
+      requires_shipping: true
+    }
+
+    product = Product.create_with_productable(product_params, productable_params)
+
+    assert product.persisted?
+    assert_equal "PhysicalProduct", product.productable_type
+    assert_not_nil product.productable
+    assert_equal 500, product.productable.weight
+    assert_equal true, product.productable.requires_shipping
+  end
+
+  test "physical_product? should return true for PhysicalProduct" do
+    assert products(:premium_t_shirt).physical_product?
+  end
+
+  test "physical_product? should return false for DigitalProduct" do
+    assert_not products(:ruby_guide).physical_product?
+  end
+
   test "should attach featured_image" do
     @product.featured_image.attach(io: File.open(Rails.root.join("test", "fixtures", "files", "test.jpg")), filename: "test.jpg", content_type: "image/jpeg")
     assert @product.featured_image.attached?

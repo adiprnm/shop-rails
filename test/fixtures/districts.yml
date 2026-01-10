@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+kebon_jeruk:
+  rajaongkir_id: "1"
+  name: Kebon Jeruk
+  city: jakarta_barat
+
+cakung:
+  rajaongkir_id: "2"
+  name: Cakung
+  city: jakarta_timur
+
+tebet:
+  rajaongkir_id: "3"
+  name: Tebet
+  city: jakarta_selatan
+
+tugu:
+  rajaongkir_id: "4"
+  name: Tugu
+  city: semarang

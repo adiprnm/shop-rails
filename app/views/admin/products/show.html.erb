@@ -1,0 +1,69 @@
+<%= content_for(:title) { "#{ @product.name } | #{ Current.settings["site_name"] } admin" } %>
+
+<div>
+  <h1><%= @product.name %></h1>
+
+  <div class="card">
+    <h2>Product Details</h2>
+    <div>
+      <p><strong>ID:</strong> <%= @product.id %></p>
+      <p><strong>Slug:</strong> <%= @product.slug %></p>
+      <p><strong>Product Type:</strong> <%= @product.productable_type %></p>
+      <p><strong>Price:</strong> <%= idr @product.price %></p>
+      <p><strong>Sale Price:</strong> <%= @product.sale_price ? idr(@product.sale_price) : 'N/A' %></p>
+      <p><strong>State:</strong> <%= @product.state %></p>
+      <p><strong>Categories:</strong> <%= @product.categories.map(&:name).join(', ') %></p>
+    </div>
+  </div>
+
+  <% if @product.digital? %>
+    <div class="card mt-4">
+      <h2>Digital Product Details</h2>
+      <div>
+        <p><strong>Resource Type:</strong> <%= @product.productable.resource_type %></p>
+        <p><strong>Resource URL:</strong> <%= @product.productable.resource_url %></p>
+        <p><strong>Sample:</strong> <%= @product.productable.sample.attached? ? 'Yes' : 'No' %></p>
+      </div>
+    </div>
+  <% elsif @product.physical? %>
+    <div class="card mt-4">
+      <h2>Physical Product Details</h2>
+      <div>
+        <p><strong>Weight:</strong> <%= @product.productable.weight %> grams</p>
+        <p><strong>Requires Shipping:</strong> <%= @product.productable.requires_shipping ? 'Yes' : 'No' %></p>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="flex justify-between items-center">
+        <h2>Variants</h2>
+        <%= link_to "Manage Variants", admin_product_variants_path(@product), class: "btn" %>
+      </div>
+      <table style="min-width: 500px;">
+        <thead>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Weight Override</th>
+          <th>Stock</th>
+          <th>Active</th>
+        </thead>
+        <tbody>
+          <% @product.productable.product_variants.each do |variant| %>
+            <tr>
+              <td><%= variant.name %></td>
+              <td><%= idr variant.price %></td>
+              <td><%= variant.weight.present? ? "#{variant.weight} grams" : 'Use default' %></td>
+              <td><%= variant.stock %></td>
+              <td><%= variant.is_active ? 'Yes' : 'No' %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <div class="mt-4">
+    <%= link_to "Edit", edit_admin_product_path(@product), class: "btn" %>
+    <%= link_to "Back", admin_products_path %>
+  </div>
+</div>

@@ -5,14 +5,32 @@
 
   <h1>Produk</h1>
 
-  <%= link_to "+ Tambah produk baru", new_admin_product_path %>
+  <%= link_to "+ Tambah produk baru", new_admin_product_path, class: "btn" %>
+
+  <div class="mt-4">
+    <%= form_with url: admin_products_path, method: :get, local: true do |f| %>
+      <div class="grouped">
+        <div class="form-group">
+          <%= f.label :product_type, "Filter by Type" %>
+          <%= f.select :product_type, options_for_select([["All", ""], ["DigitalProduct", "DigitalProduct"], ["PhysicalProduct", "PhysicalProduct"]], params[:product_type]), onchange: "this.form.submit()" %>
+        </div>
+        <div class="form-group">
+          <%= f.label :sort_by, "Sort by" %>
+          <%= f.select :sort_by, options_for_select([["ID (newest)", ""], ["Stock", "stock"]], params[:sort_by]), onchange: "this.form.submit()" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
 
   <div class="full-width overflow-x-scroll mt-8">
-    <table style="min-width: 500px;">
+    <table style="min-width: 600px;">
       <thead>
         <th>ID</th>
         <th>Nama</th>
+        <th>Tipe</th>
         <th>Harga</th>
+        <th>Variants</th>
+        <th>Stok</th>
         <th>Status</th>
         <th>Aksi</th>
       </thead>
@@ -21,6 +39,7 @@
           <tr>
             <td><%= product.id %></td>
             <td><%= product.name %></td>
+            <td><span class="badge"><%= product.productable_type %></span></td>
             <td>
               <% if product.minimum_price.present? %>
                 Min. <%= idr product.minimum_price, text: false %>
@@ -28,6 +47,20 @@
                 <del><%= idr product.price %></del> <%= idr product.sale_price %>
               <% else %>
                 <%= idr product.price %>
+              <% end %>
+            </td>
+            <td>
+              <% if product.physical? %>
+                <%= product.productable.product_variants.count %>
+              <% else %>
+                -
+              <% end %>
+            </td>
+            <td>
+              <% if product.physical? %>
+                <%= product.productable.product_variants.sum(:stock) %>
+              <% else %>
+                -
               <% end %>
             </td>
             <td><%= product.state %></td>
