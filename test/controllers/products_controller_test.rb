@@ -150,4 +150,59 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal variant.price, CartLineItem.last.price
   end
+
+  test "should show physical product page" do
+    physical_product = products(:premium_t_shirt)
+
+    get product_path(physical_product.slug)
+
+    assert_response :success
+    assert_select "h1", text: physical_product.name
+    assert_select "p", text: physical_product.short_description
+  end
+
+  test "should show variant dropdown for physical products" do
+    physical_product = products(:premium_t_shirt)
+
+    get product_path(physical_product.slug)
+
+    assert_response :success
+    assert_select "form[action=?]", add_to_cart_product_path(physical_product.slug)
+    assert_select "select[name=?]", "product_variant_id"
+  end
+
+  test "should show only active and in-stock variants" do
+    physical_product = products(:premium_t_shirt)
+
+    get product_path(physical_product.slug)
+
+    assert_response :success
+    assert_select "select[name='product_variant_id'] option", text: /Red - Small/ do
+      assert_select "[value=?]", product_variants(:t_shirt_red_small).id.to_s
+    end
+    assert_select "select[name='product_variant_id'] option", text: /Blue - Medium/ do
+      assert_select "[value=?]", product_variants(:t_shirt_blue_medium).id.to_s
+    end
+    assert_select "select[name='product_variant_id'] option", text: /Green - Large/, count: 0
+    assert_select "select[name='product_variant_id'] option", text: /Black - Extra Large/, count: 0
+  end
+
+  test "should show variant price and stock count" do
+    physical_product = products(:premium_t_shirt)
+
+    get product_path(physical_product.slug)
+
+    assert_response :success
+    assert_select "select[name='product_variant_id'] option", text: /150\.000.*Stok: 50/
+  end
+
+  test "should show different variants for different physical products" do
+    ebook_reader = products(:ebook_reader)
+
+    get product_path(ebook_reader.slug)
+
+    assert_response :success
+    assert_select "select[name='product_variant_id'] option", text: /Black/
+    assert_select "select[name='product_variant_id'] option", text: /White/, count: 0
+  end
 end
