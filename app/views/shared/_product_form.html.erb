@@ -122,9 +122,9 @@
                 <%= pf.label :requires_shipping %>
               </div>
 
-              <div class="mt-4">
+              <div class="mt-4" data-controller="variants">
                 <h3>Variants</h3>
-                <div id="variants-container" data-controller="variants">
+                <div id="variants-container">
                   <%= pf.fields_for :product_variants do |variant_fields| %>
                     <div class="variant-form mb-4" data-variants-target="variant">
                       <div class="form-group">
@@ -148,7 +148,7 @@
                         <%= variant_fields.label :is_active %>
                       </div>
                       <%= variant_fields.hidden_field :_destroy, value: "0", data: { variants_target: "destroyInput" } %>
-                      <button type="button" data-action="click->variants#remove" class="btn btn-danger">Remove</button>
+                      <button type="button" data-action="click->variants#remove" class="button-as-text text-red mt-8 underline">Remove</button>
                     </div>
                   <% end %>
                 </div>

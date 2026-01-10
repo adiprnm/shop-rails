@@ -67,7 +67,7 @@ class Admin::ProductsController < AdminController
 
   def productable_params
     productable_type = params[:product][:productable_type] || @product.productable_type
-    productable = params[:product][:productable] || params[:productable]
+    productable = params[:product][:productable]
 
     if productable_type == "DigitalProduct" && productable
       productable.permit(:resource_type, :resource_url, :resource, :sample)
