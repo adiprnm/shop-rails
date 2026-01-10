@@ -63,6 +63,12 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :integrations do
+    resource :midtrans, only: %w[] do
+      post :payment
+    end
+  end
+
   resources :shipping_costs, only: %w[ index ]
 
   get "syarat-dan-ketentuan" => "pages#terms_and_conditions"

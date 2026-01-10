@@ -195,6 +195,7 @@ bd sync
 - Follow Rails 8 conventions (Solid Queue, Solid Cache, Solid Cable)
 - Use Active Storage for file uploads
 - Database changes require migrations in `db/migrate/`
+- NEVER remove existing routes from `config/routes.rb` unless explicitly requested and approved
 
 ## Commit Discipline
 
