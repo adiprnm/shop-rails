@@ -40,10 +40,10 @@ class Admin::ProductsController < AdminController
       product_params_with_variants = product_params.merge(product_variants_attributes: productable_params[:product_variants_attributes])
     end
 
-    @product.update(product_params_with_variants)
+    @product.update(product_params_with_variants.to_h)
 
     if productable_params
-      @product.productable.update(productable_params.except(:product_variants_attributes))
+      @product.productable.update(productable_params.except(:product_variants_attributes).to_h)
     end
 
     redirect_to edit_admin_product_path(@product), notice: "Update berhasil!"

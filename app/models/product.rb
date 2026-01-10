@@ -27,7 +27,8 @@ class Product < ApplicationRecord
       PhysicalProduct.new(**productable_params)
     end
 
-    product = Product.create!(productable: productable, **product_params)
+    product = Product.new(productable: productable, **product_params.to_h)
+    product.save!
     product
   end
 
