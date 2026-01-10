@@ -40,7 +40,7 @@ class Admin::ProductsController < AdminController
       product_params_with_variants = product_params.merge(product_variants_attributes: productable_params[:product_variants_attributes])
     end
 
-    @product.update(product_params_with_variants.to_h)
+    @product.update(product_params_with_variants)
 
     if productable_params
       @product.productable.update(productable_params.except(:product_variants_attributes).to_h)
@@ -67,27 +67,12 @@ class Admin::ProductsController < AdminController
 
   def productable_params
     productable_type = params[:product][:productable_type] || @product.productable_type
+    productable = params[:product][:productable] || params[:productable]
 
-    if productable_type == "DigitalProduct"
-      if params[:productable]
-        params.require(:productable).permit(
-          :resource_type, :resource_url, :resource, :sample
-        )
-      elsif params[:product][:productable]
-        params.require(:product).require(:productable).permit(
-          :resource_type, :resource_url, :resource, :sample
-        )
-      end
-    elsif productable_type == "PhysicalProduct"
-      if params[:productable]
-        params.require(:productable).permit(
-          :weight, :requires_shipping, product_variants_attributes: [ :id, :name, :price, :weight, :stock, :is_active, :_destroy ]
-        )
-      elsif params[:product][:productable]
-        params.require(:product).require(:productable).permit(
-          :weight, :requires_shipping, product_variants_attributes: [ :id, :name, :price, :weight, :stock, :is_active, :_destroy ]
-        )
-      end
+    if productable_type == "DigitalProduct" && productable
+      productable.permit(:resource_type, :resource_url, :resource, :sample)
+    elsif productable_type == "PhysicalProduct" && productable
+      productable.permit(:weight, :requires_shipping, product_variants_attributes: [ :id, :name, :price, :weight, :stock, :is_active, :_destroy ])
     end
   end
 

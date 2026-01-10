@@ -47,6 +47,11 @@
     color:  #32CD32;
   }
 }
+.button-as-text {
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+}
 .text-white { color: white; }
 .bg-red { background-color: red; }
 .text-black { color: black; }
