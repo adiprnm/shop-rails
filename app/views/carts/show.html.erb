@@ -42,25 +42,18 @@
             </td>
           </tr>
         <% end %>
-         <tr>
-           <td colspan="2"><strong>Subtotal</strong></td>
-           <td colspan="2"><strong id="subtotal-display"><%= idr Current.cart.total_price %></strong></td>
-         </tr>
-       </tbody>
-     </table>
-
-     <%= turbo_frame_tag "shipping-options", data: { shipping_target: "shippingOptions" } %>
-
-     <table class="mt-4">
-       <tbody>
-         <tr>
-           <td><strong>Total</strong></td>
-           <td><strong id="total-display" data-shipping-target="totalDisplay"><%= idr Current.cart.total_price %></strong></td>
-         </tr>
-       </tbody>
-     </table>
+        <tr>
+          <td colspan="2"><strong>Subtotal</strong></td>
+          <td colspan="2"><strong id="subtotal-display"><%= idr Current.cart.total_price %></strong></td>
+        </tr>
+        <tr>
+          <td colspan="2"><strong>Total</strong></td>
+          <td colspan="2"><strong id="total-display" data-shipping-target="totalDisplay"><%= idr Current.cart.total_price %></strong></td>
+        </tr>
       </tbody>
     </table>
+
+    <%= turbo_frame_tag "shipping-options", data: { shipping_target: "shippingOptions" } %>
 
     <h2 class="mt-8">Checkout</h2>
 
