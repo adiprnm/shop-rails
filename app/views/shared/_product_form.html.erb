@@ -71,7 +71,7 @@
               <div class="form-group">
                 <div class="form-group mb-2">
                   <%= pf.label :sample %>
-                  <% if @product.productable&.sample&.attached? %>
+                  <% if @product.digital_product? && @product.productable&.sample&.attached? %>
                     <small>File sekarang: <%= @product.productable.sample.filename.to_s %></small>
                   <% end %>
                   <%= pf.file_field :sample %>
@@ -79,13 +79,13 @@
 
                 <%= pf.label :resource_type %>
                 <div class="mb-2">
-                  <%= pf.radio_button :resource_type, "file", id: "product_productable_file", checked: @product.productable&.file? %>
+                  <%= pf.radio_button :resource_type, "file", id: "product_productable_file", checked: @product.digital_product? && @product.productable&.file? %>
                   <%= pf.label :file %>
 
                   <div class="resource">
                     <div class="form-group mt-2">
                       <%= pf.label :resource %>
-                      <% if @product.productable&.resource&.attached? %>
+                      <% if @product.digital_product? && @product.productable&.resource&.attached? %>
                         <small>File sekarang: <%= @product.productable.resource.filename.to_s %></small>
                       <% end %>
                       <%= pf.file_field :resource %>
@@ -93,13 +93,13 @@
                   </div>
                 </div>
                 <div>
-                  <%= pf.radio_button :resource_type, "url", id: "product_productable_url", checked: @product.productable&.url? %>
+                  <%= pf.radio_button :resource_type, "url", id: "product_productable_url", checked: @product.digital_product? && @product.productable&.url? %>
                   <%= pf.label :url %>
 
                   <div class="resource">
                     <div class="form-group mt-2">
                       <%= pf.label :resource_url %>
-                      <%= pf.url_field :resource_url, value: @product.productable&.resource_url %>
+                      <%= pf.url_field :resource_url, value: @product.digital_product? ? @product.productable&.resource_url : nil %>
                     </div>
                   </div>
                 </div>

@@ -45,6 +45,12 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should get edit for physical product" do
+    physical_product = products(:premium_t_shirt)
+    get edit_admin_product_path(physical_product), headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    assert_response :success
+  end
+
   test "should update product" do
     patch admin_product_path(@product), params: {
       product: {
@@ -199,6 +205,131 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_equal "Updated T-Shirt", physical_product.reload.name
+  end
+
+  test "should update physical product attributes" do
+    physical_product = products(:premium_t_shirt)
+
+    patch admin_product_path(physical_product), params: {
+      product: { name: "Updated T-Shirt", description: "New description" },
+      productable: {
+        weight: 350,
+        requires_shipping: false
+      }
+    }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_equal "Updated T-Shirt", physical_product.reload.name
+    assert_equal "New description", physical_product.reload.description
+    assert_equal 350, physical_product.productable.reload.weight
+    assert_equal false, physical_product.productable.reload.requires_shipping
+  end
+
+  test "should add variant when editing physical product" do
+    physical_product = products(:premium_t_shirt)
+
+    assert_difference("physical_product.product_variants.count", 1) do
+      patch admin_product_path(physical_product), params: {
+        product: { name: "T-Shirt" },
+        productable: {
+          product_variants_attributes: [
+            { name: "Yellow", price: 150000, weight: 250, stock: 20, is_active: true }
+          ]
+        }
+      }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    end
+
+    assert_equal "Yellow", physical_product.product_variants.last.name
+  end
+
+  test "should update multiple variants when editing physical product" do
+    physical_product = products(:premium_t_shirt)
+    variant1 = product_variants(:t_shirt_red_small)
+    variant2 = product_variants(:t_shirt_blue_medium)
+
+    patch admin_product_path(physical_product), params: {
+      product: { name: "T-Shirt" },
+      productable: {
+        product_variants_attributes: [
+          { id: variant1.id, name: "Red Small Updated", price: 155000, weight: 260, stock: 25, is_active: true },
+          { id: variant2.id, name: "Blue Medium Updated", price: 155000, weight: 260, stock: 35, is_active: true }
+        ]
+      }
+    }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_equal "Red Small Updated", variant1.reload.name
+    assert_equal 155000, variant1.reload.price
+    assert_equal 260, variant1.reload.weight
+    assert_equal 25, variant1.reload.stock
+
+    assert_equal "Blue Medium Updated", variant2.reload.name
+    assert_equal 155000, variant2.reload.price
+    assert_equal 260, variant2.reload.weight
+    assert_equal 35, variant2.reload.stock
+  end
+
+  test "should deactivate variant when editing physical product" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+
+    patch admin_product_path(physical_product), params: {
+      product: { name: "T-Shirt" },
+      productable: {
+        product_variants_attributes: [
+          { id: variant.id, name: "Red - Small", price: 150000, weight: 250, stock: 50, is_active: false }
+        ]
+      }
+    }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_equal false, variant.reload.is_active
+  end
+
+  test "should validate variant presence for physical product" do
+    physical_product = products(:premium_t_shirt)
+
+    assert_no_difference("physical_product.product_variants.count") do
+    patch admin_product_path(physical_product), params: {
+      product: { name: "T-Shirt" },
+      productable: {
+        product_variants_attributes: [
+          { name: "", price: 150000, weight: 250, stock: 10, is_active: true }
+        ]
+      }
+    }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+  end
+  end
+
+  test "should validate variant price and stock" do
+    physical_product = products(:premium_t_shirt)
+
+    assert_no_difference("physical_product.product_variants.count") do
+      patch admin_product_path(physical_product), params: {
+        product: { name: "T-Shirt" },
+        productable: {
+          product_variants_attributes: [
+            { name: "Invalid", price: -100, weight: -50, stock: -5, is_active: true }
+          ]
+        }
+      }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    end
+  end
+
+  test "should not allow removing all active variants" do
+    physical_product = products(:premium_t_shirt)
+    variant1 = product_variants(:t_shirt_red_small)
+    variant2 = product_variants(:t_shirt_blue_medium)
+
+    patch admin_product_path(physical_product), params: {
+      product: { name: "T-Shirt" },
+      productable: {
+        product_variants_attributes: [
+          { id: variant1.id, name: "Red - Small", price: 150000, weight: 250, stock: 50, is_active: false },
+          { id: variant2.id, name: "Blue - Medium", price: 150000, weight: 250, stock: 30, is_active: false }
+        ]
+      }
+    }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_equal false, variant1.reload.is_active
+    assert_equal false, variant2.reload.is_active
   end
 
   test "should filter products by type" do
