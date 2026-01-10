@@ -4,7 +4,8 @@ class Product < ApplicationRecord
   has_one_attached :featured_image
   has_and_belongs_to_many :categories
 
-  has_many :product_variants, dependent: :destroy
+  has_many :product_variants, dependent: :destroy, inverse_of: :product
+  accepts_nested_attributes_for :product_variants, allow_destroy: true, reject_if: :all_blank
   has_many :order_line_items, as: :orderable
   has_many :completed_orders, -> { paid }, through: :order_line_items, source: :order
 

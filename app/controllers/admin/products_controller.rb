@@ -18,13 +18,12 @@ class Admin::ProductsController < AdminController
   end
 
   def create
-    @product = Product.create_with_productable(product_params, productable_params.except(:product_variants_attributes))
-
-    if productable_params[:product_variants_attributes]
-      productable_params[:product_variants_attributes].each do |attrs|
-        @product.product_variants.create(attrs) unless attrs[:_destroy]
-      end
+    product_params_with_variants = product_params
+    if productable_params&.dig(:product_variants_attributes)
+      product_params_with_variants = product_params.merge(product_variants_attributes: productable_params[:product_variants_attributes])
     end
+
+    @product = Product.create_with_productable(product_params_with_variants, productable_params&.except(:product_variants_attributes) || {})
 
     redirect_to admin_products_path
   end
@@ -36,23 +35,15 @@ class Admin::ProductsController < AdminController
   end
 
   def update
-    @product.update(product_params)
+    product_params_with_variants = product_params
+    if productable_params&.dig(:product_variants_attributes)
+      product_params_with_variants = product_params.merge(product_variants_attributes: productable_params[:product_variants_attributes])
+    end
+
+    @product.update(product_params_with_variants)
 
     if productable_params
       @product.productable.update(productable_params.except(:product_variants_attributes))
-
-      if productable_params[:product_variants_attributes]
-        productable_params[:product_variants_attributes].each do |attrs|
-          if attrs[:_destroy] == "1" && attrs[:id]
-            @product.product_variants.find(attrs[:id]).destroy
-          elsif attrs[:id]
-            variant = @product.product_variants.find(attrs[:id])
-            variant.update(attrs.except(:_destroy))
-          elsif !attrs[:id]
-            @product.product_variants.create(attrs)
-          end
-        end
-      end
     end
 
     redirect_to edit_admin_product_path(@product), notice: "Update berhasil!"
@@ -70,6 +61,7 @@ class Admin::ProductsController < AdminController
         :name, :slug, :short_description, :description,
         :price, :sale_price, :sale_price_starts_at, :sale_price_ends_at, :minimum_price,
         :productable_type, :featured_image, category_ids: [],
+        product_variants_attributes: [ :id, :name, :price, :weight, :stock, :is_active, :_destroy ]
       )
     end
 
