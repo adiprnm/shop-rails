@@ -21,7 +21,9 @@ class ProductsController < ApplicationController
               @product.actual_price
     end
 
-    Current.cart.add_item(@product, price, product_variant)
+    quantity = params[:quantity].to_i.positive? ? params[:quantity].to_i : 1
+
+    Current.cart.add_item(@product, price, product_variant, quantity)
 
     flash[:action] = "add_product_to_cart"
     redirect_to product_path(@product.slug), notice: "Produk berhasil ditambahkan ke keranjang!"

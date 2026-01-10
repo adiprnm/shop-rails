@@ -31,7 +31,7 @@
             method: :post,
             data: {
               controller: "busy-handler form-control",
-              form_control_required_fields_value: ["variant"]
+              form_control_required_fields_value: ["product_variant_id", "quantity"]
             } do |f| %>
             <div class="form-group">
               <%= f.label :product_variant_id, "Pilih Variants" %>
@@ -44,10 +44,19 @@
                 ),
                 { include_blank: "Pilih variant" },
                 {
-                  data: { action: "form-control#perform" }
+                  data: { action: "change->form-control#perform" }
                 }
               %>
               <%= tag.small flash[:alert], class: "text-red" if flash[:alert] %>
+            </div>
+            <div class="form-group">
+              <%= f.label :quantity, "Jumlah" %>
+              <%= f.number_field :quantity,
+                value: 1,
+                min: 1,
+                max: 99,
+                data: { action: "input->form-control#perform" }
+              %>
             </div>
             <button type="submit" data-action="busy-handler#handle" disabled data-form-control-target="submitButton" >+ Keranjangin</button>
           <% end %>

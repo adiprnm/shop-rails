@@ -21,6 +21,7 @@
       <thead>
         <tr>
           <td>Produk</td>
+          <td>Qty</td>
           <td>Harga</td>
           <td>Aksi</td>
         </tr>
@@ -28,7 +29,13 @@
       <tbody>
         <% Current.cart.line_items.each do |line_item| %>
           <tr>
-            <td><%= link_to line_item.cartable.name, product_path(line_item.cartable.slug) %></td>
+            <td>
+              <%= link_to line_item.cartable.name, product_path(line_item.cartable.slug) %>
+              <% if line_item.product_variant %>
+                <br><small><%= line_item.product_variant.name %></small>
+              <% end %>
+            </td>
+            <td><%= line_item.quantity %></td>
             <td><%= idr line_item.price %></td>
             <td>
               <%= link_to "Hapus", cart_line_item_path(line_item), data: { turbo_method: :delete, turbo_confirm: "Hapus #{line_item.cartable.name} dari keranjang?" }, class: "text-red" %>
@@ -36,7 +43,7 @@
           </tr>
         <% end %>
          <tr>
-           <td><strong>Subtotal</strong></td>
+           <td colspan="2"><strong>Subtotal</strong></td>
            <td colspan="2"><strong id="subtotal-display"><%= idr Current.cart.total_price %></strong></td>
          </tr>
        </tbody>
