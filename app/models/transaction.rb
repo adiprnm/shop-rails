@@ -6,10 +6,16 @@ class Transaction
   end
 
   def create(params)
+    shipping_cost = params[:shipping_cost].to_i
+    total_price = cart.total_price + shipping_cost
+
     @order = cart.orders.pending.create(
-      total_price: cart.total_price,
+      total_price: total_price,
+      shipping_cost: shipping_cost,
+      shipping_provider: params[:selected_courier],
+      shipping_method: params[:selected_service],
       has_physical_products: cart.contains_physical_product?,
-      **params,
+      **params.except(:shipping_cost, :selected_courier, :selected_service),
     )
     return @order if @order.invalid?
 

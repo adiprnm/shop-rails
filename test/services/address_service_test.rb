@@ -86,4 +86,88 @@ class AddressServiceTest < ActiveSupport::TestCase
     assert_includes result, subdistrict1
     assert_includes result, subdistrict2
   end
+
+  test "ensure_provinces returns all provinces when they exist" do
+    Province.create(rajaongkir_id: "1", name: "Province 1")
+    Province.create(rajaongkir_id: "2", name: "Province 2")
+
+    result = AddressService.ensure_provinces
+
+    assert_equal 2, result.length
+  end
+
+  test "ensure_provinces returns existing provinces" do
+    province = Province.create(rajaongkir_id: "1", name: "Province 1")
+
+    result = AddressService.ensure_provinces
+
+    assert_equal 1, result.length
+    assert_includes result, province
+  end
+
+  test "ensure_cities returns cities for given province" do
+    province = Province.create(rajaongkir_id: "1", name: "Test Province")
+    City.create(rajaongkir_id: "1", name: "City 1", province: province)
+    City.create(rajaongkir_id: "2", name: "City 2", province: province)
+
+    result = AddressService.ensure_cities(province.id)
+
+    assert_equal 2, result.length
+  end
+
+  test "ensure_cities returns existing cities for given province" do
+    province = Province.create(rajaongkir_id: "1", name: "Test Province")
+    city = City.create(rajaongkir_id: "1", name: "City 1", province: province)
+
+    result = AddressService.ensure_cities(province.id)
+
+    assert_equal 1, result.length
+    assert_includes result, city
+  end
+
+  test "ensure_districts returns districts for given city" do
+    province = Province.create(rajaongkir_id: "1", name: "Test Province")
+    city = City.create(rajaongkir_id: "1", name: "Test City", province: province)
+    District.create(rajaongkir_id: "1", name: "District 1", city: city)
+    District.create(rajaongkir_id: "2", name: "District 2", city: city)
+
+    result = AddressService.ensure_districts(city.id)
+
+    assert_equal 2, result.length
+  end
+
+  test "ensure_districts returns existing districts for given city" do
+    province = Province.create(rajaongkir_id: "1", name: "Test Province")
+    city = City.create(rajaongkir_id: "1", name: "Test City", province: province)
+    district = District.create(rajaongkir_id: "1", name: "District 1", city: city)
+
+    result = AddressService.ensure_districts(city.id)
+
+    assert_equal 1, result.length
+    assert_includes result, district
+  end
+
+  test "ensure_subdistricts returns subdistricts for given district" do
+    province = Province.create(rajaongkir_id: "1", name: "Test Province")
+    city = City.create(rajaongkir_id: "1", name: "Test City", province: province)
+    district = District.create(rajaongkir_id: "1", name: "Test District", city: city)
+    Subdistrict.create(rajaongkir_id: "1", name: "Subdistrict 1", district: district)
+    Subdistrict.create(rajaongkir_id: "2", name: "Subdistrict 2", district: district)
+
+    result = AddressService.ensure_subdistricts(district.id)
+
+    assert_equal 2, result.length
+  end
+
+  test "ensure_subdistricts returns existing subdistricts for given district" do
+    province = Province.create(rajaongkir_id: "1", name: "Test Province")
+    city = City.create(rajaongkir_id: "1", name: "Test City", province: province)
+    district = District.create(rajaongkir_id: "1", name: "Test District", city: city)
+    subdistrict = Subdistrict.create(rajaongkir_id: "1", name: "Subdistrict 1", district: district)
+
+    result = AddressService.ensure_subdistricts(district.id)
+
+    assert_equal 1, result.length
+    assert_includes result, subdistrict
+  end
 end

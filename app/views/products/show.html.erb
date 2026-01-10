@@ -26,7 +26,32 @@
       <p><%= @product.short_description %></p>
 
       <% unless @product.coming_soon? %>
-        <% if @product.minimum_price.present? %>
+        <% if @product.physical_product? %>
+          <%= form_with url: add_to_cart_product_path(@product.slug),
+            method: :post,
+            data: {
+              controller: "busy-handler form-control",
+              form_control_required_fields_value: ["variant"]
+            } do |f| %>
+            <div class="form-group">
+              <%= f.label :product_variant_id, "Pilih Variants" %>
+              <%= f.select :product_variant_id,
+                options_for_select(
+                  @product.productable.product_variants.active.in_stock.map { |v|
+                    ["#{v.name} - #{idr v.price} (Stok: #{v.stock})", v.id]
+                  },
+                  selected: params[:product_variant_id]
+                ),
+                { include_blank: "Pilih variant" },
+                {
+                  data: { action: "form-control#perform" }
+                }
+              %>
+              <%= tag.small flash[:alert], class: "text-red" if flash[:alert] %>
+            </div>
+            <button type="submit" data-action="busy-handler#handle" disabled data-form-control-target="submitButton" >+ Keranjangin</button>
+          <% end %>
+        <% elsif @product.minimum_price.present? %>
           <%= form_with url: add_to_cart_product_path(@product.slug),
             method: :post,
             data: {

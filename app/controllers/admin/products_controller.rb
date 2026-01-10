@@ -3,6 +3,14 @@ class Admin::ProductsController < AdminController
 
   def index
     @products = Product.order(id: :desc)
+
+    if params[:product_type].present?
+      @products = @products.where(productable_type: params[:product_type])
+    end
+
+    if params[:sort_by] == "stock"
+      @products = @products.includes(:productable).sort_by { |p| p.physical? ? p.productable.product_variants.sum(:stock) : 0 }
+    end
   end
 
   def new
@@ -42,21 +50,31 @@ class Admin::ProductsController < AdminController
       )
     end
 
-    def productable_params
-      productable_type = params[:product][:productable_type] || @product.productable_type
+  def productable_params
+    productable_type = params[:product][:productable_type] || @product.productable_type
 
-      if productable_type == "DigitalProduct"
-        if params[:productable]
-          params.require(:productable).permit(
-            :resource_type, :resource_url, :resource, :sample
-          )
-        elsif params[:product][:productable]
-          params.require(:product).require(:productable).permit(
-            :resource_type, :resource_url, :resource, :sample
-          )
-        end
+    if productable_type == "DigitalProduct"
+      if params[:productable]
+        params.require(:productable).permit(
+          :resource_type, :resource_url, :resource, :sample
+        )
+      elsif params[:product][:productable]
+        params.require(:product).require(:productable).permit(
+          :resource_type, :resource_url, :resource, :sample
+        )
+      end
+    elsif productable_type == "PhysicalProduct"
+      if params[:productable]
+        params.require(:productable).permit(
+          :weight, :requires_shipping, product_variants_attributes: [ :id, :name, :price, :weight, :stock, :is_active, :_destroy ]
+        )
+      elsif params[:product][:productable]
+        params.require(:product).require(:productable).permit(
+          :weight, :requires_shipping, product_variants_attributes: [ :id, :name, :price, :weight, :stock, :is_active, :_destroy ]
+        )
       end
     end
+  end
 
     def set_product
       @product = Product.find(params[:id])

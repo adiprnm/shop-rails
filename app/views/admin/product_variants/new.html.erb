@@ -1,0 +1,34 @@
+<%= content_for(:title) { "New Variant for #{@product.name} | #{ Current.settings["site_name"] } admin" } %>
+
+<div>
+  <h1>New Variant for <%= @product.name %></h1>
+
+  <%= form_with model: [:admin, @product, @variant], local: true do |f| %>
+    <div>
+      <div class="form-group">
+        <%= f.label :name %>
+        <%= f.text_field :name, required: true %>
+      </div>
+      <div class="form-group">
+        <%= f.label :price %>
+        <%= f.number_field :price, step: 0.01, min: 0, required: true %>
+      </div>
+      <div class="form-group">
+        <%= f.label :weight, "Weight Override (grams)" %>
+        <%= f.number_field :weight, step: 1, min: 0 %>
+        <small>Leave blank to use product default weight</small>
+      </div>
+      <div class="form-group">
+        <%= f.label :stock %>
+        <%= f.number_field :stock, step: 1, min: 0, required: true %>
+      </div>
+      <div class="form-group check-boxes">
+        <%= f.check_box :is_active %>
+        <%= f.label :is_active %>
+      </div>
+
+      <%= f.submit "Create Variant", class: "btn" %>
+      <%= link_to "Cancel", admin_product_variants_path(@product), class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+</div>

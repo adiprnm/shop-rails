@@ -1,6 +1,99 @@
 class AddressService
   CACHE_TTL = 7.days
 
+  def self.ensure_provinces
+    return Province.all if Province.exists?
+
+    client = RajaOngkirClient.new
+    response = client.get_provinces
+
+    return Province.all unless response[:success] && response[:data]
+
+    provinces_data = response[:data]["rajaongkir"]["results"] || []
+
+    ActiveRecord::Base.transaction do
+      provinces_data.each do |province_data|
+        Province.find_or_create_by(rajaongkir_id: province_data["province_id"]) do |province|
+          province.name = province_data["province"]
+        end
+      end
+    end
+
+    Province.all
+  end
+
+  def self.ensure_cities(province_id)
+    province = Province.find(province_id)
+    existing_cities = province.cities
+
+    return existing_cities if existing_cities.exists?
+
+    client = RajaOngkirClient.new
+    response = client.get_cities(province.rajaongkir_id)
+
+    return existing_cities unless response[:success] && response[:data]
+
+    cities_data = response[:data]["rajaongkir"]["results"] || []
+
+    ActiveRecord::Base.transaction do
+      cities_data.each do |city_data|
+        province.cities.find_or_create_by(rajaongkir_id: city_data["city_id"]) do |city|
+          city.name = city_data["city_name"]
+        end
+      end
+    end
+
+    province.cities.reload
+  end
+
+  def self.ensure_districts(city_id)
+    city = City.find(city_id)
+    existing_districts = city.districts
+
+    return existing_districts if existing_districts.exists?
+
+    client = RajaOngkirClient.new
+    response = client.get_districts(city.rajaongkir_id)
+
+    return existing_districts unless response[:success] && response[:data]
+
+    districts_data = response[:data]["rajaongkir"]["results"] || []
+
+    ActiveRecord::Base.transaction do
+      districts_data.each do |district_data|
+        city.districts.find_or_create_by(rajaongkir_id: district_data["subdistrict_id"]) do |district|
+          district.name = district_data["subdistrict_name"]
+        end
+      end
+    end
+
+    city.districts.reload
+  end
+
+  def self.ensure_subdistricts(district_id)
+    district = District.find(district_id)
+    existing_subdistricts = district.subdistricts
+
+    return existing_subdistricts if existing_subdistricts.exists?
+
+    client = RajaOngkirClient.new
+    response = client.get_subdistricts(district.rajaongkir_id)
+
+    return existing_subdistricts unless response[:success] && response[:data]
+
+    subdistricts_data = response[:data]["rajaongkir"]["results"] || []
+
+    ActiveRecord::Base.transaction do
+      subdistricts_data.each do |subdistrict_data|
+        district.subdistricts.find_or_create_by(rajaongkir_id: subdistrict_data["subdistrict_id"]) do |subdistrict|
+          subdistrict.name = subdistrict_data["subdistrict_name"]
+        end
+      end
+    end
+
+    district.subdistricts.reload
+  end
+
   def self.find_province(id)
     Province.find_by(id: id) || yield&.tap { |province| province&.save }
   end
