@@ -174,7 +174,7 @@
         <%= f.select :default_origin_district_id,
           options_for_select(
             if Current.settings["default_origin_city_id"].present?
-              City.find_by(id: Current.settings["default_origin_city_id"])?.districts&.map { |d| [d.name, d.id] } || []
+              City.find_by(id: Current.settings["default_origin_city_id"])&.districts&.map { |d| [d.name, d.id] } || []
             else
               []
             end,
@@ -190,7 +190,7 @@
         <%= f.select :default_origin_subdistrict_id,
           options_for_select(
             if Current.settings["default_origin_district_id"].present?
-              District.find_by(id: Current.settings["default_origin_district_id"])?.subdistricts&.map { |s| [s.name, s.id] } || []
+              District.find_by(id: Current.settings["default_origin_district_id"])&.subdistricts&.map { |s| [s.name, s.id] } || []
             else
               []
             end,

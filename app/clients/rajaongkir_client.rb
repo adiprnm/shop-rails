@@ -31,19 +31,19 @@ class RajaOngkirClient < ApplicationClient
 
   def get_cities(province_id)
     retry_with_backoff do
-      get("/city", province: province_id)
+      get("/city", { province: province_id }, default_headers)
     end
   end
 
   def get_districts(city_id)
     retry_with_backoff do
-      get("/subdistrict", city: city_id)
+      get("/subdistrict", { city: city_id }, default_headers)
     end
   end
 
   def get_subdistricts(district_id)
     retry_with_backoff do
-      get("/subdistrict", district: district_id)
+      get("/subdistrict", { district: district_id }, default_headers)
     end
   end
 
