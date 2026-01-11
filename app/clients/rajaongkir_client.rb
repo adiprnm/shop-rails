@@ -12,60 +12,54 @@ class RajaOngkirClient < ApplicationClient
   end
 
   def base_url
-    Setting.rajaongkir_api_host
+    Setting.rajaongkir_api_host.value
   end
 
   def default_headers
-    {
-      "Content-Type" => "application/json",
-      "Accept" => "application/json",
-      "Authorization" => "Bearer #{Setting.rajaongkir_api_key}"
-    }
+    { "Key" => Setting.rajaongkir_api_key.value }
   end
 
   def get_provinces
     retry_with_backoff do
-      get("/province")
+      get("/api/v1/destination/province", {}, default_headers)
     end
   end
 
   def get_cities(province_id)
     retry_with_backoff do
-      get("/city", { province: province_id }, default_headers)
+      get("/api/v1/destination/city/#{province_id}", {}, default_headers)
     end
   end
 
   def get_districts(city_id)
     retry_with_backoff do
-      get("/subdistrict", { city: city_id }, default_headers)
+      get("/api/v1/destination/district/#{city_id}", {}, default_headers)
     end
   end
 
   def get_subdistricts(district_id)
     retry_with_backoff do
-      get("/subdistrict", { district: district_id }, default_headers)
+      get("/api/v1/destination/sub-district/#{district_id}", {}, default_headers)
     end
   end
 
   def calculate_cost(origin, destination, weight, courier)
     retry_with_backoff do
-      origin_province = origin.is_a?(Province) ? origin : Province.find(origin)
-      origin_city = destination.is_a?(City) ? destination : City.find(destination)
-      origin_type = "province"
-      origin_id = origin_province.id
-      destination_type = "city"
-      destination_id = origin_city.id
-
-      post("/cost", {
-        origin: origin_type,
-        originType: origin_type,
-        origin_id: origin_id,
-        destination_type: destination_type,
-        destinationType: destination_type,
-        destination_id: destination_id,
+      form_data = URI.encode_www_form({
+        origin: origin,
+        destination: destination,
         weight: weight,
-        courier: courier
+        courier: courier,
+        price: "lowest"
       })
+
+      request = Net::HTTP::Post.new("#{base_url}/api/v1/calculate/district/domestic-cost")
+      request.body = form_data
+      request["Key"] = Setting.rajaongkir_api_key.value
+      request["Content-Type"] = "application/x-www-form-urlencoded"
+      request["Accept"] = "application/json"
+
+      perform_form_urlencoded_request(request)
     end
   end
 
@@ -119,5 +113,48 @@ class RajaOngkirClient < ApplicationClient
   def reset_circuit_breaker
     @failure_count = 0
     @circuit_open_until = nil
+  end
+
+  def perform_form_urlencoded_request(request)
+    response = http.request(request)
+    result = {
+      status: response.code.to_i,
+      message: response.message,
+      headers: response.to_hash,
+      data: nil,
+      error: nil
+    }
+    case response.code.to_i
+    when 200..299
+      begin
+        result[:data] = JSON.parse(response.body).with_indifferent_access
+      rescue JSON::ParserError => e
+        result[:error] = "Failed to parse JSON response: #{e.message}"
+      end
+    when 401
+      result[:error] = "Unauthorized - Check your credentials"
+    when 403
+      result[:error] = "Forbidden - You don't have permission to access this resource"
+    when 404
+      result[:error] = "Not Found - The requested resource doesn't exist"
+    when 429
+      result[:error] = "Too Many Requests - Rate limit exceeded"
+    when 500..599
+      result[:error] = "Server Error - Status #{response.code}: #{response.message}"
+    else
+      result[:error] = "Unexpected Status #{response.code}: #{response.message}"
+    end
+
+    result[:success] = result[:error].nil?
+    result
+  rescue StandardError => e
+    {
+      success: false,
+      status: nil,
+      message: "Request Failed",
+      headers: {},
+      data: nil,
+      error: "#{e.class}: #{e.message}"
+    }
   end
 end
