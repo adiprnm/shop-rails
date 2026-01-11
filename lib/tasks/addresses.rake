@@ -10,14 +10,14 @@ namespace :addresses do
       return
     end
 
-    provinces_data = response[:data]["rajaongkir"]["results"] || []
+    provinces_data = response[:data]["data"] || []
     puts "Found #{provinces_data.length} provinces"
 
     count = 0
     ActiveRecord::Base.transaction do
       provinces_data.each do |province_data|
-        province = Province.find_or_create_by(rajaongkir_id: province_data["province_id"]) do |p|
-          p.name = province_data["province"]
+        province = Province.find_or_create_by(rajaongkir_id: province_data["id"]) do |p|
+          p.name = province_data["name"]
         end
         count += 1 if province
       end
@@ -55,14 +55,14 @@ namespace :addresses do
         next
       end
 
-      cities_data = response[:data]["rajaongkir"]["results"] || []
+      cities_data = response[:data]["data"] || []
       puts "  Found #{cities_data.length} cities"
 
       count = 0
       ActiveRecord::Base.transaction do
         cities_data.each do |city_data|
-          city = province.cities.find_or_create_by(rajaongkir_id: city_data["city_id"]) do |c|
-            c.name = city_data["city_name"]
+          city = province.cities.find_or_create_by(rajaongkir_id: city_data["id"]) do |c|
+            c.name = city_data["name"]
           end
           count += 1 if city
         end
@@ -91,14 +91,14 @@ namespace :addresses do
         next
       end
 
-      districts_data = response[:data]["rajaongkir"]["results"] || []
+      districts_data = response[:data]["data"] || []
       puts "  Found #{districts_data.length} districts"
 
       count = 0
       ActiveRecord::Base.transaction do
         districts_data.each do |district_data|
-          district = city.districts.find_or_create_by(rajaongkir_id: district_data["subdistrict_id"]) do |d|
-            d.name = district_data["subdistrict_name"]
+          district = city.districts.find_or_create_by(rajaongkir_id: district_data["id"]) do |d|
+            d.name = district_data["name"]
           end
           count += 1 if district
         end
@@ -109,6 +109,42 @@ namespace :addresses do
     end
 
     puts "Successfully fetched and stored #{total_districts} districts"
+  end
+
+  desc "Fetch and store subdistricts for all districts"
+  task fetch_subdistricts: :environment do
+    puts "Fetching subdistricts for all districts..."
+    districts = District.all
+    total_subdistricts = 0
+
+    districts.each do |district|
+      puts "Fetching subdistricts for #{district.name}..."
+      client = RajaOngkirClient.new
+      response = client.get_subdistricts(district.rajaongkir_id)
+
+      unless response[:success]
+        puts "  Error fetching subdistricts: #{response[:error]}"
+        next
+      end
+
+      subdistricts_data = response[:data]["data"] || []
+      puts "  Found #{subdistricts_data.length} subdistricts"
+
+      count = 0
+      ActiveRecord::Base.transaction do
+        subdistricts_data.each do |subdistrict_data|
+          subdistrict = district.subdistricts.find_or_create_by(rajaongkir_id: subdistrict_data["id"]) do |s|
+            s.name = subdistrict_data["name"]
+          end
+          count += 1 if subdistrict
+        end
+      end
+
+      total_subdistricts += count
+      puts "  Stored #{count} subdistricts"
+    end
+
+    puts "Successfully fetched and stored #{total_subdistricts} subdistricts"
   end
 
   desc "Fetch all address data (provinces, cities, districts, subdistricts)"
@@ -125,6 +161,10 @@ namespace :addresses do
 
     puts "=" * 60
     Rake::Task["addresses:fetch_districts"].invoke
+    puts "=" * 60
+
+    puts "=" * 60
+    Rake::Task["addresses:fetch_subdistricts"].invoke
     puts "=" * 60
 
     puts "All address data fetched successfully!"
