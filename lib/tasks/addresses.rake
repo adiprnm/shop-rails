@@ -63,7 +63,9 @@ namespace :addresses do
         cities_data.each do |city_data|
           city = province.cities.find_or_create_by(rajaongkir_id: city_data["id"]) do |c|
             c.name = city_data["name"]
+            c.zip_code = city_data["zip_code"] if city_data["zip_code"].present?
           end
+          city.update(zip_code: city_data["zip_code"]) if city && city_data["zip_code"].present?
           count += 1 if city
         end
       end
@@ -99,7 +101,9 @@ namespace :addresses do
         districts_data.each do |district_data|
           district = city.districts.find_or_create_by(rajaongkir_id: district_data["id"]) do |d|
             d.name = district_data["name"]
+            d.zip_code = district_data["zip_code"] if district_data["zip_code"].present?
           end
+          district.update(zip_code: district_data["zip_code"]) if district && district_data["zip_code"].present?
           count += 1 if district
         end
       end
@@ -135,7 +139,9 @@ namespace :addresses do
         subdistricts_data.each do |subdistrict_data|
           subdistrict = district.subdistricts.find_or_create_by(rajaongkir_id: subdistrict_data["id"]) do |s|
             s.name = subdistrict_data["name"]
+            s.zip_code = subdistrict_data["zip_code"] if subdistrict_data["zip_code"].present?
           end
+          subdistrict.update(zip_code: subdistrict_data["zip_code"]) if subdistrict && subdistrict_data["zip_code"].present?
           count += 1 if subdistrict
         end
       end
