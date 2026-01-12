@@ -52,7 +52,12 @@
   <tbody>
     <% @products.each.with_index(1) do |item, index| %>
       <tr>
-        <td><%= item.orderable_name %></td>
+        <td>
+          <%= item.orderable_name %>
+          <% if item.product_variant.present? %>
+            <span style="color: #666; font-size: 0.9em;">- <%= item.product_variant.name %></span>
+          <% end %>
+        </td>
         <td><%= idr item.orderable_price %></td>
       </tr>
     <% end %>
