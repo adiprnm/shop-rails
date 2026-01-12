@@ -42,6 +42,34 @@ class Transaction::Payment::Midtrans
 
   def order_payment_url_params
     name_tokens = payable.customer_name.split(" ")
+    item_details = payable.line_items.map do |line_item|
+      {
+        id: line_item.id,
+        name: line_item.orderable_name,
+        quantity: 1,
+        price: line_item.orderable_price,
+        brand: "adipurnm",
+        category: line_item.orderable.categories.pluck(:name).join(", ").presence || "Lainnya",
+        merchant_name: "adipurnm",
+        url: ENV["APP_HOST"].to_s + Rails.application.routes.url_helpers.product_path(line_item.orderable.slug)
+      }
+    end
+
+    if payable.shipping_cost&.positive?
+      shipping_name = "Ongkos Kirim"
+      shipping_name += " (#{payable.shipping_provider} - #{payable.shipping_method})" if payable.shipping_provider.present? && payable.shipping_method.present?
+
+      item_details << {
+        id: "shipping_#{payable.id}",
+        name: shipping_name,
+        quantity: 1,
+        price: payable.shipping_cost,
+        brand: "adipurnm",
+        category: "Pengiriman",
+        merchant_name: "adipurnm"
+      }
+    end
+
     {
       transaction_details: {
         order_id: payable.order_id,
@@ -63,18 +91,7 @@ class Transaction::Payment::Midtrans
           email: payable.customer_email_address
         }
       },
-      item_details: payable.line_items.map do |line_item|
-        {
-          id: line_item.id,
-          name: line_item.orderable_name,
-          quantity: 1,
-          price: line_item.orderable_price,
-          brand: "adipurnm",
-          category: line_item.orderable.categories.pluck(:name).join(", ").presence || "Lainnya",
-          merchant_name: "adipurnm",
-          url: ENV["APP_HOST"].to_s + Rails.application.routes.url_helpers.product_path(line_item.orderable.slug)
-        }
-      end
+      item_details: item_details
     }
   end
 
