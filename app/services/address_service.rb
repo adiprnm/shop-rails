@@ -9,12 +9,12 @@ class AddressService
 
     return Province.all unless response[:success] && response[:data]
 
-    provinces_data = response[:data]["rajaongkir"]["results"] || []
+    provinces_data = response[:data]["data"] || []
 
     ActiveRecord::Base.transaction do
       provinces_data.each do |province_data|
-        Province.find_or_create_by(rajaongkir_id: province_data["province_id"]) do |province|
-          province.name = province_data["province"]
+        Province.find_or_create_by(rajaongkir_id: province_data["id"]) do |province|
+          province.name = province_data["name"]
         end
       end
     end
@@ -33,13 +33,15 @@ class AddressService
 
     return existing_cities unless response[:success] && response[:data]
 
-    cities_data = response[:data]["rajaongkir"]["results"] || []
+    cities_data = response[:data]["data"] || []
 
     ActiveRecord::Base.transaction do
       cities_data.each do |city_data|
-        province.cities.find_or_create_by(rajaongkir_id: city_data["city_id"]) do |city|
-          city.name = city_data["city_name"]
+        city = province.cities.find_or_create_by(rajaongkir_id: city_data["id"]) do |c|
+          c.name = city_data["name"]
+          c.zip_code = city_data["zip_code"] if city_data["zip_code"].present?
         end
+        city.update(zip_code: city_data["zip_code"]) if city && city_data["zip_code"].present?
       end
     end
 
@@ -57,13 +59,15 @@ class AddressService
 
     return existing_districts unless response[:success] && response[:data]
 
-    districts_data = response[:data]["rajaongkir"]["results"] || []
+    districts_data = response[:data]["data"] || []
 
     ActiveRecord::Base.transaction do
       districts_data.each do |district_data|
-        city.districts.find_or_create_by(rajaongkir_id: district_data["subdistrict_id"]) do |district|
-          district.name = district_data["subdistrict_name"]
+        district = city.districts.find_or_create_by(rajaongkir_id: district_data["id"]) do |d|
+          d.name = district_data["name"]
+          d.zip_code = district_data["zip_code"] if district_data["zip_code"].present?
         end
+        district.update(zip_code: district_data["zip_code"]) if district && district_data["zip_code"].present?
       end
     end
 
@@ -81,13 +85,15 @@ class AddressService
 
     return existing_subdistricts unless response[:success] && response[:data]
 
-    subdistricts_data = response[:data]["rajaongkir"]["results"] || []
+    subdistricts_data = response[:data]["data"] || []
 
     ActiveRecord::Base.transaction do
       subdistricts_data.each do |subdistrict_data|
-        district.subdistricts.find_or_create_by(rajaongkir_id: subdistrict_data["subdistrict_id"]) do |subdistrict|
-          subdistrict.name = subdistrict_data["subdistrict_name"]
+        subdistrict = district.subdistricts.find_or_create_by(rajaongkir_id: subdistrict_data["id"]) do |s|
+          s.name = subdistrict_data["name"]
+          s.zip_code = subdistrict_data["zip_code"] if subdistrict_data["zip_code"].present?
         end
+        subdistrict.update(zip_code: subdistrict_data["zip_code"]) if subdistrict && subdistrict_data["zip_code"].present?
       end
     end
 
