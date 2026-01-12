@@ -18,10 +18,15 @@ class Cart < ApplicationRecord
       end
     end
 
-    line_item = line_items.find_or_initialize_by(cartable: cartable)
-    line_item.product_variant = product_variant
+    line_item = line_items.find_or_initialize_by(cartable: cartable, product_variant: product_variant)
     line_item.price = price
-    line_item.quantity = quantity
+    if cartable.physical_product?
+      if line_item.new_record?
+        line_item.quantity = quantity
+      else
+        line_item.quantity += quantity
+      end
+    end
     line_item.save!
     line_item
   end

@@ -58,11 +58,58 @@ class CartTest < ActiveSupport::TestCase
   end
 
   test "should add physical product with variant to cart" do
+    @cart.line_items.delete_all
     product = products(:premium_t_shirt)
     variant = product_variants(:t_shirt_red_small)
     line_item = @cart.add_item(product, 150000, variant)
     assert @cart.line_items.include?(line_item)
     assert_equal variant, line_item.product_variant
+    assert_equal 1, line_item.quantity
+  end
+
+  test "should add physical product with variant and custom quantity" do
+    @cart.line_items.delete_all
+    product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+    line_item = @cart.add_item(product, 150000, variant, 5)
+    assert @cart.line_items.include?(line_item)
+    assert_equal 5, line_item.quantity
+  end
+
+  test "should accumulate quantity for physical product with same variant" do
+    @cart.line_items.delete_all
+    product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+
+    first_item = @cart.add_item(product, 150000, variant, 2)
+    assert_equal 2, first_item.quantity
+
+    @cart.reload
+
+    second_item = @cart.add_item(product, 150000, variant, 3)
+    assert_equal 5, second_item.quantity
+
+    @cart.reload
+
+    assert_equal 1, @cart.line_items.count
+    assert_equal 5, @cart.line_items.first.quantity
+  end
+
+  test "should default to quantity 1 when not specified" do
+    @cart.line_items.delete_all
+    product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+    line_item = @cart.add_item(product, 150000, variant)
+
+    assert_equal 1, line_item.quantity
+  end
+
+  test "should not affect digital product with quantity parameter" do
+    product = products(:ruby_guide)
+    line_item = @cart.add_item(product, 10000, nil, 5)
+
+    assert @cart.line_items.include?(line_item)
+    assert_equal 1, line_item.quantity
   end
 
   test "should raise error when adding physical product without variant" do

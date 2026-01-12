@@ -205,4 +205,58 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='product_variant_id'] option", text: /Black/
     assert_select "select[name='product_variant_id'] option", text: /White/, count: 0
   end
+
+  test "should add physical product with quantity to cart" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+
+    assert_difference("CartLineItem.count") do
+      post add_to_cart_product_path(physical_product.slug), params: { product_variant_id: variant.id, quantity: 3 }
+    end
+
+    assert_redirected_to product_path(physical_product.slug)
+    assert_equal 3, CartLineItem.last.quantity
+    assert_equal "Produk berhasil ditambahkan ke keranjang!", flash[:notice]
+  end
+
+  test "should add physical product with default quantity of 1" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+
+    assert_difference("CartLineItem.count") do
+      post add_to_cart_product_path(physical_product.slug), params: { product_variant_id: variant.id }
+    end
+
+    assert_equal 1, CartLineItem.last.quantity
+  end
+
+  test "should accumulate quantity when adding same physical product variant multiple times" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+
+    post add_to_cart_product_path(physical_product.slug), params: { product_variant_id: variant.id, quantity: 2 }
+    post add_to_cart_product_path(physical_product.slug), params: { product_variant_id: variant.id, quantity: 3 }
+
+    assert_no_difference("CartLineItem.count") do
+      assert_equal 5, CartLineItem.last.quantity
+    end
+  end
+
+  test "should default to 1 for invalid quantity" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+
+    post add_to_cart_product_path(physical_product.slug), params: { product_variant_id: variant.id, quantity: -5 }
+
+    assert_equal 1, CartLineItem.last.quantity
+  end
+
+  test "should default to 1 for zero quantity" do
+    physical_product = products(:premium_t_shirt)
+    variant = product_variants(:t_shirt_red_small)
+
+    post add_to_cart_product_path(physical_product.slug), params: { product_variant_id: variant.id, quantity: 0 }
+
+    assert_equal 1, CartLineItem.last.quantity
+  end
 end
