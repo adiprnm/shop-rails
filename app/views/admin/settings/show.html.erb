@@ -147,12 +147,6 @@
       <small class="text-gray">Pisahkan dengan koma. Contoh: jne,tiki,pos</small>
     </div>
 
-    <div class="form-group">
-      <%= f.label :excluded_shipping_services, "Layanan Pengiriman yang Dikecualikan" %>
-      <%= f.text_field :excluded_shipping_services, value: Current.settings["excluded_shipping_services"].presence || "" %>
-      <small class="text-gray">Pisahkan dengan koma. Contoh: jne-yes,tiki-ocs</small>
-    </div>
-
     <h3>Lokasi Asal Pengiriman (Default)</h3>
 
     <div class="form-group">
