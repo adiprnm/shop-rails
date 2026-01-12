@@ -286,3 +286,6 @@ a:has(> article.product-card) {
 .mx-auto {
   margin: 0 auto;
 }
+.settings h3 {
+  margin-top: 2rem;
+}
