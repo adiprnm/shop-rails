@@ -1,8 +1,8 @@
 <% if images.any? %>
   <div class="carousel" data-controller="carousel" data-carousel-autoplay-value="false">
-    <div class="carousel-container" data-carousel-target="container">
-      <% images.each do |image| %>
-        <div class="carousel-slide" data-carousel-target="slide">
+    <div class="carousel-container">
+      <% images.each_with_index do |image, index| %>
+        <div class="carousel-slide <%= index == 0 ? 'active' : '' %>" data-carousel-target="slide" <%= index > 0 ? 'hidden' : '' %>>
           <%= image_tag image, class: "product-image product-image--full-height" %>
         </div>
       <% end %>

@@ -51,14 +51,30 @@
 
 .carousel-container {
   position: relative;
+  overflow: hidden;
+}
+
+.carousel-slides {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
 }
 
 .carousel-slide {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.carousel-slide.active {
   display: block;
+  opacity: 1;
 }
 
 .carousel-slide[hidden] {
   display: none;
+  opacity: 0;
 }
 
 .carousel-nav {

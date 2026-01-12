@@ -394,4 +394,18 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
       }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
     end
   end
+
+  test "should delete product image" do
+    product = products(:ruby_guide)
+    image = fixture_file_upload("test/fixtures/files/test.jpg", "image/jpeg")
+    product.images.attach(image)
+    attachment_id = product.images.first.id
+
+    assert_difference("product.images.count", -1) do
+      delete delete_image_admin_product_path(product, image_id: attachment_id), headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    end
+
+    assert_redirected_to edit_admin_product_path(product)
+    assert_equal "Gambar berhasil dihapus!", flash[:notice]
+  end
 end

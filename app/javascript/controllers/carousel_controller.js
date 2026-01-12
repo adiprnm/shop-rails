@@ -36,8 +36,17 @@ export default class extends Controller {
 
   showSlide(index) {
     this.slideTargets.forEach((slide, i) => {
+      slide.classList.remove("active");
       slide.hidden = i !== index;
+      
+      if (i === index) {
+        setTimeout(() => {
+          slide.classList.add("active");
+        }, 10);
+      }
     });
+
+    this.updateIndicators(index);
 
     if (this.hasPrevTarget) {
       this.prevTarget.disabled = this.slideTargets.length <= 1;
@@ -46,6 +55,13 @@ export default class extends Controller {
     if (this.hasNextTarget) {
       this.nextTarget.disabled = this.slideTargets.length <= 1;
     }
+  }
+
+  updateIndicators(index) {
+    const indicators = this.element.querySelectorAll(".carousel-indicator");
+    indicators.forEach((indicator, i) => {
+      indicator.classList.toggle("active", i === index);
+    });
   }
 
   handleKeydown(event) {

@@ -12,9 +12,9 @@
       <% if product.images.attached? %>
         <div class="mt-2">
           <% product.images.each do |image| %>
-            <div class="mb-2">
+            <div class="mb-2 flex items-center gap-2">
               <%= image_tag image, class: "product-image product-image--small" %>
-              <%= link_to "Remove", delete_image_admin_product_path(product, image_id: image.id), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red text-sm" %>
+              <%= button_to "Remove", delete_image_admin_product_path(product, image_id: image.id), method: :delete, data: { turbo_confirm: "Are you sure?" }, form: { class: "inline" }, class: "text-red text-sm button-as-text" %>
             </div>
           <% end %>
         </div>
