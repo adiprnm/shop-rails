@@ -40,19 +40,13 @@ class Admin::SettingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update default shipping origin settings" do
-    province = provinces(:jawa_barat)
-    city = cities(:jakarta_barat)
     district = districts(:kebon_jeruk)
 
     patch admin_settings_path, params: {
-      default_origin_province_id: province.id,
-      default_origin_city_id: city.id,
       default_origin_district_id: district.id
     }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
 
     assert_redirected_to admin_settings_path
-    assert_equal province.id.to_s, Setting.default_origin_province_id.value
-    assert_equal city.id.to_s, Setting.default_origin_city_id.value
     assert_equal district.id.to_s, Setting.default_origin_district_id.value
   end
 
@@ -108,9 +102,6 @@ class Admin::SettingsControllerTest < ActionDispatch::IntegrationTest
     get admin_settings_path, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
 
     assert_response :success
-    assert_select "label[for=default_origin_province_id]"
-    assert_select "label[for=default_origin_city_id]"
     assert_select "label[for=default_origin_district_id]"
-    assert_select "label[for=default_origin_subdistrict_id]"
   end
 end
