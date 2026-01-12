@@ -3,7 +3,6 @@ class ShippingCostsController < ApplicationController
     return unless params[:subdistrict_id].present?
 
     subdistrict = Subdistrict.find(params[:subdistrict_id])
-    destination = subdistrict
 
     cart_total_weight = Current.cart.physical_items.sum do |item|
       variant_weight = item.product_variant&.weight
@@ -11,51 +10,57 @@ class ShippingCostsController < ApplicationController
       variant_weight || base_weight || 0
     end
 
-    origin = Province.first
-    origin_type = "province"
+    origin_district = District.first
+    return unless origin_district
+
+    origin_type = "District"
+    destination_type = "Subdistrict"
 
     couriers = [ "jne", "tiki", "pos" ]
     @shipping_options = []
 
     couriers.each do |courier|
       response = RajaOngkirClient.new.calculate_cost(
-        origin,
-        destination,
+        origin_district.rajaongkir_id,
+        subdistrict.rajaongkir_id,
         cart_total_weight,
         courier
       )
 
       next unless response[:success] && response[:data]
 
-      costs_data = response[:data]["rajaongkir"]["results"][0]["costs"] || []
+      costs_data = response[:data]["data"] || []
 
       costs_data.each do |cost_data|
+        courier_code = cost_data["code"]
         service = cost_data["service"]
-        price = cost_data["cost"][0]["value"]
-        etd = cost_data["cost"][0]["etd"]
+        price = cost_data["cost"]
+        etd = cost_data["etd"]
+        description = cost_data["description"]
 
         shipping_cost = ShippingCost.find_or_fetch(
-          origin,
-          destination,
+          origin_district,
+          subdistrict,
           cart_total_weight,
-          courier,
+          courier_code,
           service
         ) do
           ShippingCost.new(
             origin_type: origin_type,
-            origin_id: origin.id,
-            destination_type: "Subdistrict",
-            destination_id: destination.id,
+            origin_id: origin_district.id,
+            destination_type: destination_type,
+            destination_id: subdistrict.id,
             weight: cart_total_weight,
-            courier: courier,
+            courier: courier_code,
             service: service,
             cost: price
           )
         end
 
         @shipping_options << {
-          courier: courier.upcase,
+          courier: cost_data["name"],
           service: service,
+          description: description,
           price: shipping_cost.calculate,
           etd: etd
         }
