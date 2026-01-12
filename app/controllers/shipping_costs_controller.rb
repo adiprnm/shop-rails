@@ -20,50 +20,71 @@ class ShippingCostsController < ApplicationController
     @shipping_options = []
 
     couriers.each do |courier|
-      response = RajaOngkirClient.new.calculate_cost(
-        origin_district.rajaongkir_id,
-        district.rajaongkir_id,
-        cart_total_weight,
-        courier
+      cached_costs = ShippingCost.fresh.where(
+        origin_type: origin_type,
+        origin_id: origin_district.id,
+        destination_type: destination_type,
+        destination_id: district.id,
+        weight: cart_total_weight,
+        courier: courier
       )
 
-      next unless response[:success] && response[:data]
-
-      costs_data = response[:data]["data"] || []
-
-      costs_data.each do |cost_data|
-        courier_code = cost_data["code"]
-        service = cost_data["service"]
-        price = cost_data["cost"]
-        etd = cost_data["etd"]
-        description = cost_data["description"]
-
-        shipping_cost = ShippingCost.find_or_fetch(
-          origin_district,
-          district,
-          cart_total_weight,
-          courier_code,
-          service
-        ) do
-          ShippingCost.new(
-            origin_type: origin_type,
-            origin_id: origin_district.id,
-            destination_type: destination_type,
-            destination_id: district.id,
-            weight: cart_total_weight,
-            courier: courier_code,
-            service: service,
-            cost: price
-          )
+      if cached_costs.exists?
+        cached_costs.each do |shipping_cost|
+          @shipping_options << {
+            courier: courier.upcase,
+            service: shipping_cost.service,
+            description: "",
+            price: shipping_cost.calculate,
+            etd: ""
+          }
         end
+      else
+        response = RajaOngkirClient.new.calculate_cost(
+          origin_district.rajaongkir_id,
+          district.rajaongkir_id,
+          cart_total_weight,
+          courier
+        )
 
-        @shipping_options << {
-          courier: cost_data["name"],
-          service: service,
-          description: description,
-          price: shipping_cost.calculate,
-          etd: etd
-        }
+        next unless response[:success] && response[:data]
+
+        costs_data = response[:data]["data"] || []
+
+        costs_data.each do |cost_data|
+          courier_code = cost_data["code"]
+          service = cost_data["service"]
+          price = cost_data["cost"]
+          etd = cost_data["etd"]
+          description = cost_data["description"]
+
+          shipping_cost = ShippingCost.find_or_fetch(
+            origin_district,
+            district,
+            cart_total_weight,
+            courier_code,
+            service
+          ) do
+            ShippingCost.new(
+              origin_type: origin_type,
+              origin_id: origin_district.id,
+              destination_type: destination_type,
+              destination_id: district.id,
+              weight: cart_total_weight,
+              courier: courier_code,
+              service: service,
+              cost: price
+            )
+          end
+
+          @shipping_options << {
+            courier: cost_data["name"],
+            service: service,
+            description: description,
+            price: shipping_cost.calculate,
+            etd: etd
+          }
+        end
       end
     end
 
