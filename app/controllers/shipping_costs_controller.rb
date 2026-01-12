@@ -16,7 +16,8 @@ class ShippingCostsController < ApplicationController
     origin_type = "District"
     destination_type = "District"
 
-    couriers = [ "jne", "tiki", "pos" ]
+    couriers = Setting.available_couriers.value.to_s.split(",").map(&:strip).reject(&:blank?)
+    couriers = [ "jne", "tiki", "pos" ] if couriers.empty?
     @shipping_options = []
 
     couriers.each do |courier|
