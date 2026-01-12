@@ -9,10 +9,17 @@
   <%= tag.meta name: "og:description", content: description %>
 <% end %>
 
-<div class="text-center">
+<div class="text-center" data-controller="copy-text">
   <%= status_tag(@order) %>
 
   <h1 class="mt-4" style="font-size: 2rem; font-weight: 800;"><%= idr @order.total_price %></h1>
+  <button style="padding: 0.25rem 0.75rem; font-size: 14px;" data-amount="<%= @order.total_price %>" data-action="copy-text#perform" class="mb-4">Salin</button>
+  <dialog data-copy-text-target="modal">
+    <article>
+      <p>Nominal berhasil disalin!</p>
+      <button data-action="copy-text#closeModal">Tutup</button>
+    </article>
+  </dialog>
 
   <% if @order.pending? || @order.failed? %>
     <p class="mb-8">Bayar sebelum <%= tag.strong l(@order.will_expire_at, format: :long, locale: :id) %></p>
@@ -41,6 +48,21 @@
             <h2 class="payment-method-name">QRIS</h2>
             <%= image_tag Current.settings["payment_qris"], class: "qris" %>
           </article>
+
+          <p class="text-xl mt-8"><strong>Cara Pembayaran</strong></p>
+          <ol style="text-align: left;">
+            <%
+              ext = Current.settings["payment_qris"].split(".").last
+              name = "#{ Current.settings["site_name"] } QRIS"
+              filename = "#{ name.parameterize }.#{ext}"
+            %>
+            <li><%= link_to "Simpan gambar QRIS", Current.settings["payment_qris"], download: filename, title: name %> di HP Anda</li>
+            <li>Buka aplikasi dompet digital/m-banking Anda</li>
+            <li>Pilih fitur Scan QR atau Upload QR</li>
+            <li>Upload gambar QRIS ini, lalu ikuti instruksi untuk menyelesaikan pembayaran</li>
+            <li>Pastikan nominal yang ditransfer sama dengan nominal yang harus dibayarkan</li>
+            <li><%= link_to "Unggah bukti pembayaran", new_order_payment_evidence_path(@order.order_id) %> setelah pembayaran berhasil dilakukan</li>
+          </ol>
         </div>
       <% end %>
 
