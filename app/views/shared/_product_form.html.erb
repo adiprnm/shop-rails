@@ -10,11 +10,11 @@
       <%= f.file_field :images, multiple: true, accept: "image/*" %>
       <small class="block">Upload multiple images for the product carousel (optional)</small>
       <% if product.images.attached? %>
-        <div class="mt-2">
+        <div class="mt-2 flex gap-4 flex-nowrap overflow-x-scroll ">
           <% product.images.each do |image| %>
-            <div class="mb-2 flex items-center gap-2">
-              <%= image_tag image, class: "product-image product-image--small" %>
-              <%= button_to "Remove", delete_image_admin_product_path(product, image_id: image.id), method: :delete, data: { turbo_confirm: "Are you sure?" }, form: { class: "inline" }, class: "text-red text-sm button-as-text" %>
+            <div class="mb-2 mt-4 inline flex-noshrink">
+              <%= image_tag image, class: "product-image product-image--square product-image--medium", style: "width: 200px;" %>
+              <%= link_to "Remove", delete_image_admin_product_path(product, image_id: image.id), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "text-red text-sm mt-2 block button-as-text" %>
             </div>
           <% end %>
         </div>
