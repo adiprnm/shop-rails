@@ -31,6 +31,7 @@ class Setting < ApplicationRecord
     rajaongkir_api_host
     default_origin_district_id
     available_couriers
+    included_shipping_services
   ].freeze
   ATTACHABLE_KEYS = %i[ site_favicon og_image payment_qris ].freeze
 
