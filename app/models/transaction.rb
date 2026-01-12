@@ -6,17 +6,21 @@ class Transaction
   end
 
   def create(params)
-    shipping_cost = params[:shipping_cost].to_i
-    total_price = cart.total_price + shipping_cost
+    shipping_cost_obj = ShippingCost.find_by(id: params[:shipping_cost_id])
+    shipping_cost_value = shipping_cost_obj&.cost || 0
 
-    @order = cart.orders.pending.create(
-      total_price: total_price,
-      shipping_cost: shipping_cost,
-      shipping_provider: params[:selected_courier],
-      shipping_method: params[:selected_service],
+    order_params = {
+      total_price: cart.total_price + shipping_cost_value,
+      shipping_cost: shipping_cost_value,
+      shipping_provider: shipping_cost_obj&.courier,
+      shipping_method: shipping_cost_obj&.service,
       has_physical_products: cart.contains_physical_product?,
-      **params.except(:shipping_cost, :selected_courier, :selected_service),
-    )
+      **params.except(:shipping_cost_id)
+    }
+
+    order_params[:shipping_cost_id] = shipping_cost_obj.id if shipping_cost_obj
+
+    @order = cart.orders.pending.create(order_params)
     return @order if @order.invalid?
 
     cart.line_items.each do |line_item|

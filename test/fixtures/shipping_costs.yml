@@ -65,3 +65,25 @@ tiki_ons_fresh:
   service: ONS
   cost: 12000
   created_at: <%= 1.hour.ago %>
+
+jne_district_yes:
+  origin_type: District
+  origin: kebon_jeruk
+  destination_type: District
+  destination: tebet
+  weight: 1000
+  courier: jne
+  service: YES
+  cost: 12000
+  created_at: <%= 1.hour.ago %>
+
+kebon_jeruk_yes:
+  origin_type: District
+  origin: cakung
+  destination_type: District
+  destination: tebet
+  weight: 1000
+  courier: jne
+  service: YES
+  cost: 10000
+  created_at: <%= 1.hour.ago %>

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["totalDisplay", "shippingOptions", "courierInput", "serviceInput", "costInput", "finalTotalDisplay"]
+  static targets = ["totalDisplay", "shippingOptions", "finalTotalDisplay"]
   static values = { baseTotal: Number }
 
   connect() {
@@ -14,12 +14,6 @@ export default class extends Controller {
 
     if (selectedOption.checked) {
       const price = parseFloat(selectedOption.dataset.price)
-      const courier = selectedOption.dataset.courier
-      const service = selectedOption.dataset.service
-
-      this.courierInputTarget.value = courier
-      this.serviceInputTarget.value = service
-      this.costInputTarget.value = price
 
       this.updateTotalDisplay(this.baseTotalValue + price)
       this.updateFinalTotalDisplay(this.baseTotalValue + price)

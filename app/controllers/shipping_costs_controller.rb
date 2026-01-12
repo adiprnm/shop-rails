@@ -34,10 +34,11 @@ class ShippingCostsController < ApplicationController
 
       if cached_costs.exists?
         cached_costs.each do |shipping_cost|
-          service_key = "#{courier}-#{shipping_cost.service}"
+          service_key = "#{courier}-#{shipping_cost.service.downcase}"
           next if included_services.present? && !service_key.in?(included_services)
 
           @shipping_options << {
+            id: shipping_cost.id,
             courier: courier.upcase,
             service: shipping_cost.service,
             description: "",
@@ -57,6 +58,8 @@ class ShippingCostsController < ApplicationController
 
         costs_data = response[:data]["data"] || []
 
+        Rails.logger.info costs_data
+
         costs_data.each do |cost_data|
           courier_code = cost_data["code"]
           service = cost_data["service"]
@@ -64,7 +67,7 @@ class ShippingCostsController < ApplicationController
           etd = cost_data["etd"]
           description = cost_data["description"]
 
-          service_key = "#{courier_code}-#{service}"
+          service_key = "#{courier_code}-#{service.downcase}"
           next if included_services.present? && !service_key.in?(included_services)
 
           shipping_cost = ShippingCost.find_or_fetch(
@@ -87,6 +90,7 @@ class ShippingCostsController < ApplicationController
           end
 
           @shipping_options << {
+            id: shipping_cost.id,
             courier: cost_data["name"],
             service: service,
             description: description,

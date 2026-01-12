@@ -47,9 +47,7 @@ class OrdersController < ApplicationController
         :shipping_district_id,
         :shipping_subdistrict_id,
         :order_notes,
-        :shipping_cost,
-        :selected_courier,
-        :selected_service
+        :shipping_cost_id
       )
     end
 end

@@ -3,16 +3,15 @@
     <h3>Pilihan Pengiriman</h3>
     <div id="shipping-options-list">
       <% shipping_options.each do |option| %>
-        <div class="form-group check-boxes">
-          <%= radio_button_tag "shipping_option", "#{option[:courier]}-#{option[:service]}", false,
-            id: "shipping_#{option[:courier]}_#{option[:service]}",
+        <div class="form-group flex items-center gap-4 mt-4">
+          <%= radio_button_tag "shipping_cost_id", option[:id], false,
+            id: "shipping_#{option[:id]}",
             data: {
               action: "change->shipping#updateTotal",
               price: option[:price],
-              courier: option[:courier],
-              service: option[:service]
+              shippingCostId: option[:id]
             } %>
-          <%= label_tag "shipping_#{option[:courier]}_#{option[:service]}" do %>
+          <%= label_tag "shipping_#{option[:id]}" do %>
             <strong><%= option[:courier] %> - <%= option[:service] %></strong>
             <br>
             <%= idr option[:price] %>
@@ -23,8 +22,5 @@
         </div>
       <% end %>
     </div>
-    <%= hidden_field_tag :selected_courier, nil, data: { shipping_target: "courierInput" } %>
-    <%= hidden_field_tag :selected_service, nil, data: { shipping_target: "serviceInput" } %>
-    <%= hidden_field_tag :shipping_cost, nil, data: { shipping_target: "costInput" } %>
   </div>
 <% end %>
