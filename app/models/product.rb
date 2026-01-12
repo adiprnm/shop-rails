@@ -2,6 +2,7 @@ class Product < ApplicationRecord
   delegated_type :productable, types: %w[ DigitalProduct PhysicalProduct ]
 
   has_one_attached :featured_image
+  has_many_attached :images
   has_and_belongs_to_many :categories
 
   has_many :product_variants, dependent: :destroy, inverse_of: :product

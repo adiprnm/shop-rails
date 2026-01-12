@@ -44,3 +44,69 @@
   & fieldset, div.resource { display: none; }
   & input:checked ~ fieldset, input:checked ~ div.resource { display: block; }
 }
+
+.carousel {
+  position: relative;
+}
+
+.carousel-container {
+  position: relative;
+}
+
+.carousel-slide {
+  display: block;
+}
+
+.carousel-slide[hidden] {
+  display: none;
+}
+
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.carousel-nav button {
+  background: var(--primary);
+  color: var(--primary-inverse);
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.carousel-indicators {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.carousel-indicator {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+
+  &.active {
+    background: var(--primary);
+    color: var(--primary-inverse);
+  }
+
+  &:hover:not(.active) {
+    background: rgba(var(--primary-rgb), 0.1);
+  }
+}

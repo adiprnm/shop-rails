@@ -5,6 +5,21 @@
       <%= image_tag product.featured_image.attached? ? product.featured_image : "", data: { image_preview_target: "preview" } %>
       <%= f.file_field :featured_image, data: { action: "image-preview#perform" } %>
     </div>
+    <div class="form-group">
+      <%= f.label :images %>
+      <%= f.file_field :images, multiple: true, accept: "image/*" %>
+      <small class="block">Upload multiple images for the product carousel (optional)</small>
+      <% if product.images.attached? %>
+        <div class="mt-2">
+          <% product.images.each do |image| %>
+            <div class="mb-2">
+              <%= image_tag image, class: "product-image product-image--small" %>
+              <%= link_to "Remove", delete_image_admin_product_path(product, image_id: image.id), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red text-sm" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
   </div>
   <div>
     <div class="form-group">

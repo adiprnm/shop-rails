@@ -31,6 +31,9 @@ Rails.application.routes.draw do
   resources :admin, controller: "admin", only: %w[ index ]
   namespace :admin do
     resources :products do
+      member do
+        delete :delete_image
+      end
       resources :product_variants, only: %w[ index new create ]
     end
     resources :product_variants, only: %w[ edit update destroy ] do

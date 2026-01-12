@@ -1,5 +1,5 @@
 class Admin::ProductsController < AdminController
-  before_action :set_product, only: %i[ show edit update destroy ]
+  before_action :set_product, only: %i[ show edit update destroy delete_image ]
 
   def index
     @products = Product.order(id: :desc)
@@ -45,13 +45,20 @@ class Admin::ProductsController < AdminController
     redirect_to admin_products_path, notice: "Produk berhasil dihapus!"
   end
 
+  def delete_image
+    @image = ActiveStorage::Attachment.find(params[:image_id])
+    @image.purge
+
+    redirect_to edit_admin_product_path(@product), notice: "Gambar berhasil dihapus!"
+  end
+
   private
 
   def product_params
     params.require(:product).permit(
       :name, :slug, :short_description, :description,
       :price, :sale_price, :sale_price_starts_at, :sale_price_ends_at, :minimum_price,
-      :productable_type, :featured_image, category_ids: [],
+      :productable_type, :featured_image, images: [], category_ids: [],
       product_variants_attributes: [ :id, :name, :price, :weight, :stock, :is_active, :_destroy ]
     )
   end
