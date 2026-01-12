@@ -10,7 +10,7 @@ class ShippingCostsController < ApplicationController
       variant_weight || base_weight || 0
     end
 
-    origin_district = District.first
+    origin_district = District.find(Setting.default_origin_district_id.value)
     return unless origin_district
 
     origin_type = "District"
