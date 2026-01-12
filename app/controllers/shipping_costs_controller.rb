@@ -1,8 +1,8 @@
 class ShippingCostsController < ApplicationController
   def index
-    return unless params[:subdistrict_id].present?
+    return unless params[:district_id].present?
 
-    subdistrict = Subdistrict.find(params[:subdistrict_id])
+    district = District.find(params[:district_id])
 
     cart_total_weight = Current.cart.physical_items.sum do |item|
       variant_weight = item.product_variant&.weight
@@ -14,7 +14,7 @@ class ShippingCostsController < ApplicationController
     return unless origin_district
 
     origin_type = "District"
-    destination_type = "Subdistrict"
+    destination_type = "District"
 
     couriers = [ "jne", "tiki", "pos" ]
     @shipping_options = []
@@ -22,7 +22,7 @@ class ShippingCostsController < ApplicationController
     couriers.each do |courier|
       response = RajaOngkirClient.new.calculate_cost(
         origin_district.rajaongkir_id,
-        subdistrict.rajaongkir_id,
+        district.rajaongkir_id,
         cart_total_weight,
         courier
       )
@@ -40,7 +40,7 @@ class ShippingCostsController < ApplicationController
 
         shipping_cost = ShippingCost.find_or_fetch(
           origin_district,
-          subdistrict,
+          district,
           cart_total_weight,
           courier_code,
           service
@@ -49,7 +49,7 @@ class ShippingCostsController < ApplicationController
             origin_type: origin_type,
             origin_id: origin_district.id,
             destination_type: destination_type,
-            destination_id: subdistrict.id,
+            destination_id: district.id,
             weight: cart_total_weight,
             courier: courier_code,
             service: service,

@@ -75,9 +75,10 @@ export default class extends Controller {
 
   onSubdistrictChange(event) {
     const subdistrictId = event.target.value
+    const districtId = this.hasDistrictSelectTarget ? this.districtSelectTarget.value : null
 
-    if (subdistrictId) {
-      this.fetchShippingCosts(subdistrictId)
+    if (districtId) {
+      this.fetchShippingCosts(districtId)
     }
   }
 
@@ -152,9 +153,9 @@ export default class extends Controller {
     }
   }
 
-  async fetchShippingCosts(subdistrictId) {
+  async fetchShippingCosts(districtId) {
     try {
-      const response = await fetch(`/shipping_costs?subdistrict_id=${subdistrictId}`, {
+      const response = await fetch(`/shipping_costs?district_id=${districtId}`, {
         headers: {
           "Accept": "text/vnd.turbo-stream.html"
         }
