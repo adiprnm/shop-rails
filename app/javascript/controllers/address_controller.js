@@ -145,7 +145,7 @@ export default class extends Controller {
 
       if (response.ok) {
         const html = await response.text()
-        target.innerHTML = html
+        Turbo.renderStreamMessage(html)
       }
     } catch (error) {
       console.error("Error fetching address data:", error)
