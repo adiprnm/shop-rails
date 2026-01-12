@@ -13,8 +13,12 @@ class ShippingCost < ApplicationRecord
   validates :service, presence: true
   validates :cost, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
-  scope :fresh, -> { where("created_at > ?", CACHE_TTL.ago) }
-  scope :expired, -> { where("created_at <= ?", CACHE_TTL.ago) }
+  scope :fresh, -> { where("price_updated_at > ?", CACHE_TTL.ago) }
+  scope :expired, -> { where("price_updated_at <= ?", CACHE_TTL.ago) }
+
+  def fresh?
+    price_updated_at && price_updated_at > CACHE_TTL.ago
+  end
 
   def self.find_or_fetch(origin, destination, weight, courier, service)
     origin_type = origin.class.name
@@ -22,7 +26,7 @@ class ShippingCost < ApplicationRecord
     destination_type = destination.class.name
     destination_id = destination.id
 
-    fresh_records = fresh.find_by(
+    existing_record = find_by(
       origin_type: origin_type,
       origin_id: origin_id,
       destination_type: destination_type,
@@ -32,10 +36,21 @@ class ShippingCost < ApplicationRecord
       service: service
     )
 
-    return fresh_records if fresh_records
+    if existing_record
+      return existing_record if existing_record.fresh?
+
+      new_cost = yield
+      if new_cost
+        existing_record.update(cost: new_cost.cost, price_updated_at: Time.current)
+      end
+      return existing_record
+    end
 
     new_cost = yield
-    new_cost&.save
+    if new_cost
+      new_cost.price_updated_at = Time.current
+      new_cost.save
+    end
     new_cost
   end
 
