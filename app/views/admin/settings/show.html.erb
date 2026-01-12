@@ -144,7 +144,7 @@
     <div class="form-group">
       <%= f.label :default_origin_district_id, "Kecamatan" %>
       <%= f.select :default_origin_district_id,
-        options_from_collection_for_select(@districts, :id, :name, selected: Current.settings["default_origin_district_id"]),
+        options_from_collection_for_select(@districts, :id, :phrased, selected: Current.settings["default_origin_district_id"]),
         { include_blank: "Pilih Kecamatan" }
       %>
     </div>
