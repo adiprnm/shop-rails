@@ -25,7 +25,7 @@ class Order < ApplicationRecord
   validates :customer_agree_to_terms, acceptance: true
   validates :customer_phone, presence: true, if: :contains_physical_products?
   validates :address_line, presence: true, if: :contains_physical_products?
-    validates :shipping_province_id, presence: true, if: :contains_physical_products?
+  validates :shipping_province_id, presence: true, if: :contains_physical_products?
   validates :shipping_city_id, presence: true, if: :contains_physical_products?
   validates :shipping_cost_id, presence: true, if: :contains_physical_products?
   validate :address_hierarchy_consistency
