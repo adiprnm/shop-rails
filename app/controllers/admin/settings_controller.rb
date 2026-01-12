@@ -1,6 +1,6 @@
 class Admin::SettingsController < AdminController
   def show
-    @districts = District.all
+    @districts = District.all.includes(city: :province)
   end
 
   def update

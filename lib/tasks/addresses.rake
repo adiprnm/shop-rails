@@ -115,6 +115,50 @@ namespace :addresses do
     puts "Successfully fetched and stored #{total_districts} districts"
   end
 
+  desc "Fetch and store districts for a specific city by RajaOngkir province ID and city ID"
+  task :sync_districts, [ :province_id, :city_id ] => :environment do |t, args|
+    province_rajaongkir_id = args[:province_id]
+    city_rajaongkir_id = args[:city_id]
+
+    unless province_rajaongkir_id && city_rajaongkir_id
+      puts "Error: Both province_id and city_id are required"
+      puts "Usage: rake addresses:sync_districts[province_rajaongkir_id,city_rajaongkir_id]"
+      puts "Example: rake addresses:sync_districts[6,26]"
+      return
+    end
+
+    puts "Finding or fetching province with RajaOngkir ID: #{province_rajaongkir_id}..."
+
+    AddressService.ensure_provinces
+    province = AddressService.find_province_by_rajaongkir_id(province_rajaongkir_id)
+
+    unless province
+      puts "Error: Province with RajaOngkir ID #{province_rajaongkir_id} not found"
+      return
+    end
+
+    puts "Found province: #{province.name}"
+
+    puts "Finding or fetching city with RajaOngkir ID: #{city_rajaongkir_id}..."
+
+    AddressService.ensure_cities(province.id)
+    city = AddressService.find_city_by_rajaongkir_id(city_rajaongkir_id)
+
+    unless city
+      puts "Error: City with RajaOngkir ID #{city_rajaongkir_id} not found in province '#{province.name}'"
+      return
+    end
+
+    puts "Found city: #{city.name}"
+
+    puts "Syncing districts for city: #{city.name} (Province: #{province.name})..."
+
+    districts = AddressService.ensure_districts(city.id)
+
+    puts "Successfully synced #{districts.count} districts for #{city.name}"
+    districts.each { |d| puts "  - #{d.name}" }
+  end
+
   desc "Fetch and store subdistricts for all districts"
   task fetch_subdistricts: :environment do
     puts "Fetching subdistricts for all districts..."
