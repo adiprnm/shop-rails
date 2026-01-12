@@ -5,7 +5,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     @cart = carts(:guest_cart)
     @product = products(:design_collection)
     @default_headers = { headers: { "CF-Connecting-IP" => "10.0.0.1" } }
-    @jne_yes = shipping_costs(:jne_yes)
+    @jne_district_yes = shipping_costs(:jne_district_yes)
   end
 
   test "should create order successfully" do
@@ -155,11 +155,11 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
         customer_phone: "08123456789",
         customer_agree_to_terms: "1",
         address_line: "Test Address 123",
-        shipping_province_id: @jne_yes.origin.id,
-        shipping_city_id: @jne_yes.destination.id,
-        shipping_district_id: 1,
-        shipping_subdistrict_id: 1,
-        shipping_cost_id: @jne_yes.id
+        shipping_province_id: provinces(:jawa_barat).id,
+        shipping_city_id: cities(:jakarta_selatan).id,
+        shipping_district_id: districts(:tebet).id,
+        shipping_subdistrict_id: subdistricts(:gedong_pancoran).id,
+        shipping_cost_id: @jne_district_yes.id
       },
       **@default_headers
 
@@ -220,18 +220,18 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
       customer_phone: "08123456789",
       customer_agree_to_terms: "1",
       address_line: "Test Address 123",
-      shipping_province_id: @jne_yes.origin.id,
-      shipping_city_id: @jne_yes.destination.id,
-      shipping_district_id: 1,
-      shipping_subdistrict_id: 1,
-      shipping_cost_id: @jne_yes.id
+      shipping_province_id: provinces(:jawa_barat).id,
+      shipping_city_id: cities(:jakarta_selatan).id,
+      shipping_district_id: districts(:tebet).id,
+      shipping_subdistrict_id: subdistricts(:gedong_pancoran).id,
+      shipping_cost_id: @jne_district_yes.id
     },
     **@default_headers
 
     assert_redirected_to order_path(Order.last.order_id)
-    assert_equal 10000, Order.last.shipping_cost
+    assert_equal 12000, Order.last.shipping_cost
     assert_equal "jne", Order.last.shipping_provider
     assert_equal "YES", Order.last.shipping_method
-    assert_equal 50000 + 10000, Order.last.total_price
+    assert_equal 50000 + 12000, Order.last.total_price
   end
 end

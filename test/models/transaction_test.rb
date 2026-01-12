@@ -96,6 +96,7 @@ class TransactionTest < ActiveSupport::TestCase
       shipping_city_id: cities(:jakarta_selatan).id,
       shipping_district_id: districts(:tebet).id,
       shipping_subdistrict_id: subdistricts(:gedong_pancoran).id,
+      shipping_cost_id: shipping_costs(:jne_district_yes).id,
       customer_agree_to_terms: true
     )
 
@@ -131,6 +132,7 @@ class TransactionTest < ActiveSupport::TestCase
       shipping_city_id: cities(:jakarta_selatan).id,
       shipping_district_id: districts(:tebet).id,
       shipping_subdistrict_id: subdistricts(:gedong_pancoran).id,
+      shipping_cost_id: shipping_costs(:jne_district_yes).id,
       customer_agree_to_terms: true
     )
 

@@ -4,7 +4,7 @@ class Order < ApplicationRecord
   has_many :line_items, class_name: "OrderLineItem", dependent: :delete_all
   has_many :payment_evidences, -> { order(created_at: :desc) }, as: :payable, dependent: :destroy
 
-  belongs_to :shipping_cost_record, class_name: "ShippingCost", optional: true
+  belongs_to :shipping_cost_record, class_name: "ShippingCost", optional: true, foreign_key: "shipping_cost_id"
   belongs_to :shipping_province, class_name: "Province", optional: true
   belongs_to :shipping_city, class_name: "City", optional: true
   belongs_to :shipping_district, class_name: "District", optional: true
