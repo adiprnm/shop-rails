@@ -14,7 +14,6 @@ export default class extends Controller {
     if (selectedOption.checked) {
       const price = parseFloat(selectedOption.dataset.price)
 
-      this.updateTotalDisplay(this.baseTotalValue + price)
       this.updateFinalTotalDisplay(this.baseTotalValue + price)
     }
   }
