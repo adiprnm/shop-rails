@@ -1,11 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["totalDisplay", "shippingOptions", "courierInput", "serviceInput", "costInput"]
+  static targets = ["totalDisplay", "shippingOptions", "courierInput", "serviceInput", "costInput", "finalTotalDisplay"]
   static values = { baseTotal: Number }
 
   connect() {
-    this.updateTotal()
+    this.updateTotalDisplay(this.baseTotalValue)
+    this.updateFinalTotalDisplay(this.baseTotalValue)
   }
 
   updateTotal(event) {
@@ -21,6 +22,7 @@ export default class extends Controller {
       this.costInputTarget.value = price
 
       this.updateTotalDisplay(this.baseTotalValue + price)
+      this.updateFinalTotalDisplay(this.baseTotalValue + price)
     }
   }
 
@@ -28,6 +30,13 @@ export default class extends Controller {
     const totalElement = this.totalDisplayTarget
     if (totalElement) {
       totalElement.textContent = this.formatCurrency(total)
+    }
+  }
+
+  updateFinalTotalDisplay(total) {
+    const finalTotalElement = this.finalTotalDisplayTarget
+    if (finalTotalElement) {
+      finalTotalElement.textContent = this.formatCurrency(total)
     }
   }
 

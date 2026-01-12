@@ -53,8 +53,6 @@
       </tbody>
     </table>
 
-    <%= turbo_frame_tag "shipping-options", data: { shipping_target: "shippingOptions" } %>
-
     <h2 class="mt-8">Checkout</h2>
 
     <%= form_with url: orders_path, method: :post, data: { turbo: false, controller: "auto-filler address shipping", auto_filler_fields_value: %w[ customer_name customer_email_address customer_phone address_line shipping_province_id shipping_city_id shipping_district_id shipping_subdistrict_id order_notes ], address_show_shipping_value: Current.cart.contains_physical_product?, shipping_base_total_value: Current.cart.total_price } do |f| %>
@@ -103,6 +101,17 @@
           <%= turbo_frame_tag "subdistricts-options", data: { address_target: "subdistrictsFrame" } %>
         </div>
       <% end %>
+
+      <%= turbo_frame_tag "shipping-options", data: { shipping_target: "shippingOptions" } %>
+
+      <div class="form-group mb-4" data-shipping-target="finalTotalSection">
+        <table>
+          <tr>
+            <td colspan="2"><strong>Total Akhir</strong></td>
+            <td colspan="2"><strong id="final-total-display"><%= idr Current.cart.total_price %></strong></td>
+          </tr>
+        </table>
+      </div>
 
       <div class="form-group mb-4">
         <%= f.label :order_notes, "Catatan Pesanan" %>
