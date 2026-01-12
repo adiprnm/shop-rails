@@ -18,6 +18,8 @@ class ShippingCostsController < ApplicationController
 
     couriers = Setting.available_couriers.value.to_s.split(",").map(&:strip).reject(&:blank?)
     couriers = [ "jne", "tiki", "pos" ] if couriers.empty?
+    excluded_services = Setting.excluded_shipping_services.value.to_s.split(",").map(&:strip).reject(&:blank?)
+
     @shipping_options = []
 
     couriers.each do |courier|
@@ -32,6 +34,9 @@ class ShippingCostsController < ApplicationController
 
       if cached_costs.exists?
         cached_costs.each do |shipping_cost|
+          service_key = "#{courier}-#{shipping_cost.service}"
+          next if service_key.in?(excluded_services)
+
           @shipping_options << {
             courier: courier.upcase,
             service: shipping_cost.service,
@@ -58,6 +63,9 @@ class ShippingCostsController < ApplicationController
           price = cost_data["cost"]
           etd = cost_data["etd"]
           description = cost_data["description"]
+
+          service_key = "#{courier_code}-#{service}"
+          next if service_key.in?(excluded_services)
 
           shipping_cost = ShippingCost.find_or_fetch(
             origin_district,
