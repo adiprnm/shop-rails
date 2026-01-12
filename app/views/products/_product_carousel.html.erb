@@ -14,9 +14,9 @@
           &#10094;
         </button>
         <div class="carousel-indicators">
-          <% images.each_with_index do |_, index| %>
+          <% images.each_with_index do |image, index| %>
             <button type="button" data-action="carousel#goTo" data-index="<%= index %>" class="carousel-indicator <%= index == 0 ? 'active' : '' %>">
-              <%= index + 1 %>
+              <%= image_tag image, class: "carousel-thumbnail" %>
             </button>
           <% end %>
         </div>
