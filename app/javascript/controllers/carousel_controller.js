@@ -6,7 +6,7 @@ export default class extends Controller {
 
   connect() {
     this.showSlide(0);
-    
+
     if (this.autoplayValue) {
       this.startAutoplay();
     }
@@ -29,7 +29,9 @@ export default class extends Controller {
     this.showSlide(this.currentIndexValue);
   }
 
-  goTo(index) {
+  goTo({ target }) {
+    const index = parseInt(target.dataset.index)
+    console.log(index)
     this.currentIndexValue = index;
     this.showSlide(index);
   }
@@ -38,7 +40,7 @@ export default class extends Controller {
     this.slideTargets.forEach((slide, i) => {
       slide.classList.remove("active");
       slide.hidden = i !== index;
-      
+
       if (i === index) {
         setTimeout(() => {
           slide.classList.add("active");

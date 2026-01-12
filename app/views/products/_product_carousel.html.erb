@@ -15,9 +15,7 @@
         </button>
         <div class="carousel-indicators">
           <% images.each_with_index do |image, index| %>
-            <button type="button" data-action="carousel#goTo" data-index="<%= index %>" class="carousel-indicator <%= index == 0 ? 'active' : '' %>">
-              <%= image_tag image, class: "carousel-thumbnail" %>
-            </button>
+            <%= image_tag image, data: { index: index, action: "click->carousel#goTo" }, class: "carousel-indicator #{ index == 0 ? 'active' : '' }" %>
           <% end %>
         </div>
         <button type="button" data-carousel-target="next" data-action="carousel#next" aria-label="Next image">
