@@ -139,6 +139,14 @@
       </div>
     </div>
 
+    <h3>Kurir Tersedia</h3>
+
+    <div class="form-group">
+      <%= f.label :available_couriers, "Kurir Tersedia" %>
+      <%= f.text_field :available_couriers, value: Current.settings["available_couriers"] %>
+      <small class="text-gray">Pisahkan dengan koma. Contoh: jne,tiki,pos</small>
+    </div>
+
     <h3>Lokasi Asal Pengiriman (Default)</h3>
 
     <div class="form-group">
