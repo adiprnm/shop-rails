@@ -44,12 +44,16 @@
           <td class="min-w-max"><strong>Alamat Pengiriman</strong></td>
           <td><%= @order.address_line %></td>
         </tr>
-        <tr>
-          <td class="min-w-max"><strong>Area</strong></td>
-          <td>
-            <%= [@order.shipping_subdistrict&.name, @order.shipping_district&.name, @order.shipping_city&.name, @order.shipping_province&.name].compact.join(", ") %>
-          </td>
-        </tr>
+         <tr>
+           <td class="min-w-max"><strong>Area</strong></td>
+           <td>
+             <%= [@order.shipping_subdistrict&.name, @order.shipping_district&.name, @order.shipping_city&.name, @order.shipping_province&.name].compact.join(", ") %>
+           </td>
+         </tr>
+         <tr>
+           <td class="min-w-max"><strong>Nomor Resi</strong></td>
+           <td><%= @order.tracking_number || "Belum tersedia" %></td>
+         </tr>
       <% end %>
       <% if Current.settings["payment_provider"] == "manual" %>
         <tr>

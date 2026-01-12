@@ -23,6 +23,10 @@ class Order::Notification
     OrderMailer.with(order: order, products: line_items).order_failed.deliver_later
   end
 
+  def notify_tracking_number
+    OrderMailer.with(order: order, products: line_items).shipping_tracking.deliver_later
+  end
+
   def notify_admin
     OrderMailer
       .with(order: order, products: line_items)

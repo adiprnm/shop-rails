@@ -29,6 +29,12 @@ class OrderMailer < ApplicationMailer
       subject: "Order kamu belum bisa kami proses"
   end
 
+  def shipping_tracking
+    mail from: from_email,
+      to: @order.customer_email_address,
+      subject: "Pesanan kamu sudah dikirim!"
+  end
+
   def digital_product_accesses
     mail from: from_email,
       to: @order.customer_email_address,

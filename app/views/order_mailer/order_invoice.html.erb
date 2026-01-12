@@ -96,7 +96,7 @@
     <% end %>
     <tr>
       <td style="background-color: #f2f2f2"><strong>Nomor Resi</strong></td>
-      <td>Belum tersedia</td>
+      <td><%= @order.tracking_number || "Belum tersedia" %></td>
     </tr>
   </table>
 <% end %>

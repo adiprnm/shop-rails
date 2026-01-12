@@ -121,4 +121,29 @@ class OrderTest < ActiveSupport::TestCase
     @order.update(state_updated_at: 1.day.ago)
     assert_not_includes Order.today, @order
   end
+
+  test "should set tracking_number_updated_at when tracking_number changes" do
+    @order.update(tracking_number: "JP123456789")
+    assert_not_nil @order.tracking_number_updated_at
+  end
+
+  test "should allow tracking_number to be optional" do
+    @order.update(tracking_number: nil)
+    assert @order.valid?
+  end
+
+  test "should allow tracking_number when present" do
+    @order.update(tracking_number: "JP123456789")
+    assert @order.valid?
+  end
+
+  test "should update tracking_number_updated_at when tracking_number is updated" do
+    @order.update(tracking_number: "JP123456789")
+    original_updated_at = @order.tracking_number_updated_at
+
+    sleep(0.01)
+    @order.update(tracking_number: "JP987654321")
+
+    assert @order.tracking_number_updated_at > original_updated_at
+  end
 end

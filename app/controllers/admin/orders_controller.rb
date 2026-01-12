@@ -29,6 +29,7 @@ class Admin::OrdersController < AdminController
         :customer_agree_to_receive_newsletter,
         :state,
         :remark,
+        :tracking_number,
       )
     )
 

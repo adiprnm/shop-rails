@@ -13,12 +13,14 @@ class Order < ApplicationRecord
   enum :state, %w[ pending paid failed expired ]
 
   before_save -> { self.state_updated_at = Time.now }, if: :state_changed?
+  before_save -> { self.tracking_number_updated_at = Time.now }, if: :tracking_number_changed?
   before_create -> { self.order_id = SecureRandom.uuid }
 
   after_save_commit :decrement_variant_stock, if: -> { saved_change_to_state? && paid? }
   after_save_commit :send_order_successful_notification, if: -> { saved_change_to_state? && paid? }
   after_save_commit :send_order_failed_notification, if: -> { saved_change_to_state? && failed? }
   after_create_commit :send_order_created_notification, if: -> { Current.settings["payment_provider"] == "manual" }
+  after_save_commit :send_shipping_tracking_notification, if: -> { saved_change_to_tracking_number? && tracking_number.present? }
 
   scope :today, -> { where(state_updated_at: Time.now.all_day) }
 
@@ -72,6 +74,10 @@ class Order < ApplicationRecord
 
     def send_order_failed_notification
       Notification.with(order: self).notify_failed
+    end
+
+    def send_shipping_tracking_notification
+      Notification.with(order: self).notify_tracking_number
     end
 
     def address_hierarchy_consistency

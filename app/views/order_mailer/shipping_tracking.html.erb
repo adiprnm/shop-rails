@@ -1,0 +1,66 @@
+<h2>Halo <%= @order.customer_name %>!</h2>
+
+<p style="line-height: 1.5; margin-bottom: 2rem;">Pesanan kamu sudah dikirim. Berikut detail pengirimannya:</p>
+
+<table>
+  <tr>
+    <td style="background-color: #f2f2f2"><strong>ID Pesanan</strong></td>
+    <td><%= @order.order_id %></td>
+  </tr>
+  <tr>
+    <td style="background-color: #f2f2f2"><strong>Kurir</strong></td>
+    <td><%= "#{@order.shipping_provider&.upcase} - #{@order.shipping_method}" %></td>
+  </tr>
+  <tr>
+    <td style="background-color: #f2f2f2"><strong>Nomor Resi</strong></td>
+    <td><%= @order.tracking_number %></td>
+  </tr>
+</table>
+
+<h3>Alamat Pengiriman</h3>
+
+<table style="margin-top: 1rem;">
+  <tr>
+    <td style="background-color: #f2f2f2"><strong>Nama</strong></td>
+    <td><%= @order.customer_name %></td>
+  </tr>
+  <tr>
+    <td style="background-color: #f2f2f2"><strong>Nomor HP</strong></td>
+    <td><%= @order.customer_phone %></td>
+  </tr>
+  <tr>
+    <td style="background-color: #f2f2f2"><strong>Alamat</strong></td>
+    <td><%= @order.address_line %></td>
+  </tr>
+  <% if @order.shipping_subdistrict %>
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Kelurahan</strong></td>
+      <td><%= @order.shipping_subdistrict.name %></td>
+    </tr>
+  <% end %>
+  <% if @order.shipping_district %>
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Kecamatan</strong></td>
+      <td><%= @order.shipping_district.name %></td>
+    </tr>
+  <% end %>
+  <% if @order.shipping_city %>
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Kota/Kabupaten</strong></td>
+      <td><%= @order.shipping_city.name %></td>
+    </tr>
+  <% end %>
+  <% if @order.shipping_province %>
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Provinsi</strong></td>
+      <td><%= @order.shipping_province.name %></td>
+    </tr>
+  <% end %>
+</table>
+
+<p style="line-height: 1.5; margin-top: 2rem;">Kamu bisa melacak paket kamu dengan nomor resi di atas. Sampai jumpa di pesanan berikutnya!</p>
+
+<p style="line-height: 1.5; margin-top: 3rem;">
+  Salam,<br>
+  <%= Setting.email_sender_name.value %>
+</p>
