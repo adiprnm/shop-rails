@@ -46,10 +46,6 @@
           <td colspan="2"><strong>Subtotal</strong></td>
           <td colspan="2"><strong id="subtotal-display"><%= idr Current.cart.total_price %></strong></td>
         </tr>
-        <tr>
-          <td colspan="2"><strong>Total</strong></td>
-          <td colspan="2"><strong id="total-display" data-shipping-target="totalDisplay"><%= idr Current.cart.total_price %></strong></td>
-        </tr>
       </tbody>
     </table>
 
@@ -104,16 +100,14 @@
 
       <%= turbo_frame_tag "shipping-options", data: { shipping_target: "shippingOptions" } %>
 
-      <div class="form-group mb-4" data-shipping-target="finalTotalSection">
-        <table>
-          <tr>
-            <td colspan="2"><strong>Total Akhir</strong></td>
-            <td colspan="2"><strong id="final-total-display" data-shipping-target="finalTotalDisplay"><%= idr Current.cart.total_price %></strong></td>
-          </tr>
+      <div class="form-group mb-4 mt-8 text-xl" data-shipping-target="finalTotalSection">
+        <div class="flex justify-between">
+          <strong>Total Akhir</strong>
+          <strong id="final-total-display" data-shipping-target="finalTotalDisplay"><%= idr Current.cart.total_price %></strong>
         </table>
       </div>
 
-      <div class="form-group mb-4">
+      <div class="form-group mb-4 mt-4">
         <%= f.label :order_notes, "Catatan Pesanan" %>
         <%= f.text_area :order_notes, rows: 2, data: { action: "auto-filler#save" } %>
       </div>

@@ -1,11 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["totalDisplay", "shippingOptions", "finalTotalDisplay"]
+  static targets = [ "shippingOptions", "finalTotalDisplay"]
   static values = { baseTotal: Number }
 
   connect() {
-    this.updateTotalDisplay(this.baseTotalValue)
     this.updateFinalTotalDisplay(this.baseTotalValue)
   }
 
@@ -17,13 +16,6 @@ export default class extends Controller {
 
       this.updateTotalDisplay(this.baseTotalValue + price)
       this.updateFinalTotalDisplay(this.baseTotalValue + price)
-    }
-  }
-
-  updateTotalDisplay(total) {
-    const totalElement = this.totalDisplayTarget
-    if (totalElement) {
-      totalElement.textContent = this.formatCurrency(total)
     }
   }
 
