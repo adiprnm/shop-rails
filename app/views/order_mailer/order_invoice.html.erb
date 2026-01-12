@@ -54,8 +54,8 @@
       <tr>
         <td>
           <%= item.orderable_name %>
-          <% if item.product_variant.present? %>
-            <span style="color: #666; font-size: 0.9em;">- <%= item.product_variant.name %></span>
+          <% if item.product_variant_name.present? %>
+            <span style="color: #666; font-size: 0.9em;">- <%= item.product_variant_name %></span>
           <% end %>
         </td>
         <td><%= idr item.orderable_price %></td>

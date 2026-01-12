@@ -36,6 +36,7 @@ class Transaction
         orderable_price: line_item.price,
         productable: line_item.cartable.productable,
         product_variant: line_item.product_variant,
+        product_variant_name: line_item.product_variant&.name,
         weight: weight,
       )
     end
