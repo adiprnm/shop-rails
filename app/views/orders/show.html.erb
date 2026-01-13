@@ -12,13 +12,9 @@
 <div class="text-center" data-controller="copy-text">
   <%= status_tag(@order) %>
 
-  <h1 class="mt-4" style="font-size: 2rem; font-weight: 800;"><%= idr @order.total_price %></h1>
-  <button style="padding: 0.25rem 0.75rem; font-size: 14px;" data-amount="<%= @order.total_price %>" data-action="copy-text#perform" class="mb-4">Salin</button>
+  <h1 class="mt-4" style="font-size: 2rem; font-weight: 800;"><%= idr @order.final_total_price %></h1>
+  <button style="padding: 0.25rem 0.75rem; font-size: 0.85rem;" data-amount="<%= @order.total_price %>" data-action="copy-text#perform" class="mb-4">Salin</button>
 
-  <% if Current.settings["payment_provider"] == "manual" && @order.unique_code.present? %>
-    <p class="mb-8 text-xl">Kode unik pembayaran: <strong style="font-size: 1.25rem;"><%= @order.unique_code %></strong></p>
-    <p class="text-gray text-sm mb-4">Mohon transferkan sesuai dengan nominal ditambah kode unik pembayaran.</p>
-  <% end %>
   <dialog data-copy-text-target="modal">
     <article>
       <p>Nominal berhasil disalin!</p>

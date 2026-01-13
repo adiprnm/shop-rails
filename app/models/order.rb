@@ -82,6 +82,10 @@ class Order < ApplicationRecord
     end
   end
 
+  def final_total_price
+    total_price.to_i + unique_code
+  end
+
   private
     def send_order_successful_notification
       Notification.with(order: self).notify
