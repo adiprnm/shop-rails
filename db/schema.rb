@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_13_000329) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -46,8 +46,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "price"
+    t.integer "product_variant_id"
+    t.integer "quantity", default: 1, null: false
     t.index ["cart_id"], name: "index_cart_line_items_on_cart_id"
     t.index ["cartable_type", "cartable_id"], name: "index_cart_line_items_on_cartable"
+    t.index ["product_variant_id"], name: "index_cart_line_items_on_product_variant_id"
   end
 
   create_table "carts", force: :cascade do |t|
@@ -68,11 +71,35 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
     t.integer "product_id", null: false
   end
 
+  create_table "cities", force: :cascade do |t|
+    t.string "rajaongkir_id", null: false
+    t.string "name", null: false
+    t.integer "province_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "zip_code"
+    t.index ["name"], name: "index_cities_on_name"
+    t.index ["province_id"], name: "index_cities_on_province_id"
+    t.index ["rajaongkir_id"], name: "index_cities_on_rajaongkir_id", unique: true
+  end
+
   create_table "digital_products", force: :cascade do |t|
     t.integer "resource_type", default: 0
     t.string "resource_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "districts", force: :cascade do |t|
+    t.string "rajaongkir_id", null: false
+    t.string "name", null: false
+    t.integer "city_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "zip_code"
+    t.index ["city_id"], name: "index_districts_on_city_id"
+    t.index ["name"], name: "index_districts_on_name"
+    t.index ["rajaongkir_id"], name: "index_districts_on_rajaongkir_id", unique: true
   end
 
   create_table "donation_payment_evidences", force: :cascade do |t|
@@ -106,8 +133,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
     t.datetime "updated_at", null: false
     t.string "productable_type"
     t.integer "productable_id"
+    t.integer "product_variant_id"
+    t.integer "weight"
+    t.string "product_variant_name"
     t.index ["order_id"], name: "index_order_line_items_on_order_id"
     t.index ["orderable_type", "orderable_id"], name: "index_order_line_items_on_cartable"
+    t.index ["product_variant_id"], name: "index_order_line_items_on_product_variant_id"
     t.index ["productable_type", "productable_id"], name: "index_order_line_items_on_productable"
   end
 
@@ -125,7 +156,30 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "remark"
+    t.string "customer_phone"
+    t.text "address_line"
+    t.integer "shipping_province_id"
+    t.integer "shipping_city_id"
+    t.integer "shipping_district_id"
+    t.integer "shipping_subdistrict_id"
+    t.text "order_notes"
+    t.string "shipping_provider"
+    t.string "shipping_method"
+    t.integer "shipping_cost"
+    t.boolean "has_physical_products"
+    t.integer "shipping_cost_id"
+    t.string "tracking_number"
+    t.datetime "tracking_number_updated_at"
+    t.integer "unique_code"
     t.index ["cart_id"], name: "index_orders_on_cart_id"
+    t.index ["has_physical_products"], name: "index_orders_on_has_physical_products"
+    t.index ["shipping_city_id"], name: "index_orders_on_shipping_city_id"
+    t.index ["shipping_cost_id"], name: "index_orders_on_shipping_cost_id"
+    t.index ["shipping_district_id"], name: "index_orders_on_shipping_district_id"
+    t.index ["shipping_method"], name: "index_orders_on_shipping_method"
+    t.index ["shipping_provider"], name: "index_orders_on_shipping_provider"
+    t.index ["shipping_province_id"], name: "index_orders_on_shipping_province_id"
+    t.index ["shipping_subdistrict_id"], name: "index_orders_on_shipping_subdistrict_id"
   end
 
   create_table "payment_evidences", force: :cascade do |t|
@@ -134,6 +188,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
     t.integer "payable_id", null: false
     t.string "payable_type", null: false
     t.boolean "checked", default: false, null: false
+  end
+
+  create_table "physical_products", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "weight"
+    t.boolean "requires_shipping"
+  end
+
+  create_table "product_variants", force: :cascade do |t|
+    t.integer "product_id", null: false
+    t.string "name"
+    t.integer "price"
+    t.integer "weight"
+    t.integer "stock"
+    t.boolean "is_active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_product_variants_on_product_id"
   end
 
   create_table "products", force: :cascade do |t|
@@ -153,6 +226,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
     t.integer "minimum_price"
   end
 
+  create_table "provinces", force: :cascade do |t|
+    t.string "rajaongkir_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_provinces_on_name"
+    t.index ["rajaongkir_id"], name: "index_provinces_on_rajaongkir_id", unique: true
+  end
+
   create_table "settings", force: :cascade do |t|
     t.string "key"
     t.json "value"
@@ -160,10 +242,50 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_174250) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "shipping_costs", force: :cascade do |t|
+    t.string "origin_type"
+    t.integer "origin_id"
+    t.string "destination_type"
+    t.integer "destination_id"
+    t.integer "weight"
+    t.string "courier"
+    t.string "service"
+    t.string "description"
+    t.integer "cost"
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "price_updated_at"
+    t.index ["origin_type", "origin_id", "destination_type", "destination_id", "weight", "courier", "service"], name: "index_shipping_costs_unique", unique: true
+  end
+
+  create_table "subdistricts", force: :cascade do |t|
+    t.string "rajaongkir_id", null: false
+    t.string "name", null: false
+    t.integer "district_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "zip_code"
+    t.index ["district_id"], name: "index_subdistricts_on_district_id"
+    t.index ["name"], name: "index_subdistricts_on_name"
+    t.index ["rajaongkir_id"], name: "index_subdistricts_on_rajaongkir_id", unique: true
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cart_line_items", "carts"
+  add_foreign_key "cart_line_items", "product_variants"
+  add_foreign_key "cities", "provinces"
+  add_foreign_key "districts", "cities"
   add_foreign_key "donation_payment_evidences", "donations"
   add_foreign_key "order_line_items", "orders"
+  add_foreign_key "order_line_items", "product_variants"
   add_foreign_key "orders", "carts"
+  add_foreign_key "orders", "cities", column: "shipping_city_id"
+  add_foreign_key "orders", "districts", column: "shipping_district_id"
+  add_foreign_key "orders", "provinces", column: "shipping_province_id"
+  add_foreign_key "orders", "shipping_costs"
+  add_foreign_key "orders", "subdistricts", column: "shipping_subdistrict_id"
+  add_foreign_key "product_variants", "products"
+  add_foreign_key "subdistricts", "districts"
 end

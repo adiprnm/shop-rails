@@ -5,6 +5,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     @cart = carts(:guest_cart)
     @product = products(:design_collection)
     @default_headers = { headers: { "CF-Connecting-IP" => "10.0.0.1" } }
+    @jne_district_yes = shipping_costs(:jne_district_yes)
   end
 
   test "should create order successfully" do
@@ -19,7 +20,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
         },
         **@default_headers
 
-      assert_redirected_to order_path(Order.last.order_id)
+      assert_redirected_to order_path(Order.last.order_id), "Should redirect to order page but got #{response.redirect_url} with flash: #{flash[:alert]}"
     end
   end
 
@@ -141,5 +142,96 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     **@default_headers
 
     assert_not Order.last.customer_agree_to_receive_newsletter
+  end
+
+  test "should create order with valid shipping_cost_id for physical product" do
+    physical_product = products(:premium_t_shirt)
+    @cart.line_items.create(cartable: physical_product, price: 50000)
+
+    assert_difference("Order.count") do
+      post orders_path, params: {
+        customer_name: "Test User",
+        customer_email_address: "test@example.com",
+        customer_phone: "08123456789",
+        customer_agree_to_terms: "1",
+        address_line: "Test Address 123",
+        shipping_province_id: provinces(:jawa_barat).id,
+        shipping_city_id: cities(:jakarta_selatan).id,
+        shipping_district_id: districts(:tebet).id,
+        shipping_subdistrict_id: subdistricts(:gedong_pancoran).id,
+        shipping_cost_id: @jne_district_yes.id
+      },
+      **@default_headers
+
+      assert_redirected_to order_path(Order.last.order_id), "Got redirected to #{response.redirect_url} with flash: #{flash[:alert]}"
+    end
+  end
+
+  test "should not create order with invalid shipping_cost_id" do
+    physical_product = products(:premium_t_shirt)
+    @cart.line_items.create(cartable: physical_product, price: 50000)
+
+    assert_no_difference("Order.count") do
+      post orders_path, params: {
+        customer_name: "Test User",
+        customer_email_address: "test@example.com",
+        customer_phone: "08123456789",
+        customer_agree_to_terms: "1",
+        address_line: "Test Address 123",
+        shipping_province_id: 1,
+        shipping_city_id: 1,
+        shipping_cost_id: 999999
+      },
+      **@default_headers
+
+      assert_redirected_to cart_path
+      assert_not_nil flash[:alert]
+    end
+  end
+
+  test "should not create order for physical product without shipping_cost_id" do
+    physical_product = products(:premium_t_shirt)
+    @cart.line_items.create(cartable: physical_product, price: 50000)
+
+    assert_no_difference("Order.count") do
+      post orders_path, params: {
+        customer_name: "Test User",
+        customer_email_address: "test@example.com",
+        customer_phone: "08123456789",
+        customer_agree_to_terms: "1",
+        address_line: "Test Address 123",
+        shipping_province_id: 1,
+        shipping_city_id: 1
+      },
+      **@default_headers
+
+      assert_redirected_to cart_path
+      assert_not_nil flash[:alert]
+    end
+  end
+
+  test "should not allow shipping cost manipulation via shipping_cost_id" do
+    physical_product = products(:premium_t_shirt)
+    @cart.line_items.create(cartable: physical_product, price: 50000)
+
+    post orders_path, params: {
+      customer_name: "Test User",
+      customer_email_address: "test@example.com",
+      customer_phone: "08123456789",
+      customer_agree_to_terms: "1",
+      address_line: "Test Address 123",
+      shipping_province_id: provinces(:jawa_barat).id,
+      shipping_city_id: cities(:jakarta_selatan).id,
+      shipping_district_id: districts(:tebet).id,
+      shipping_subdistrict_id: subdistricts(:gedong_pancoran).id,
+      shipping_cost_id: @jne_district_yes.id
+    },
+    **@default_headers
+
+    assert_redirected_to order_path(Order.last.order_id)
+    assert_equal 12000, Order.last.shipping_cost
+    assert_equal "jne", Order.last.shipping_provider
+    assert_equal "YES", Order.last.shipping_method
+    assert_equal 50000 + 12000, Order.last.total_price
   end
 end

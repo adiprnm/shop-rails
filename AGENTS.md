@@ -195,6 +195,7 @@ bd sync
 - Follow Rails 8 conventions (Solid Queue, Solid Cache, Solid Cable)
 - Use Active Storage for file uploads
 - Database changes require migrations in `db/migrate/`
+- NEVER remove existing routes from `config/routes.rb` unless explicitly requested and approved
 
 ## Commit Discipline
 
@@ -259,6 +260,38 @@ bd sync
 5. **Act**: Implement changes following Rails conventions
 6. **Verify**: Run tests, linters, and security scans
 7. **Update bead**: Mark progress, record decisions, close when complete
+
+## Plan Approval Workflow
+
+**CRITICAL: When user approves a plan, IMMEDIATELY create beads based on that plan.**
+
+1. **Present plan**: Show implementation breakdown before starting work
+2. **Await approval**: Stop and wait for user to approve the plan
+3. **Create beads on approval**: Once user says "approved" or similar, immediately create beads:
+   - Create individual beads for each major task in the plan
+   - Set appropriate priority (P0, P1, P2, P3, P4)
+   - Set appropriate type (task, bug, feature, epic, question, docs)
+   - Add dependencies using `bd dep add <child> <parent>` for task ordering
+   - Include acceptance criteria in bead descriptions
+4. **Confirm creation**: List all created beads with their IDs and purposes
+5. **Begin execution**: Set first bead to `in_progress` and start work
+
+**Example:**
+
+```bash
+# After plan approval, create beads immediately
+bd create "Add user authentication" -p 1 -t feature -d "Implement login/signup with Devise"
+bd create "Create users table migration" -p 0 -t task -d "Add users table with email/password" --deps parent-of:first-bead-id
+bd create "Set up Devise configuration" -p 1 -t task --deps parent-of:first-bead-id
+bd create "Build login form" -p 1 -t task --deps parent-of:first-bead-id
+bd create "Add authentication tests" -p 2 -t task --deps parent-of:first-bead-id
+
+# Link dependencies
+bd dep add <users-table-bead> <authentication-bead>
+bd dep add <devise-config-bead> <authentication-bead>
+bd dep add <login-form-bead> <authentication-bead>
+bd dep add <auth-tests-bead> <authentication-bead>
+```
 
 ## Order of Operations
 
@@ -396,3 +429,66 @@ When ending a work session, you MUST complete ALL steps below. Work is NOT compl
 - If push fails, resolve and retry until it succeeds
 - Always include bead references in commit messages
 - Ensure beads accurately reflect work state
+
+<!-- bv-agent-instructions-v1 -->
+
+---
+
+## Beads Workflow Integration
+
+This project uses [beads_viewer](https://github.com/Dicklesworthstone/beads_viewer) for issue tracking. Issues are stored in `.beads/` and tracked in git.
+
+### Essential Commands
+
+```bash
+# View issues (launches TUI - avoid in automated sessions)
+bv
+
+# CLI commands for agents (use these instead)
+bd ready              # Show issues ready to work (no blockers)
+bd list --status=open # All open issues
+bd show <id>          # Full issue details with dependencies
+bd create --title="..." --type=task --priority=2
+bd update <id> --status=in_progress
+bd close <id> --reason="Completed"
+bd close <id1> <id2>  # Close multiple issues at once
+bd sync               # Commit and push changes
+```
+
+### Workflow Pattern
+
+1. **Start**: Run `bd ready` to find actionable work
+2. **Claim**: Use `bd update <id> --status=in_progress`
+3. **Work**: Implement the task
+4. **Complete**: Use `bd close <id>`
+5. **Sync**: Always run `bd sync` at session end
+
+### Key Concepts
+
+- **Dependencies**: Issues can block other issues. `bd ready` shows only unblocked work.
+- **Priority**: P0=critical, P1=high, P2=medium, P3=low, P4=backlog (use numbers, not words)
+- **Types**: task, bug, feature, epic, question, docs
+- **Blocking**: `bd dep add <issue> <depends-on>` to add dependencies
+
+### Session Protocol
+
+**Before ending any session, run this checklist:**
+
+```bash
+git status              # Check what changed
+git add <files>         # Stage code changes
+bd sync                 # Commit beads changes
+git commit -m "..."     # Commit code
+bd sync                 # Commit any new beads changes
+git push                # Push to remote
+```
+
+### Best Practices
+
+- Check `bd ready` at session start to find available work
+- Update status as you work (in_progress → closed)
+- Create new issues with `bd create` when you discover tasks
+- Use descriptive titles and set appropriate priority/type
+- Always `bd sync` before ending session
+
+<!-- end-bv-agent-instructions -->

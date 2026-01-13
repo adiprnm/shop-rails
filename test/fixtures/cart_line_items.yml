@@ -4,13 +4,30 @@ ruby_guide_in_cart:
   cart: user_one_cart
   cartable: ruby_guide (Product)
   price: 99000
+  quantity: 1
 
 design_collection_in_cart:
   cart: user_one_cart
   cartable: design_collection (Product)
   price: 299000
+  quantity: 1
 
 business_course_in_cart:
   cart: user_two_cart
   cartable: business_audio_course (Product)
   price: 149000
+  quantity: 1
+
+premium_t_shirt_red_in_cart:
+  cart: user_one_cart
+  cartable: premium_t_shirt (Product)
+  product_variant: t_shirt_red_small
+  price: 150000
+  quantity: 1
+
+ebook_reader_black_in_cart:
+  cart: user_two_cart
+  cartable: ebook_reader (Product)
+  product_variant: ebook_black
+  price: 1500000
+  quantity: 1

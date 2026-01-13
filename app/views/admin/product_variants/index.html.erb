@@ -1,0 +1,51 @@
+<%= content_for(:title) { "Variants for #{@product.name} | #{ Current.settings["site_name"] } admin" } %>
+
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Variants for <%= @product.name %></h1>
+
+  <div class="mb-4">
+    <%= link_to "Back to Product", edit_admin_product_path(@product), class: "btn" %>
+    <%= link_to "+ Add New Variant", new_admin_product_variant_path(@product), class: "btn" %>
+  </div>
+
+  <%= form_with url: bulk_activate_admin_product_variants_path(@product), method: :post, local: true, class: "mb-4" do |f| %>
+    <div class="flex items-center gap-2">
+      <%= check_box_tag :bulk_select_all, nil, false, data: { action: "change->variants#toggleAll" } %>
+      <label>Select All</label>
+      <%= f.submit "Activate Selected", class: "btn btn-success" %>
+      <%= submit_tag "Deactivate Selected", formaction: bulk_deactivate_admin_product_variants_path(@product), class: "btn btn-danger" %>
+    </div>
+
+    <div class="full-width overflow-x-scroll mt-4">
+      <table style="min-width: 600px;">
+        <thead>
+          <th></th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Weight Override</th>
+          <th>Stock</th>
+          <th>Active</th>
+          <th>Actions</th>
+        </thead>
+        <tbody>
+          <% @variants.each do |variant| %>
+            <tr>
+              <td><%= check_box_tag "variant_ids[]", variant.id, false, class: "bulk-checkbox" %></td>
+              <td><%= variant.name %></td>
+              <td><%= idr variant.price %></td>
+              <td><%= variant.weight.present? ? "#{variant.weight}g" : "-" %></td>
+              <td><%= variant.stock %></td>
+              <td><%= variant.is_active ? "Yes" : "No" %></td>
+              <td>
+                <%= link_to "Edit", edit_admin_product_variant_path(@product, variant) %>
+                <%= link_to "Delete", admin_product_variant_path(@product, variant), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "text-red" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

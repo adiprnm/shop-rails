@@ -17,7 +17,7 @@
   </tr>
   <tr>
     <td style="background-color: #f2f2f2"><strong>Kontak Pemesan</strong></td>
-    <td><%= @order.customer_email_address %></td>
+    <td><%= @order.customer_email_address %><%= @order.customer_phone.present? ? " (#{@order.customer_phone})" : "" %></td>
   </tr>
   <tr>
     <td style="background-color: #f2f2f2"><strong>Total Harga</strong></td>
@@ -41,6 +41,30 @@
     <% end %>
   </tbody>
 </table>
+
+<% if @order.contains_physical_products? %>
+  <h3>Informasi Pengiriman</h3>
+  <table style="margin-top: 1rem;">
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Kurir</strong></td>
+      <td><%= "#{@order.shipping_provider&.upcase} - #{@order.shipping_method}" %></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Biaya Kirim</strong></td>
+      <td><%= idr @order.shipping_cost %></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Alamat</strong></td>
+      <td><%= @order.address_line %></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f2f2f2"><strong>Area</strong></td>
+      <td>
+        <%= [@order.shipping_subdistrict&.name, @order.shipping_district&.name, @order.shipping_city&.name, @order.shipping_province&.name].compact.join(", ") %>
+      </td>
+    </tr>
+  </table>
+<% end %>
 
 <% if Setting.payment_provider.value == "manual" %>
   <p style="line-height: 1.5; margin-top: 2rem;">Harap lakukan verifikasi pembayaran di halaman admin secepatnya.</p>

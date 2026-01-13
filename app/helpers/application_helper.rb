@@ -1,5 +1,6 @@
 module ApplicationHelper
   def idr(amount, text: true)
+    return "-" if amount.nil?
     return "Gratis" if amount.zero? && text
 
     number_to_currency(amount, unit: "Rp", separator: ".", delimiter: ".", precision: 0)

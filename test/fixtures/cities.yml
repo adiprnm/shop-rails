@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+jakarta_barat:
+  rajaongkir_id: "1"
+  name: Jakarta Barat
+  province: jawa_barat
+
+jakarta_timur:
+  rajaongkir_id: "2"
+  name: Jakarta Timur
+  province: jawa_barat
+
+jakarta_selatan:
+  rajaongkir_id: "3"
+  name: Jakarta Selatan
+  province: jawa_barat
+
+semarang:
+  rajaongkir_id: "4"
+  name: Semarang
+  province: jawa_tengah

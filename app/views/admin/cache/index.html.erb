@@ -1,0 +1,42 @@
+<%= content_for(:title) { "Cache Management | #{ Current.settings["site_name"] } admin" } %>
+
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Cache Management</h1>
+
+  <div class="card mt-4">
+    <h2>Address Cache</h2>
+    <div class="mt-4">
+      <p><strong>Provinces:</strong> <%= @cached_addresses[:provinces] %></p>
+      <p><strong>Cities:</strong> <%= @cached_addresses[:cities] %></p>
+      <p><strong>Districts:</strong> <%= @cached_addresses[:districts] %></p>
+      <p><strong>Subdistricts:</strong> <%= @cached_addresses[:subdistricts] %></p>
+
+      <% if @cache_age %>
+        <p><strong>Cache Age:</strong> <%= distance_of_time_in_words(@cache_age, Time.current) %> ago</p>
+      <% else %>
+        <p><strong>Cache Status:</strong> No cached addresses</p>
+      <% end %>
+
+      <%= form_with url: fetch_provinces_admin_cache_path, method: :post, local: true do |f| %>
+        <%= f.submit "Fetch Provinces from RajaOngkir", class: "btn" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="card mt-4">
+    <h2>Shipping Cost Cache</h2>
+    <div class="mt-4">
+      <p><strong>Cached Shipping Costs:</strong> <%= @shipping_cost_cache_count %></p>
+
+      <%= form_with url: clear_shipping_cache_admin_cache_path, method: :post, local: true do |f| %>
+        <%= f.submit "Clear Shipping Cost Cache", class: "btn btn-danger", data: { turbo_confirm: "Are you sure? This will clear all cached shipping costs." } %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <%= link_to "Back to Admin", admin_path %>
+  </div>
+</div>

@@ -40,6 +40,14 @@ class OrdersController < ApplicationController
         :customer_email_address,
         :customer_agree_to_terms,
         :customer_agree_to_receive_newsletter,
+        :customer_phone,
+        :address_line,
+        :shipping_province_id,
+        :shipping_city_id,
+        :shipping_district_id,
+        :shipping_subdistrict_id,
+        :order_notes,
+        :shipping_cost_id
       )
     end
 end

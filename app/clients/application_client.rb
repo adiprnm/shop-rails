@@ -71,6 +71,11 @@ class ApplicationClient
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
       end
+
+      if Rails.env.development?
+        http.set_debug_output($stdout)
+      end
+
       http
     end
 

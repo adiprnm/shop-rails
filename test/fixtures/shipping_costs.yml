@@ -1,0 +1,97 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+ jne_yes:
+  origin_type: Province
+  origin: jawa_barat
+  destination_type: City
+  destination: jakarta_barat
+  weight: 1000
+  courier: jne
+  service: "YES"
+  cost: 10000
+  created_at: <%= 1.hour.ago %>
+  price_updated_at: <%= 1.hour.ago %>
+
+ jne_oke_fresh:
+  origin_type: Province
+  origin: jawa_barat
+  destination_type: City
+  destination: jakarta_barat
+  weight: 500
+  courier: jne
+  service: OKE
+  cost: 8000
+  created_at: <%= 1.hour.ago %>
+  price_updated_at: <%= 1.hour.ago %>
+
+ jne_oke_expired:
+  origin_type: Province
+  origin: jawa_barat
+  destination_type: City
+  destination: jakarta_barat
+  weight: 501
+  courier: jne
+  service: OKE
+  cost: 8000
+  created_at: <%= 25.hours.ago %>
+  price_updated_at: <%= 25.hours.ago %>
+
+ jne_reg_fresh:
+  origin_type: Province
+  origin: jawa_barat
+  destination_type: City
+  destination: jakarta_barat
+  weight: 750
+  courier: jne
+  service: REG
+  cost: 9000
+  created_at: <%= 1.hour.ago %>
+  price_updated_at: <%= 1.hour.ago %>
+
+ jne_reg_expired:
+  origin_type: Province
+  origin: jawa_barat
+  destination_type: City
+  destination: jakarta_barat
+  weight: 751
+  courier: jne
+  service: REG
+  cost: 9000
+  created_at: <%= 25.hours.ago %>
+  price_updated_at: <%= 25.hours.ago %>
+
+ tiki_ons_fresh:
+  origin_type: Province
+  origin: jawa_barat
+  destination_type: City
+  destination: jakarta_barat
+  weight: 1001
+  courier: tiki
+  service: ONS
+  cost: 12000
+  created_at: <%= 1.hour.ago %>
+  price_updated_at: <%= 1.hour.ago %>
+
+ jne_district_yes:
+  origin_type: District
+  origin: kebon_jeruk
+  destination_type: District
+  destination: tebet
+  weight: 1000
+  courier: jne
+  service: "YES"
+  cost: 12000
+  created_at: <%= 1.hour.ago %>
+  price_updated_at: <%= 1.hour.ago %>
+
+ kebon_jeruk_yes:
+  origin_type: District
+  origin: cakung
+  destination_type: District
+  destination: tebet
+  weight: 1000
+  courier: jne
+  service: "YES"
+  cost: 10000
+  created_at: <%= 1.hour.ago %>
+  price_updated_at: <%= 1.hour.ago %>

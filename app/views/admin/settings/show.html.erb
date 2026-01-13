@@ -1,6 +1,6 @@
 <%= content_for(:title) { "Pengaturan | #{ Current.settings["site_name"] } admin" } %>
 
-<div>
+<div class="settings">
   <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
 
   <h1>Pengaturan</h1>
@@ -43,6 +43,12 @@
     <div class="form-group">
       <%= f.label :payment_provider, "Provider Pembayaran" %>
       <%= f.select :payment_provider, [ [ "Midtrans", "midtrans" ], [ "Manual", "manual" ] ], { selected: Current.settings["payment_provider"] } %>
+    </div>
+
+    <div class="form-group" data-controller="dependent-select" data-dependent-select-source-value="payment_provider" data-dependent-select-condition-value="manual">
+      <%= f.label :manual_payment_unique_code_max, "Maksimum Kode Unik Pembayaran Manual" %>
+      <%= f.number_field :manual_payment_unique_code_max, value: Current.settings["manual_payment_unique_code_max"].presence || 500, min: 1, data: { dependent_select_target: "field" } %>
+      <small class="text-gray">Kode unik akan di-generate secara acak dari 1 hingga angka ini saat pembayaran manual.</small>
     </div>
 
     <h3>QRIS dan Nomor Rekening</h1>
@@ -94,6 +100,7 @@
         <%= f.label :email_sender_name, "Nama Pengirim" %>
         <%= f.text_field :email_sender_name, value: Current.settings["email_sender_name"] %>
       </div>
+
       <div class="form-group">
         <%= f.label :email_sender_email, "Email Pengirim" %>
         <%= f.text_field :email_sender_email, value: Current.settings["email_sender_email"] %>
@@ -122,6 +129,44 @@
         <%= f.label :smtp_password, "Password" %>
         <%= f.text_field :smtp_password, value: Current.settings["smtp_password"] %>
       </div>
+    </div>
+
+    <h3>RajaOngkir API</h3>
+
+    <div class="grouped">
+      <div class="form-group">
+        <%= f.label :rajaongkir_api_key, "API Key" %>
+        <%= f.text_field :rajaongkir_api_key, value: Current.settings["rajaongkir_api_key"] %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :rajaongkir_api_host, "API Host" %>
+        <%= f.text_field :rajaongkir_api_host, value: Current.settings["rajaongkir_api_host"] %>
+      </div>
+    </div>
+
+    <h3>Kurir Tersedia</h3>
+
+    <div class="form-group">
+      <%= f.label :available_couriers, "Kurir Tersedia" %>
+      <%= f.text_field :available_couriers, value: Current.settings["available_couriers"] %>
+      <small class="text-gray">Pisahkan dengan koma. Contoh: jne,tiki,pos</small>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :included_shipping_services, "Layanan Pengiriman yang Disertakan" %>
+      <%= f.text_field :included_shipping_services, value: Current.settings["included_shipping_services"].presence || "" %>
+      <small class="text-gray">Pisahkan dengan koma. Kosongkan untuk menampilkan semua. Contoh: jne-yes,tiki-ocs</small>
+    </div>
+
+    <h3>Lokasi Asal Pengiriman (Default)</h3>
+
+    <div class="form-group">
+      <%= f.label :default_origin_district_id, "Kecamatan" %>
+      <%= f.select :default_origin_district_id,
+        options_from_collection_for_select(@districts, :id, :phrased, selected: Current.settings["default_origin_district_id"]),
+        { include_blank: "Pilih Kecamatan" }
+      %>
     </div>
 
     <h3>Akun Admin</h3>

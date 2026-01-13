@@ -1,0 +1,1 @@
+<%= tag.option("Select Subdistrict", value: "") + subdistricts.map { |subdistrict| tag.option(subdistrict.name, value: subdistrict.id) }.join("\n").html_safe %>

@@ -40,6 +40,13 @@
       <%= f.text_area :remark %>
     </div>
 
+    <% if @order.contains_physical_products? %>
+      <div class="form-group">
+        <%= f.label :tracking_number %>
+        <%= f.text_field :tracking_number %>
+      </div>
+    <% end %>
+
     <%= f.submit "Simpan" %>
   <% end %>
 </div>

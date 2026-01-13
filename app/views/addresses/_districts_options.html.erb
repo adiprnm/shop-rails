@@ -1,0 +1,1 @@
+<%= tag.option("Select District", value: "") + districts.map { |district| tag.option(district.name, value: district.id) }.join("\n").html_safe %>

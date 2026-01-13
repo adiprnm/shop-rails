@@ -1,0 +1,29 @@
+<% if images.any? %>
+  <div class="carousel" data-controller="carousel" data-carousel-autoplay-value="false">
+    <div class="carousel-container">
+      <% images.each_with_index do |image, index| %>
+        <div class="carousel-slide <%= index == 0 ? 'active' : '' %>" data-carousel-target="slide" <%= index > 0 ? 'hidden' : '' %>>
+          <%= image_tag image, class: "product-image product-image--full-height" %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if images.length > 1 %>
+      <div class="carousel-nav">
+        <button type="button" data-carousel-target="prev" data-action="carousel#previous" aria-label="Previous image">
+          &#10094;
+        </button>
+        <div class="carousel-indicators">
+          <% images.each_with_index do |image, index| %>
+            <%= image_tag image, data: { index: index, action: "click->carousel#goTo" }, class: "carousel-indicator #{ index == 0 ? 'active' : '' }" %>
+          <% end %>
+        </div>
+        <button type="button" data-carousel-target="next" data-action="carousel#next" aria-label="Next image">
+          &#10095;
+        </button>
+      </div>
+    <% end %>
+  </div>
+<% elsif featured_image.present? && featured_image.attached? %>
+  <%= image_tag featured_image, class: "product-image product-image--full-height mb-4" %>
+<% end %>

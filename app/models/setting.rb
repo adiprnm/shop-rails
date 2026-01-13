@@ -14,11 +14,11 @@ class Setting < ApplicationRecord
     payment_client_id
     payment_client_secret
     payment_api_host
-    payment_provider
     payment_qris
     payment_account_name
     payment_account_user_name
     payment_account_number
+    manual_payment_unique_code_max
     email_sender_email
     email_sender_name
     smtp_host
@@ -28,6 +28,11 @@ class Setting < ApplicationRecord
     admin_username
     admin_password
     admin_email
+    rajaongkir_api_key
+    rajaongkir_api_host
+    default_origin_district_id
+    available_couriers
+    included_shipping_services
   ].freeze
   ATTACHABLE_KEYS = %i[ site_favicon og_image payment_qris ].freeze
 

@@ -42,6 +42,30 @@ class CartLineItemTest < ActiveSupport::TestCase
   end
 
   test "should allow multiple products in same cart" do
-    assert_equal 2, carts(:user_one_cart).line_items.count
+    assert_equal 3, carts(:user_one_cart).line_items.count
+  end
+
+  test "should belong to product_variant" do
+    assert_respond_to @line_item, :product_variant
+  end
+
+  test "physical product cart line item should have product_variant" do
+    t_shirt_item = cart_line_items(:premium_t_shirt_red_in_cart)
+    assert_not_nil t_shirt_item.product_variant
+    assert_equal "Red - Small", t_shirt_item.product_variant.name
+  end
+
+  test "physical product cart line item should use variant price" do
+    t_shirt_item = cart_line_items(:premium_t_shirt_red_in_cart)
+    assert_equal 150000, t_shirt_item.price
+  end
+
+  test "physical_product? should return true for physical product line items" do
+    t_shirt_item = cart_line_items(:premium_t_shirt_red_in_cart)
+    assert t_shirt_item.physical_product?
+  end
+
+  test "physical_product? should return false for digital product line items" do
+    assert_not @line_item.physical_product?
   end
 end

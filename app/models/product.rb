@@ -1,9 +1,12 @@
 class Product < ApplicationRecord
-  delegated_type :productable, types: %w[ DigitalProduct ]
+  delegated_type :productable, types: %w[ DigitalProduct PhysicalProduct ]
 
   has_one_attached :featured_image
+  has_many_attached :images
   has_and_belongs_to_many :categories
 
+  has_many :product_variants, dependent: :destroy, inverse_of: :product
+  accepts_nested_attributes_for :product_variants, allow_destroy: true, reject_if: :all_blank
   has_many :order_line_items, as: :orderable
   has_many :completed_orders, -> { paid }, through: :order_line_items, source: :order
 
@@ -21,9 +24,12 @@ class Product < ApplicationRecord
     productable = case productable_type
     when "DigitalProduct"
       DigitalProduct.new(**productable_params)
+    when "PhysicalProduct"
+      PhysicalProduct.new(**productable_params)
     end
 
-    product = Product.create!(productable: productable, **product_params)
+    product = Product.new(productable: productable, **product_params.to_h)
+    product.save!
     product
   end
 
@@ -40,6 +46,19 @@ class Product < ApplicationRecord
   end
 
   def coming_soon?
+    return false if physical_product?
     productable.resource_path.blank?
+  end
+
+  def physical_product?
+    productable_type == "PhysicalProduct"
+  end
+
+  def physical?
+    productable_type == "PhysicalProduct"
+  end
+
+  def digital?
+    productable_type == "DigitalProduct"
   end
 end

@@ -1,0 +1,51 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# T-Shirt variants - testing active, inactive, and out-of-stock scenarios
+t_shirt_red_small:
+  product: premium_t_shirt
+  name: Red - Small
+  price: 150000
+  weight: 250
+  stock: 50
+  is_active: true
+
+t_shirt_blue_medium:
+  product: premium_t_shirt
+  name: Blue - Medium
+  price: 150000
+  weight: 250
+  stock: 30
+  is_active: true
+
+t_shirt_green_large:
+  product: premium_t_shirt
+  name: Green - Large
+  price: 150000
+  weight: 250
+  stock: 0
+  is_active: true
+
+t_shirt_discontinued:
+  product: premium_t_shirt
+  name: Black - Extra Large
+  price: 150000
+  weight: 250
+  stock: 10
+  is_active: false
+
+# EBook Reader variants
+ebook_black:
+  product: ebook_reader
+  name: Black
+  price: 1500000
+  weight: 500
+  stock: 25
+  is_active: true
+
+ebook_white:
+  product: ebook_reader
+  name: White
+  price: 1500000
+  weight: 500
+  stock: 0
+  is_active: true

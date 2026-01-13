@@ -1,0 +1,26 @@
+<% if shipping_options.present? %>
+  <div class="mt-4 card">
+    <h3>Pilihan Pengiriman</h3>
+    <div id="shipping-options-list">
+      <% shipping_options.each do |option| %>
+        <div class="form-group flex items-center gap-4 mt-4">
+          <%= radio_button_tag "shipping_cost_id", option[:id], false,
+            id: "shipping_#{option[:id]}",
+            data: {
+              action: "change->shipping#updateTotal",
+              price: option[:price],
+              shippingCostId: option[:id]
+            } %>
+          <%= label_tag "shipping_#{option[:id]}" do %>
+            <strong><%= option[:courier] %> - <%= option[:service] %></strong>
+            <br>
+            <%= idr option[:price] %>
+            <% if option[:etd].present? %>
+              <small class="text-gray"> (Estimasi: <%= option[:etd] %>)</small>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

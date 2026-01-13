@@ -114,4 +114,23 @@ class Admin::OrdersControllerTest < ActionDispatch::IntegrationTest
     get admin_orders_path, headers: { "HTTP_AUTHORIZATION" => invalid_auth }
     assert_response :unauthorized
   end
+
+  test "should update tracking_number" do
+    patch admin_order_path(@order), params: {
+      order: { tracking_number: "JP123456789" }
+    }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_redirected_to admin_order_path(@order)
+    assert_equal "JP123456789", @order.reload.tracking_number
+  end
+
+  test "should set tracking_number_updated_at when tracking_number is updated" do
+    assert_nil @order.tracking_number_updated_at
+
+    patch admin_order_path(@order), params: {
+      order: { tracking_number: "JP123456789" }
+    }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_not_nil @order.reload.tracking_number_updated_at
+  end
 end

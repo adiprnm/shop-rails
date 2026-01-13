@@ -1,4 +1,8 @@
 class Admin::SettingsController < AdminController
+  def show
+    @districts = District.all.includes(city: :province)
+  end
+
   def update
     Setting.bulk_update(settings_params)
 

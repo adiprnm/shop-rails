@@ -1,3 +1,14 @@
+<% title = "Unggah Bukti Pembayaran | #{ Current.settings["site_name"] }" %>
+<% description = "Unggak bukti pembayaran pesanan pesanan di #{ Current.settings["site_name"] }" %>
+
+<%= content_for(:title) { title } %>
+<%= content_for(:head) do %>
+  <%= tag.meta name: "robots", content: "noindex" %>
+  <%= tag.meta name: "description", content: description %>
+  <%= tag.meta name: "og:title", content: title %>
+  <%= tag.meta name: "og:description", content: description %>
+<% end %>
+
 <div>
   <h1>Unggah Bukti Pembayaran</h1>
 
@@ -11,6 +22,11 @@
       <td>Nama Pemesan</td>
       <td>:</td>
       <td><%= @order.customer_name %></td>
+    </tr>
+    <tr>
+      <td>Total Pembayaran</td>
+      <td>:</td>
+      <td><%= idr @order.final_total_price %></td>
     </tr>
   </table>
 
@@ -26,11 +42,20 @@
     <tbody>
       <% @order.line_items.each do |item| %>
       <tr>
-        <td><%= item.orderable_name %></td>
+        <td>
+          <%= item.orderable_name %>
+          <% if item.product_variant_name? %>
+            <br><small class="text-gray"><%= item.product_variant_name %></small>
+          <% end %>
+        </td>
         <td><%= idr item.orderable_price %></td>
       </tr>
+      <% end %>
+      <tr>
+        <td>Kode Unik</td>
+        <td><%= idr @order.unique_code %></td>
+      </tr>
     </tbody>
-    <% end %>
   </table>
 
   <h2>Bukti Pembayaran</h2>
@@ -38,6 +63,6 @@
   <%= form_with model: @payment_evidence, url: order_payment_evidence_path, method: :post, data: { controller: "image-preview" } do |f| %>
     <%= image_tag "", class: "block", data: { image_preview_target: "preview" } %>
     <%= f.file_field :file, accept: "image/jpg,image/jpeg,image/webp,image/png", data: { action: "image-preview#perform" } %>
-    <%= f.submit "Kirim Bukti Pembayaran" %>
+    <%= f.submit "Unggah Bukti Pembayaran" %>
   <% end %>
 </div>

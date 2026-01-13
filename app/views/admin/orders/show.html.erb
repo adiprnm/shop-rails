@@ -23,10 +23,38 @@
         <td class="min-w-max"><strong>Email Customer</strong></td>
         <td><%= @order.customer_email_address %></td>
       </tr>
-      <tr>
-        <td class="min-w-max"><strong>Status</strong></td>
-        <td class="min-w-max"><%= @order.state %></td>
-      </tr>
+       <tr>
+         <td class="min-w-max"><strong>Status</strong></td>
+         <td class="min-w-max"><%= @order.state %></td>
+       </tr>
+      <% if @order.contains_physical_products? %>
+        <tr>
+          <td class="min-w-max"><strong>Nomor HP</strong></td>
+          <td><%= @order.customer_phone || "-" %></td>
+        </tr>
+        <tr>
+          <td class="min-w-max"><strong>Kurir</strong></td>
+          <td><%= "#{@order.shipping_provider&.upcase} - #{@order.shipping_method}" %></td>
+        </tr>
+        <tr>
+          <td class="min-w-max"><strong>Biaya Kirim</strong></td>
+          <td><%= idr @order.shipping_cost || 0 %></td>
+        </tr>
+        <tr>
+          <td class="min-w-max"><strong>Alamat Pengiriman</strong></td>
+          <td><%= @order.address_line %></td>
+        </tr>
+         <tr>
+           <td class="min-w-max"><strong>Area</strong></td>
+           <td>
+             <%= [@order.shipping_subdistrict&.name, @order.shipping_district&.name, @order.shipping_city&.name, @order.shipping_province&.name].compact.join(", ") %>
+           </td>
+         </tr>
+         <tr>
+           <td class="min-w-max"><strong>Nomor Resi</strong></td>
+           <td><%= @order.tracking_number || "Belum tersedia" %></td>
+         </tr>
+      <% end %>
       <% if Current.settings["payment_provider"] == "manual" %>
         <tr>
           <td class="min-w-max"><strong>Keterangan</strong></td>
@@ -41,6 +69,12 @@
         <td class="min-w-max"><strong>Total Harga</strong></td>
         <td><%= idr @order.total_price %></td>
       </tr>
+      <% if Current.settings["payment_provider"] == "manual" && @order.unique_code.present? %>
+        <tr>
+          <td class="min-w-max"><strong>Kode Unik</strong></td>
+          <td><%= @order.unique_code %></td>
+        </tr>
+      <% end %>
       <% if Current.settings["payment_provider"] == "midtrans" %>
         <tr>
           <td class="min-w-max"><strong>Response Midtrans</strong></td>
