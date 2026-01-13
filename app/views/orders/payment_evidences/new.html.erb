@@ -17,14 +17,45 @@
       <td>Order ID</td>
       <td>:</td>
       <td><%= @order.order_id %></td>
-       </tr>
-       <% if @order.unique_code.present? %>
-       <tr>
-         <td>Kode Unik</td>
-         <td><%= @order.unique_code %></td>
-       </tr>
-       <% end %>
-     </tbody>
+    </tr>
+    <tr>
+      <td>Nama Pemesan</td>
+      <td>:</td>
+      <td><%= @order.customer_name %></td>
+    </tr>
+    <tr>
+      <td>Total Pembayaran</td>
+      <td>:</td>
+      <td><%= idr @order.final_total_price %></td>
+    </tr>
+  </table>
+
+  <h2>Rincian</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <td>Nama</td>
+        <td>Harga</td>
+      </tr>
+    </thead>
+    <tbody>
+      <% @order.line_items.each do |item| %>
+      <tr>
+        <td>
+          <%= item.orderable_name %>
+          <% if item.product_variant_name? %>
+            <br><small class="text-gray"><%= item.product_variant_name %></small>
+          <% end %>
+        </td>
+        <td><%= idr item.orderable_price %></td>
+      </tr>
+      <% end %>
+      <tr>
+        <td>Kode Unik</td>
+        <td><%= idr @order.unique_code %></td>
+      </tr>
+    </tbody>
   </table>
 
   <h2>Bukti Pembayaran</h2>
