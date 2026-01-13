@@ -104,13 +104,6 @@ a:has(> article.product-card) {
   font-size: 1rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
-  height: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2; /* Maximum number of lines to show */
-  line-clamp: 2; /* Standard property for modern browsers */
-  -webkit-box-orient: vertical;
 }
 .product-image {
   width: 100%;
