@@ -65,7 +65,7 @@ group :test do
   gem "selenium-webdriver"
   gem "mocha"
   gem "rails-controller-testing"
-  gem "minitest", "~> 5.0"
+  gem "minitest", "~> 6.0"
 end
 
 gem "redcarpet", "~> 3.6"
