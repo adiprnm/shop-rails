@@ -83,7 +83,7 @@ class Order < ApplicationRecord
   end
 
   def final_total_price
-    total_price.to_i + unique_code
+    total_price.to_i + unique_code.to_i
   end
 
   private
