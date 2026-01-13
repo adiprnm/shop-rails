@@ -104,4 +104,21 @@ class Admin::SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "label[for=default_origin_district_id]"
   end
+
+  test "should update manual payment unique code max setting" do
+    patch admin_settings_path, params: {
+      manual_payment_unique_code_max: "1000"
+    }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_redirected_to admin_settings_path
+    assert_equal "1000", Setting.manual_payment_unique_code_max.value
+  end
+
+  test "should display manual payment unique code max field" do
+    get admin_settings_path, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_response :success
+    assert_select "label[for=manual_payment_unique_code_max]"
+    assert_select "input[name=manual_payment_unique_code_max][type=number]"
+  end
 end

@@ -15,6 +15,7 @@ class Order < ApplicationRecord
   before_save -> { self.state_updated_at = Time.now }, if: :state_changed?
   before_save -> { self.tracking_number_updated_at = Time.now }, if: :tracking_number_changed?
   before_create -> { self.order_id = SecureRandom.uuid }
+  before_create -> { self.unique_code = generate_unique_code }, if: -> { Current.settings["payment_provider"] == "manual" }
 
   after_save_commit :decrement_variant_stock, if: -> { saved_change_to_state? && paid? }
   after_save_commit :send_order_successful_notification, if: -> { saved_change_to_state? && paid? }
@@ -51,6 +52,24 @@ class Order < ApplicationRecord
 
   def mark_evidences_as_checked
     payment_evidences.where(checked: false).update_all(checked: true)
+  end
+
+  def generate_unique_code
+    max_code = (Current.settings["manual_payment_unique_code_max"] || 500).to_i
+    attempts = 0
+    max_attempts = 100
+
+    loop do
+      code = rand(1..max_code)
+      conflicting_order = Order.where(unique_code: code, state: %w[pending failed]).exists?
+
+      unless conflicting_order
+        return code
+      end
+
+      attempts += 1
+      raise "Unable to generate unique code after #{max_attempts} attempts" if attempts >= max_attempts
+    end
   end
 
   def decrement_variant_stock

@@ -76,6 +76,110 @@ class OrderTest < ActiveSupport::TestCase
     assert_equal expected_expiry, @order.will_expire_at
   end
 
+  test "should generate unique code for manual payment provider" do
+    Current.settings = { "payment_provider" => "manual", "manual_payment_unique_code_max" => 500 }
+    order = Order.create!(
+      cart: carts(:user_one_cart),
+      customer_name: "Test Customer",
+      customer_email_address: "test@example.com",
+      customer_agree_to_terms: true,
+      total_price: 10000,
+      state: "pending"
+    )
+    assert_not_nil order.unique_code
+    assert order.unique_code >= 1
+    assert order.unique_code <= 500
+  end
+
+  test "should not generate unique code for midtrans payment provider" do
+    Current.settings = { "payment_provider" => "midtrans" }
+    order = Order.create!(
+      cart: carts(:user_one_cart),
+      customer_name: "Test Customer",
+      customer_email_address: "test@example.com",
+      customer_agree_to_terms: true,
+      total_price: 10000,
+      state: "pending"
+    )
+    assert_nil order.unique_code
+  end
+
+  test "should regenerate unique code if it conflicts with pending order" do
+    Current.settings = { "payment_provider" => "manual", "manual_payment_unique_code_max" => 10 }
+    order1 = Order.create!(
+      cart: carts(:user_one_cart),
+      customer_name: "Test Customer 1",
+      customer_email_address: "test1@example.com",
+      customer_agree_to_terms: true,
+      total_price: 10000,
+      state: "pending"
+    )
+    order2 = Order.create!(
+      cart: carts(:user_two_cart),
+      customer_name: "Test Customer 2",
+      customer_email_address: "test2@example.com",
+      customer_agree_to_terms: true,
+      total_price: 20000,
+      state: "pending"
+    )
+    assert_not_nil order1.unique_code
+    assert_not_nil order2.unique_code
+    assert order1.unique_code >= 1
+    assert order1.unique_code <= 10
+    assert order2.unique_code >= 1
+    assert order2.unique_code <= 10
+  end
+
+  test "should regenerate unique code if it conflicts with failed order" do
+    Current.settings = { "payment_provider" => "manual", "manual_payment_unique_code_max" => 10 }
+    order1 = Order.create!(
+      cart: carts(:user_one_cart),
+      customer_name: "Test Customer 1",
+      customer_email_address: "test1@example.com",
+      customer_agree_to_terms: true,
+      total_price: 10000,
+      state: "pending"
+    )
+    order1.update(state: "failed")
+    order2 = Order.create!(
+      cart: carts(:user_two_cart),
+      customer_name: "Test Customer 2",
+      customer_email_address: "test2@example.com",
+      customer_agree_to_terms: true,
+      total_price: 20000,
+      state: "pending"
+    )
+    assert_not_nil order1.unique_code
+    assert_not_nil order2.unique_code
+    assert order1.unique_code >= 1
+    assert order1.unique_code <= 10
+    assert order2.unique_code >= 1
+    assert order2.unique_code <= 10
+  end
+
+  test "should allow duplicate unique code if one order is paid" do
+    Current.settings = { "payment_provider" => "manual", "manual_payment_unique_code_max" => 10 }
+    order1 = Order.create!(
+      cart: carts(:user_one_cart),
+      customer_name: "Test Customer 1",
+      customer_email_address: "test1@example.com",
+      customer_agree_to_terms: true,
+      total_price: 10000,
+      state: "pending"
+    )
+    order1.update(state: "paid")
+    order2 = Order.create!(
+      cart: carts(:user_two_cart),
+      customer_name: "Test Customer 2",
+      customer_email_address: "test2@example.com",
+      customer_agree_to_terms: true,
+      total_price: 20000,
+      state: "pending"
+    )
+    assert_not_nil order1.unique_code
+    assert_not_nil order2.unique_code
+  end
+
   test "should mark evidences as checked" do
     evidence1 = @order.payment_evidences.create(file: File.open(Rails.root.join("test/fixtures/files/test.pdf")), checked: false)
     evidence2 = @order.payment_evidences.create(file: File.open(Rails.root.join("test/fixtures/files/test.pdf")), checked: false)

@@ -69,6 +69,12 @@
         <td class="min-w-max"><strong>Total Harga</strong></td>
         <td><%= idr @order.total_price %></td>
       </tr>
+      <% if Current.settings["payment_provider"] == "manual" && @order.unique_code.present? %>
+        <tr>
+          <td class="min-w-max"><strong>Kode Unik</strong></td>
+          <td><%= @order.unique_code %></td>
+        </tr>
+      <% end %>
       <% if Current.settings["payment_provider"] == "midtrans" %>
         <tr>
           <td class="min-w-max"><strong>Response Midtrans</strong></td>

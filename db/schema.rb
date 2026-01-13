@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_12_231551) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_13_000329) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -170,6 +170,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_12_231551) do
     t.integer "shipping_cost_id"
     t.string "tracking_number"
     t.datetime "tracking_number_updated_at"
+    t.integer "unique_code"
     t.index ["cart_id"], name: "index_orders_on_cart_id"
     t.index ["has_physical_products"], name: "index_orders_on_has_physical_products"
     t.index ["shipping_city_id"], name: "index_orders_on_shipping_city_id"

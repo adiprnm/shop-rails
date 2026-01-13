@@ -45,6 +45,12 @@
       <%= f.select :payment_provider, [ [ "Midtrans", "midtrans" ], [ "Manual", "manual" ] ], { selected: Current.settings["payment_provider"] } %>
     </div>
 
+    <div class="form-group" data-controller="dependent-select" data-dependent-select-source-value="payment_provider" data-dependent-select-condition-value="manual">
+      <%= f.label :manual_payment_unique_code_max, "Maksimum Kode Unik Pembayaran Manual" %>
+      <%= f.number_field :manual_payment_unique_code_max, value: Current.settings["manual_payment_unique_code_max"].presence || 500, min: 1, data: { dependent_select_target: "field" } %>
+      <small class="text-gray">Kode unik akan di-generate secara acak dari 1 hingga angka ini saat pembayaran manual.</small>
+    </div>
+
     <h3>QRIS dan Nomor Rekening</h1>
 
     <div class="form-group" data-controller="image-preview">

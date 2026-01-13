@@ -18,6 +18,7 @@ class Setting < ApplicationRecord
     payment_account_name
     payment_account_user_name
     payment_account_number
+    manual_payment_unique_code_max
     email_sender_email
     email_sender_name
     smtp_host
