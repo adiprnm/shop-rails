@@ -27,6 +27,7 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
             short_description: "Short desc",
             description: "Description",
             state: "active",
+            display_type: "full",
             productable_type: "DigitalProduct",
             productable: {
               resource_type: "file",
@@ -38,6 +39,7 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to admin_products_path
+    assert_equal "full", Product.last.display_type
   end
 
   test "should get edit" do
@@ -126,6 +128,7 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
           slug: "new-product",
           price: 10000,
           state: "active",
+          display_type: "compact_list",
           productable_type: "DigitalProduct",
           category_ids: [ category.id ],
           productable: {
@@ -137,6 +140,7 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_includes Product.last.categories, category
+    assert_equal "compact_list", Product.last.display_type
   end
 
   test "should update product with sale price" do
@@ -159,6 +163,14 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 30000, @product.reload.minimum_price
   end
 
+  test "should update product display_type" do
+    patch admin_product_path(@product), params: {
+      product: { display_type: "compact_list" }
+    }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_equal "compact_list", @product.reload.display_type
+  end
+
   test "should create physical product with variants" do
     assert_difference("Product.count") do
       assert_difference("PhysicalProduct.count") do
@@ -171,6 +183,7 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
               short_description: "Short desc",
               description: "Description",
               state: "active",
+              display_type: "full",
               productable_type: "PhysicalProduct",
               productable: {
                 weight: 500,
@@ -188,6 +201,7 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to admin_products_path
     assert_equal 2, PhysicalProduct.last.product_variants.count
+    assert_equal "full", Product.last.display_type
   end
 
   test "should update physical product" do

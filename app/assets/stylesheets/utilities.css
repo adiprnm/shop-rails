@@ -87,7 +87,6 @@ a:has(> article.product-card) {
   color: inherit;
 }
 .product-card {
-  margin-bottom: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -98,6 +97,27 @@ a:has(> article.product-card) {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+  }
+}
+.product-card-compact-list {
+  display: flex;
+
+  .product-image--square {
+    max-width: 100px;
+
+    @media (width >= 480px) {
+      max-width: 120px;
+    }
+  }
+
+  .product-title {
+    margin-top: 0;
+  }
+
+  section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }
 .product-title {

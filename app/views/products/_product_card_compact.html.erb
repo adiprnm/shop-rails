@@ -1,0 +1,25 @@
+<%= link_to product_path(product.slug), class: "h-full" do %>
+  <article class="product-card-compact-list p-0">
+    <% if product.featured_image.attached? %>
+      <%= image_tag product.featured_image, class: "product-image product-image--square" %>
+    <% end %>
+    <section class="p-4 mb-0">
+      <div>
+        <h2 class="product-title"><%= product.name %></h2>
+        <%= render "products/product_price", product: product %>
+        <div class="flex flex-col justify-between h-full">
+          <%= render "products/product_sold", product: product %>
+          <% if product.categories.present? %>
+            <div>
+              <% product.categories.each do |category| %>
+                <span class="text-gray badge inline-block mt-4 text-xs">
+                  <%= category.name %>
+                </span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  </article>
+<% end %>

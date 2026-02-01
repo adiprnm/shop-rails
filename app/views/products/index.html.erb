@@ -14,8 +14,14 @@
   <% if @products.empty? %>
     <p>Belum ada produk yang tersedia.</p>
   <% else %>
-    <div class="product-layout">
-      <%= render partial: "products/product_card", collection: @products, as: :product %>
+    <div>
+      <% @products.each do |product| %>
+        <% if product.compact_list? %>
+          <%= render "products/product_card_compact", product: product %>
+        <% else %>
+          <%= render "products/product_card", product: product %>
+        <% end %>
+      <% end %>
     </div>
   <% end %>
 </div>

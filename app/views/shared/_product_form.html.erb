@@ -38,6 +38,10 @@
       <%= f.label :description %>
       <%= f.text_area :description, style: "min-height: 300px" %>
     </div>
+    <div class="form-group">
+      <%= f.label :display_type %>
+      <%= f.select :display_type, Product.display_types.keys.map { |type| [ type.humanize, type ] } %>
+    </div>
     <div class="form-group check-boxes">
       <%= f.label :category_ids, "Category" %>
       <%= f.collection_check_boxes :category_ids, Category.all, :id, :name do |b| %>

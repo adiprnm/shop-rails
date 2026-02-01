@@ -12,6 +12,7 @@ ruby_guide:
   state: active
   productable: programming_book (DigitalProduct)
   minimum_price: 50000
+  display_type: full
 
 design_collection:
   name: Design Collection
@@ -25,6 +26,7 @@ design_collection:
   state: active
   productable: design_kit (DigitalProduct)
   minimum_price: 100000
+  display_type: full
 
 business_audio_course:
   name: Business Audio Course
@@ -38,6 +40,7 @@ business_audio_course:
   state: active
   productable: business_audio (DigitalProduct)
   minimum_price: 75000
+  display_type: full
 
 premium_t_shirt:
   name: Premium T-Shirt
@@ -51,6 +54,7 @@ premium_t_shirt:
   state: active
   productable: t_shirt (PhysicalProduct)
   minimum_price: 100000
+  display_type: full
 
 ebook_reader:
   name: EBook Reader
@@ -64,3 +68,4 @@ ebook_reader:
   state: active
   productable: ebook_device (PhysicalProduct)
   minimum_price: 500000
+  display_type: full

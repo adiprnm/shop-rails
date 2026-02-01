@@ -34,6 +34,15 @@ class ProductTest < ActiveSupport::TestCase
     assert_equal "inactive", @product.state
   end
 
+  test "should have full display_type" do
+    assert_equal "full", @product.display_type
+  end
+
+  test "should have compact_list display_type" do
+    @product.display_type = "compact_list"
+    assert_equal "compact_list", @product.display_type
+  end
+
   test "should be sale_price? when sale_price is set and within date range" do
     assert products(:ruby_guide).sale_price?
   end

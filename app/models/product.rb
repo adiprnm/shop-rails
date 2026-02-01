@@ -17,6 +17,7 @@ class Product < ApplicationRecord
   }
 
   enum :state, %w[ inactive active ]
+  enum :display_type, %w[ full compact_list ].index_by(&:itself)
 
   def self.create_with_productable(product_params, productable_params)
     productable_type = product_params.delete(:productable_type)
