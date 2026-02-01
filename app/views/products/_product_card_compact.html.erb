@@ -7,7 +7,7 @@
       <div>
         <h2 class="product-title"><%= product.name %></h2>
         <%= render "products/product_price", product: product %>
-        <div class="flex flex-col justify-between h-full">
+        <div class="flex flex-col justify-between">
           <%= render "products/product_sold", product: product %>
           <% if product.categories.present? %>
             <div>
