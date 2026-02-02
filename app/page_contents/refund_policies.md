@@ -5,6 +5,7 @@ Kebijakan ini menjelaskan syarat dan ketentuan pengembalian dana untuk pembelian
 
 ### 2.1 Kebijakan Non-Refundable
 Produk digital yang dibeli bersifat **non-refundable** dan tidak dapat dikembalikan, termasuk:
+
 - Template dan desain
 - E-book dan panduan digital
 - Audio dan video
@@ -14,12 +15,14 @@ Produk digital yang dibeli bersifat **non-refundable** dan tidak dapat dikembali
 
 ### 2.2 Pengecualian
 Pengembalian dana untuk produk digital hanya dapat diproses dalam kondisi berikut:
+
 - Produk rusak atau tidak dapat diakses setelah pembayaran
 - Terdapat kesalahan teknis dari pihak kami yang mencegah akses ke produk
 - Deskripsi produk sangat berbeda dengan yang diterima
 
 ### 2.3 Proses Pengajuan Refund Produk Digital
 Jika Anda mengalami masalah dengan produk digital:
+
 1. Hubungi kami melalui email: adi@adipurnm.my.id
 2. Jelaskan masalah yang Anda alami secara rinci
 3. Sertakan bukti pembayaran dan screenshot masalah
@@ -33,6 +36,7 @@ Produk fisik dapat dikembalikan dalam waktu **7 hari kalender** setelah tanggal 
 
 ### 3.2 Syarat Pengembalian Produk Fisik
 Pengembalian produk fisik dapat dilakukan jika memenuhi syarat berikut:
+
 - Produk masih dalam kondisi asli, tidak rusak, dan segel belum dibuka
 - Dilengkapi dengan kemasan asli dan semua aksesoris lengkap
 - Dilengkapi dengan bukti pembelian yang valid
@@ -40,6 +44,7 @@ Pengembalian produk fisik dapat dilakukan jika memenuhi syarat berikut:
 
 ### 3.3 Kondisi yang Tidak Dapat Direfund
 Produk fisik tidak dapat dikembalikan jika:
+
 - Segel produk telah dibuka
 - Produk telah digunakan
 - Kerusakan disebabkan oleh kesalahan penggunaan
@@ -80,6 +85,7 @@ Seluruh donasi yang diberikan bersifat **non-refundable** dan tidak dapat dikemb
 
 ### 5.3 Konfirmasi Pengembalian Dana
 Anda akan menerima email konfirmasi ketika:
+
 - Permintaan pengembalian dana disetujui
 - Proses pengembalian dana telah selesai
 
@@ -110,6 +116,7 @@ Kami berhak mengubah kebijakan ini sewaktu-waktu tanpa pemberitahuan sebelumnya.
 ## 8. Kontak dan Bantuan
 
 Untuk pertanyaan atau pengajuan refund:
+
 - Email: adi@adipurnm.my.id
 - Waktu respon: 1-3 hari kerja
 

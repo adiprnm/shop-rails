@@ -1,4 +1,4 @@
-<%= content_for(:title) { "#{ @title } | #{ Current.settings["site_name"] }" } %>
+<%= content_for(:title) { "#{ @page.title } | #{ Current.settings["site_name"] }" } %>
 <%= content_for :head do %>
   <%= tag.meta name: "description", content: @page.description %>
   <%= tag.meta name: "og:title", content: @page.title %>
