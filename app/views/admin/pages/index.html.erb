@@ -1,0 +1,33 @@
+<%= content_for(:title) { "Laman | #{ Current.settings["site_name"] } admin" } %>
+
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Laman</h1>
+
+  <%= link_to "+ Tambah laman baru", new_admin_page_path, class: "btn" %>
+
+  <div class="full-width overflow-x-scroll mt-8">
+    <table style="min-width: 600px;">
+      <thead>
+        <th>ID</th>
+        <th>Judul</th>
+        <th>Status</th>
+        <th>Aksi</th>
+      </thead>
+      <tbody>
+        <% @pages.each do |page| %>
+          <tr>
+            <td><%= page.id %></td>
+            <td><%= page.title %></td>
+            <td><%= page.state %></td>
+            <td>
+              <%= link_to "Edit", edit_admin_page_path(page) %>
+              <%= link_to "Hapus", admin_page_path(page), data: { turbo_method: :delete, turbo_confirm: "Kamu yakin?" }, class: "text-red" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

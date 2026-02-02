@@ -9,6 +9,7 @@ class Setting < ApplicationRecord
     site_main_menu
     site_storage_host
     site_terms_and_conditions_url
+    site_refund_policies_url
     og_image
     payment_provider
     payment_client_id

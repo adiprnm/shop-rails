@@ -1,0 +1,9 @@
+<%= content_for(:title) { "Edit #{ @page.title } | #{ Current.settings["site_name"] } admin" } %>
+
+<div>
+  <%= tag.div flash[:notice], class: "flash-success mb-4" if flash[:notice] %>
+
+  <h1>Edit <%= @page.title %></h1>
+
+  <%= render 'form', page: @page %>
+</div>

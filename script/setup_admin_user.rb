@@ -21,5 +21,21 @@ else
   Setting.site_storage_host.update value: ENV["STORAGE_HOST"]
   Setting.site_terms_and_conditions_url.update value: "/syarat-dan-ketentuan"
 
+  content = File.read(Rails.root.join("app/page_contents/terms.md"))
+  Page.published.create_with(
+    title: "Syarat dan Ketentuan",
+    slug: "syarat-dan-ketentuan",
+    description: "Syarat dan ketentuan toko online #{ Setting.site_name.value }",
+    content: content
+  ).find_or_create_by(slug: "syarat-dan-ketentuan")
+
+  content = File.read(Rails.root.join("app/page_contents/refund_policies.md"))
+  Page.published.create_with(
+    title: "Kebijakan Pengembalian Dana (Refund Policy)",
+    slug: "kebijakan-pengembalian-dana",
+    description: "Kebijakan pengembalian dana toko online #{ Setting.site_name.value }",
+    content: content
+  ).find_or_create_by(slug: "kebijakan-pengembalian-dana")
+
   puts "Admin credentials has been successfully set up. You can configure the other credentials at the /admin page"
 end

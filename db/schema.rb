@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_01_153643) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_02_032407) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -180,6 +180,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_01_153643) do
     t.index ["shipping_provider"], name: "index_orders_on_shipping_provider"
     t.index ["shipping_province_id"], name: "index_orders_on_shipping_province_id"
     t.index ["shipping_subdistrict_id"], name: "index_orders_on_shipping_subdistrict_id"
+  end
+
+  create_table "pages", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "slug", null: false
+    t.string "description", null: false
+    t.text "content"
+    t.string "state", null: false
+    t.datetime "state_updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "payment_evidences", force: :cascade do |t|

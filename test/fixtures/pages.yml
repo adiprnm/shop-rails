@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: Terms and Conditions
+  slug: syarat-dan-ketentuan
+  description: Syarat dan ketentuan toko
+  content: This is the terms and conditions content
+  state: published
+  state_updated_at: 2026-02-02 09:19:43
+
+two:
+  title: Draft Page
+  slug: draft-page
+  description: A draft page
+  content: This is draft content
+  state: draft
+  state_updated_at: 2026-02-02 09:19:43

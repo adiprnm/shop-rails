@@ -1,11 +1,12 @@
 <%= content_for(:title) { "#{ @title } | #{ Current.settings["site_name"] }" } %>
 <%= content_for :head do %>
-  <%= tag.meta name: "description", content: @description %>
-  <%= tag.meta name: "og:title", content: @title %>
-  <%= tag.meta name: "og:description", content: @description %>
+  <%= tag.meta name: "description", content: @page.description %>
+  <%= tag.meta name: "og:title", content: @page.title %>
+  <%= tag.meta name: "og:description", content: @page.description %>
   <% if Current.settings["og_image"].present? %>
     <%= tag.meta name: "og:image", content: request.base_url + Current.settings["og_image"] %>
   <% end %>
 <% end %>
 
-<%= render_markdown_as_html content %>
+<%= tag.h1 @page.title %>
+<%= render_markdown_as_html @page.content %>

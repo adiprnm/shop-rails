@@ -55,6 +55,8 @@ Rails.application.routes.draw do
       post :fetch_provinces
       post :clear_shipping_cache
     end
+
+    resources :pages
   end
 
   resources :addresses, only: %w[] do
@@ -74,7 +76,7 @@ Rails.application.routes.draw do
 
   resources :shipping_costs, only: %w[ index ]
 
-  get "syarat-dan-ketentuan" => "pages#terms_and_conditions"
+  get ":slug", to: "pages#show"
 
   mount MissionControl::Jobs::Engine, at: "/jobs"
 end

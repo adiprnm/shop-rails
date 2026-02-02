@@ -6,187 +6,206 @@
   <h1>Pengaturan</h1>
 
   <%= form_with url: admin_settings_path, method: :put do |f| %>
-    <h3>Situs</h3>
+    <details open>
+      <summary>Situs</summary>
 
-    <div class="form-group">
-      <%= f.label :site_name, "Nama Situs" %>
-      <%= f.text_field :site_name, value: Current.settings["site_name"] %>
-    </div>
-
-    <div class="form-group" data-controller="image-preview">
-      <%= f.label :site_favicon, "Favicon" %>
-      <%= image_tag Current.settings["site_favicon"].present? ? request.base_url + Current.settings["site_favicon"] : "", data: { image_preview_target: "preview" }, class: "icon-xlarge block" %>
-      <%= f.file_field :site_favicon, data: { action: "image-preview#perform" } %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :site_storage_host, "Host Storage" %>
-      <%= f.text_field :site_storage_host, value: Current.settings["site_storage_host"] %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :site_terms_and_conditions_url, "URL halaman Syarat dan Ketentuan" %>
-      <%= f.text_field :site_terms_and_conditions_url, value: Current.settings["site_terms_and_conditions_url"].presence || "/syarat-dan-ketentuan" %>
-    </div>
-
-    <div class="form-group" data-controller="image-preview">
-      <%= f.label :og_image, "Open Graph Image" %>
-      <%= image_tag Current.settings["og_image"].present? ? request.base_url + Current.settings["og_image"] : "", data: { image_preview_target: "preview" } %>
-      <%= f.file_field :og_image, data: { action: "image-preview#perform" } %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :site_main_menu, "Menu Utama" %>
-      <%= f.text_area :site_main_menu, style: "min-height: 40px; font-family: monospace", value: Current.settings["site_main_menu"] %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :payment_provider, "Provider Pembayaran" %>
-      <%= f.select :payment_provider, [ [ "Midtrans", "midtrans" ], [ "Manual", "manual" ] ], { selected: Current.settings["payment_provider"] } %>
-    </div>
-
-    <div class="form-group" data-controller="dependent-select" data-dependent-select-source-value="payment_provider" data-dependent-select-condition-value="manual">
-      <%= f.label :manual_payment_unique_code_max, "Maksimum Kode Unik Pembayaran Manual" %>
-      <%= f.number_field :manual_payment_unique_code_max, value: Current.settings["manual_payment_unique_code_max"].presence || 500, min: 1, data: { dependent_select_target: "field" } %>
-      <small class="text-gray">Kode unik akan di-generate secara acak dari 1 hingga angka ini saat pembayaran manual.</small>
-    </div>
-
-    <h3>QRIS dan Nomor Rekening</h1>
-
-    <div class="form-group" data-controller="image-preview">
-      <%= f.label :payment_qris, "QRIS" %>
-      <%= image_tag Current.settings["payment_qris"].present? ? request.base_url + Current.settings["payment_qris"] : "", data: { image_preview_target: "preview" }, class: "block" %>
-      <%= f.file_field :payment_qris, data: { action: "image-preview#perform" } %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :payment_account_name, "Nama Bank/E-wallet" %>
-      <%= f.text_field :payment_account_name, value: Current.settings["payment_account_name"].presence %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :payment_account_number, "Nomor Rekening Bank/E-wallet" %>
-      <%= f.text_field :payment_account_number, value: Current.settings["payment_account_number"].presence %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :payment_account_user_name, "Nama Pemilik Rekening/E-wallet" %>
-      <%= f.text_field :payment_account_user_name, value: Current.settings["payment_account_user_name"].presence %>
-    </div>
-
-    <h3>Integrasi Midtrans</h3>
-
-    <div class="form-group">
-      <%= f.label :payment_api_host, "API Host" %>
-      <%= f.text_field :payment_api_host, value: Current.settings["payment_api_host"] %>
-    </div>
-
-    <div class="grouped">
       <div class="form-group">
-        <%= f.label :payment_client_id, "Client ID" %>
-        <%= f.text_field :payment_client_id, value: Current.settings["payment_client_id"] %>
+        <%= f.label :site_name, "Nama Situs" %>
+        <%= f.text_field :site_name, value: Current.settings["site_name"] %>
+      </div>
+
+      <div class="form-group" data-controller="image-preview">
+        <%= f.label :site_favicon, "Favicon" %>
+        <%= image_tag Current.settings["site_favicon"].present? ? request.base_url + Current.settings["site_favicon"] : "", data: { image_preview_target: "preview" }, class: "icon-xlarge block" %>
+        <%= f.file_field :site_favicon, data: { action: "image-preview#perform" } %>
       </div>
 
       <div class="form-group">
-        <%= f.label :payment_client_secret, "Client Secret" %>
-        <%= f.text_field :payment_client_secret, value: Current.settings["payment_client_secret"] %>
-      </div>
-    </div>
-
-    <h3>Email SMTP</h3>
-
-    <div class="grouped">
-      <div class="form-group">
-        <%= f.label :email_sender_name, "Nama Pengirim" %>
-        <%= f.text_field :email_sender_name, value: Current.settings["email_sender_name"] %>
+        <%= f.label :site_storage_host, "Host Storage" %>
+        <%= f.text_field :site_storage_host, value: Current.settings["site_storage_host"] %>
       </div>
 
       <div class="form-group">
-        <%= f.label :email_sender_email, "Email Pengirim" %>
-        <%= f.text_field :email_sender_email, value: Current.settings["email_sender_email"] %>
-      </div>
-    </div>
-
-    <div class="grouped">
-      <div class="form-group">
-        <%= f.label :smtp_host, "Host" %>
-        <%= f.text_field :smtp_host, value: Current.settings["smtp_host"] %>
+        <%= f.label :site_terms_and_conditions_url, "URL halaman Syarat dan Ketentuan" %>
+        <%= f.text_field :site_terms_and_conditions_url, value: Current.settings["site_terms_and_conditions_url"].presence || "/syarat-dan-ketentuan" %>
       </div>
 
       <div class="form-group">
-        <%= f.label :smtp_port, "Port" %>
-        <%= f.text_field :smtp_port, value: Current.settings["smtp_port"] %>
-      </div>
-    </div>
-
-    <div class="grouped">
-      <div class="form-group">
-        <%= f.label :smtp_username, "Username" %>
-        <%= f.text_field :smtp_username, value: Current.settings["smtp_username"] %>
+        <%= f.label :site_refund_policies_url, "URL halaman Kebijakan Pengembalian Dana" %>
+        <%= f.text_field :site_refund_policies_url, value: Current.settings["site_refund_policies_url"].presence || "/kebijakan-pengembalian-dana" %>
       </div>
 
-      <div class="form-group">
-        <%= f.label :smtp_password, "Password" %>
-        <%= f.text_field :smtp_password, value: Current.settings["smtp_password"] %>
-      </div>
-    </div>
-
-    <h3>RajaOngkir API</h3>
-
-    <div class="grouped">
-      <div class="form-group">
-        <%= f.label :rajaongkir_api_key, "API Key" %>
-        <%= f.text_field :rajaongkir_api_key, value: Current.settings["rajaongkir_api_key"] %>
+      <div class="form-group" data-controller="image-preview">
+        <%= f.label :og_image, "Open Graph Image" %>
+        <%= image_tag Current.settings["og_image"].present? ? request.base_url + Current.settings["og_image"] : "", data: { image_preview_target: "preview" } %>
+        <%= f.file_field :og_image, data: { action: "image-preview#perform" } %>
       </div>
 
       <div class="form-group">
-        <%= f.label :rajaongkir_api_host, "API Host" %>
-        <%= f.text_field :rajaongkir_api_host, value: Current.settings["rajaongkir_api_host"] %>
-      </div>
-    </div>
-
-    <h3>Kurir Tersedia</h3>
-
-    <div class="form-group">
-      <%= f.label :available_couriers, "Kurir Tersedia" %>
-      <%= f.text_field :available_couriers, value: Current.settings["available_couriers"] %>
-      <small class="text-gray">Pisahkan dengan koma. Contoh: jne,tiki,pos</small>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :included_shipping_services, "Layanan Pengiriman yang Disertakan" %>
-      <%= f.text_field :included_shipping_services, value: Current.settings["included_shipping_services"].presence || "" %>
-      <small class="text-gray">Pisahkan dengan koma. Kosongkan untuk menampilkan semua. Contoh: jne-yes,tiki-ocs</small>
-    </div>
-
-    <h3>Lokasi Asal Pengiriman (Default)</h3>
-
-    <div class="form-group">
-      <%= f.label :default_origin_district_id, "Kecamatan" %>
-      <%= f.select :default_origin_district_id,
-        options_from_collection_for_select(@districts, :id, :phrased, selected: Current.settings["default_origin_district_id"]),
-        { include_blank: "Pilih Kecamatan" }
-      %>
-    </div>
-
-    <h3>Akun Admin</h3>
-
-    <div class="grouped">
-      <div class="form-group">
-        <%= f.label :admin_username, "Username" %>
-        <%= f.text_field :admin_username, value: Current.settings["admin_username"] %>
+        <%= f.label :site_main_menu, "Menu Utama" %>
+        <%= f.text_area :site_main_menu, style: "min-height: 40px; font-family: monospace", value: Current.settings["site_main_menu"] %>
       </div>
 
       <div class="form-group">
-        <%= f.label :admin_password, "Password" %>
-        <%= f.text_field :admin_password, value: Current.settings["admin_password"] %>
+        <%= f.label :payment_provider, "Provider Pembayaran" %>
+        <%= f.select :payment_provider, [ [ "Midtrans", "midtrans" ], [ "Manual", "manual" ] ], { selected: Current.settings["payment_provider"] } %>
       </div>
-    </div>
 
-    <div class="form-group">
-      <%= f.label :admin_email, "Email" %>
-      <%= f.email_field :admin_email, value: Current.settings["admin_email"] %>
-    </div>
+      <div class="form-group mb-4" data-controller="dependent-select" data-dependent-select-source-value="payment_provider" data-dependent-select-condition-value="manual">
+        <%= f.label :manual_payment_unique_code_max, "Maksimum Kode Unik Pembayaran Manual" %>
+        <%= f.number_field :manual_payment_unique_code_max, value: Current.settings["manual_payment_unique_code_max"].presence || 500, min: 1, data: { dependent_select_target: "field" } %>
+        <small class="text-gray">Kode unik akan di-generate secara acak dari 1 hingga angka ini saat pembayaran manual.</small>
+      </div>
+    </details>
+
+    <details>
+      <summary>QRIS dan Nomor Rekening</summary>
+
+      <div class="form-group" data-controller="image-preview">
+        <%= f.label :payment_qris, "QRIS" %>
+        <%= image_tag Current.settings["payment_qris"].present? ? request.base_url + Current.settings["payment_qris"] : "", data: { image_preview_target: "preview" }, class: "block" %>
+        <%= f.file_field :payment_qris, data: { action: "image-preview#perform" } %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :payment_account_name, "Nama Bank/E-wallet" %>
+        <%= f.text_field :payment_account_name, value: Current.settings["payment_account_name"].presence %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :payment_account_number, "Nomor Rekening Bank/E-wallet" %>
+        <%= f.text_field :payment_account_number, value: Current.settings["payment_account_number"].presence %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :payment_account_user_name, "Nama Pemilik Rekening/E-wallet" %>
+        <%= f.text_field :payment_account_user_name, value: Current.settings["payment_account_user_name"].presence %>
+      </div>
+    </details>
+
+    <details>
+      <summary>Integrasi Midtrans</summary>
+
+      <div class="form-group">
+        <%= f.label :payment_api_host, "API Host" %>
+        <%= f.text_field :payment_api_host, value: Current.settings["payment_api_host"] %>
+      </div>
+
+      <div class="grouped">
+        <div class="form-group">
+          <%= f.label :payment_client_id, "Client ID" %>
+          <%= f.text_field :payment_client_id, value: Current.settings["payment_client_id"] %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :payment_client_secret, "Client Secret" %>
+          <%= f.text_field :payment_client_secret, value: Current.settings["payment_client_secret"] %>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>Email SMTP</summary>
+
+      <div class="grouped">
+        <div class="form-group">
+          <%= f.label :email_sender_name, "Nama Pengirim" %>
+          <%= f.text_field :email_sender_name, value: Current.settings["email_sender_name"] %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :email_sender_email, "Email Pengirim" %>
+          <%= f.text_field :email_sender_email, value: Current.settings["email_sender_email"] %>
+        </div>
+      </div>
+
+      <div class="grouped">
+        <div class="form-group">
+          <%= f.label :smtp_host, "Host" %>
+          <%= f.text_field :smtp_host, value: Current.settings["smtp_host"] %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :smtp_port, "Port" %>
+          <%= f.text_field :smtp_port, value: Current.settings["smtp_port"] %>
+        </div>
+      </div>
+
+      <div class="grouped">
+        <div class="form-group">
+          <%= f.label :smtp_username, "Username" %>
+          <%= f.text_field :smtp_username, value: Current.settings["smtp_username"] %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :smtp_password, "Password" %>
+          <%= f.text_field :smtp_password, value: Current.settings["smtp_password"] %>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>Pengiriman</summary>
+
+      <h3>Integrasi Raja Ongkir</h3>
+
+      <div class="grouped">
+        <div class="form-group">
+          <%= f.label :rajaongkir_api_key, "API Key" %>
+          <%= f.text_field :rajaongkir_api_key, value: Current.settings["rajaongkir_api_key"] %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :rajaongkir_api_host, "API Host" %>
+          <%= f.text_field :rajaongkir_api_host, value: Current.settings["rajaongkir_api_host"] %>
+        </div>
+      </div>
+
+      <h3>Kurir Tersedia</h3>
+
+      <div class="form-group">
+        <%= f.label :available_couriers, "Kurir Tersedia" %>
+        <%= f.text_field :available_couriers, value: Current.settings["available_couriers"] %>
+        <small class="text-gray">Pisahkan dengan koma. Contoh: jne,tiki,pos</small>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :included_shipping_services, "Layanan Pengiriman yang Disertakan" %>
+        <%= f.text_field :included_shipping_services, value: Current.settings["included_shipping_services"].presence || "" %>
+        <small class="text-gray">Pisahkan dengan koma. Kosongkan untuk menampilkan semua. Contoh: jne-yes,tiki-ocs</small>
+      </div>
+
+      <h3>Lokasi Asal Pengiriman (Default)</h3>
+
+      <div class="form-group">
+        <%= f.label :default_origin_district_id, "Kecamatan" %>
+        <%= f.select :default_origin_district_id,
+          options_from_collection_for_select(@districts, :id, :phrased, selected: Current.settings["default_origin_district_id"]),
+          { include_blank: "Pilih Kecamatan" }
+        %>
+      </div>
+    </details>
+
+    <details>
+      <summary>Akun Admin</summary>
+
+      <div class="grouped">
+        <div class="form-group">
+          <%= f.label :admin_username, "Username" %>
+          <%= f.text_field :admin_username, value: Current.settings["admin_username"] %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :admin_password, "Password" %>
+          <%= f.text_field :admin_password, value: Current.settings["admin_password"] %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :admin_email, "Email" %>
+        <%= f.email_field :admin_email, value: Current.settings["admin_email"] %>
+      </div>
+    </details>
 
     <%= f.submit "Simpan", class: "mt-4" %>
   <% end %>
