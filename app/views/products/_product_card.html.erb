@@ -8,15 +8,6 @@
       <%= render "products/product_price", product: product %>
       <div class="flex flex-col justify-between h-full">
         <%= render "products/product_sold", product: product %>
-        <% if product.categories.present? %>
-          <div>
-            <% product.categories.each do |category| %>
-              <span class="text-gray badge inline-block mt-4 text-xs">
-                <%= category.name %>
-              </span>
-            <% end %>
-          </div>
-        <% end %>
       </div>
     </section>
   </article>

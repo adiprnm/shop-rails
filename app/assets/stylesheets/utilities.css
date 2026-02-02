@@ -82,7 +82,7 @@
 .flex-noshrink { flex-shrink: 0; }
 .rounded-full { border-radius: 9999px; }
 
-a:has(> article.product-card) {
+a:has(> article.product-card), a:has(> article.product-card-compact-list) {
   text-decoration: none;
   color: inherit;
 }
@@ -121,6 +121,7 @@ a:has(> article.product-card) {
   }
 }
 .product-title {
+  font-weight: 400;
   font-size: 1rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -130,7 +131,6 @@ a:has(> article.product-card) {
 }
 .product-price {
   font-size: 0.75rem;
-  color: #008000;
 }
 .product-image--square {
   aspect-ratio: 1 / 1;
