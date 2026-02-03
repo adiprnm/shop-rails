@@ -314,7 +314,8 @@ a:has(> article.product-card), a:has(> article.product-card-compact-list) {
   right: 1rem;
   width: 55px;
   height: 55px;
-  display: grid;
+  display: grid!important;
+  padding: 0;
   grid-template-columns: 1fr;
   place-items: center;
   border-radius: 9999px;
