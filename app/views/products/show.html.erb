@@ -15,7 +15,7 @@
     <div>
       <%= render "product_carousel", images: @product.images, featured_image: @product.featured_image %>
     </div>
-    <div>
+    <div id="<%= @product.slug %>">
       <%= render "product_price", product: @product %>
       <p>
         <%= render "product_sold", product: @product %>
@@ -93,3 +93,5 @@
     <%= render_markdown_as_html @product.description %>
   </div>
 </div>
+
+<%= go_to_top_button(@product.slug) %>

@@ -19,4 +19,10 @@ module ApplicationHelper
       files.map! { |file| "/fonts/#{ File.basename(file) }" }
     end
   end
+
+  def go_to_top_button(id)
+    link_to "##{id}", class: "go-to-top", role: "button" do
+      icon "arrow-up", class: "icon"
+    end
+  end
 end

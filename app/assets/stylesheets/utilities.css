@@ -308,3 +308,14 @@ a:has(> article.product-card), a:has(> article.product-card-compact-list) {
 .settings h3 {
   margin-top: 2rem;
 }
+.go-to-top {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 55px;
+  height: 55px;
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+  border-radius: 9999px;
+}
