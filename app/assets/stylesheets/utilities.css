@@ -101,6 +101,7 @@ a:has(> article.product-card), a:has(> article.product-card-compact-list) {
 }
 .product-card-compact-list {
   display: flex;
+  overflow: hidden;
 
   .product-image--square {
     max-width: 100px;
