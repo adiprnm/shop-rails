@@ -5,4 +5,6 @@
       <%= link_to "Lihat keranjang", cart_path, style: "text-decoration: underline; color: #38e85e" %>
     <% end %>
   </div>
+<% elsif flash[:alert] %>
+  <%= tag.div flash[:alert], class: "flash-error mb-4" %>
 <% end %>

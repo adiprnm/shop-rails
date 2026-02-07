@@ -21,48 +21,45 @@
       <thead>
         <tr>
           <td>Produk</td>
-          <td>Qty</td>
           <td>Harga</td>
-          <td>Aksi</td>
         </tr>
       </thead>
       <tbody>
         <% Current.cart.line_items.each do |line_item| %>
-          <tr>
+          <tr class="text-sm">
             <td>
               <%= link_to line_item.cartable.name, product_path(line_item.cartable.slug) %>
               <% if line_item.product_variant %>
-                <br><small><%= line_item.product_variant.name %></small>
+                <br><small class="text-gray"><%= line_item.product_variant.name %></small>
               <% end %>
+              <% if line_item.physical_product? %>
+                <br>
+                <%= tag.strong "x #{ line_item.quantity }" %>
+              <% end %>
+              <%= link_to "Hapus", cart_line_item_path(line_item), data: { turbo_method: :delete, turbo_confirm: "Hapus #{line_item.cartable.name} dari keranjang?" }, class: "text-red block mt-2" %>
             </td>
-            <td><%= line_item.quantity %></td>
             <td><%= idr line_item.price %></td>
-            <td>
-              <%= link_to "Hapus", cart_line_item_path(line_item), data: { turbo_method: :delete, turbo_confirm: "Hapus #{line_item.cartable.name} dari keranjang?" }, class: "text-red" %>
-            </td>
           </tr>
         <% end %>
         <tr>
-          <td colspan="2"><strong>Subtotal</strong></td>
-          <td colspan="2"><strong id="subtotal-display"><%= idr Current.cart.total_price %></strong></td>
+          <td><strong>Subtotal</strong></td>
+          <td><strong id="subtotal-display"><%= idr Current.cart.total_price %></strong></td>
         </tr>
       </tbody>
     </table>
 
-    <div class="mt-8">
-      <%= link_to "Lanjut ke Checkout", new_order_path, class: "btn w-full text-center" %>
-    </div>
-
     <% if @cart_recommendations.any? %>
       <section class="mt-8">
         <h2 class="text-base font-base">Kamu mungkin juga suka:</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <% @cart_recommendations.each do |product| %>
-            <%= render "products/product_card_compact", product: product %>
-          <% end %>
-        </div>
+        <% @cart_recommendations.each do |product| %>
+          <%= render "products/product_card_compact", product: product %>
+        <% end %>
       </section>
     <% end %>
+
+    <div class="mt-8">
+      <%= link_to "Lanjut ke Checkout", new_order_path, role: "button", class: "block w-full text-center" %>
+    </div>
   <% else %>
     <p>Keranjang kamu masih kosong nih. <%= link_to "Belanja sekarang", products_path %></p>
   <% end %>

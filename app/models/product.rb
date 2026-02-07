@@ -111,6 +111,7 @@ class Product < ApplicationRecord
       .distinct
 
     recommended_products_ids = recommended_products.pluck(:id).sample([ limit, recommended_products.count ].min)
+    recommended_products_ids -= product_ids
 
     where(id: recommended_products_ids).limit(limit)
   end

@@ -19,26 +19,28 @@
     </div>
   </div>
 
-  <div class="mb-4 card">
+  <div class="mb-4">
     <h3>Ringkasan Pesanan</h3>
     <table class="mb-4">
       <thead>
         <tr>
-          <td>Produk</td>
-          <td>Qty</td>
+          <td colspan="2">Produk</td>
           <td>Harga</td>
         </tr>
       </thead>
       <tbody>
         <% Current.cart.line_items.each do |line_item| %>
-          <tr>
-            <td>
+          <tr class="text-sm">
+            <td colspan="2">
               <%= line_item.cartable.name %>
               <% if line_item.product_variant %>
-                <br><small><%= line_item.product_variant.name %></small>
+                <br><small class="text-gray"><%= line_item.product_variant.name %></small>
+              <% end %>
+              <% if line_item.physical_product? %>
+                <br>
+                <strong>x <%= line_item.quantity %></strong>
               <% end %>
             </td>
-            <td><%= line_item.quantity %></td>
             <td><%= idr line_item.price %></td>
           </tr>
         <% end %>
@@ -101,7 +103,7 @@
 
   <div class="form-group mb-4 mt-8">
     <%= f.label :order_notes, "Catatan Pesanan" %>
-    <%= f.text_area :order_notes, rows: 2, data: { action: "auto-filler#save" } %>
+    <%= f.text_area :order_notes, rows: 4, class: "font-sans", data: { action: "auto-filler#save" } %>
   </div>
 
   <div class="flex items-center gap-2 mb-4">
