@@ -279,6 +279,8 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     product = products(:ruby_guide)
     recommended = products(:design_collection)
 
+    ProductRecommendation.where(source_product_id: product.id).destroy_all
+
     product.source_recommendations.create!(
       recommended_product: recommended,
       recommendation_type: "upsell"
@@ -286,13 +288,18 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     get product_path(product.slug)
     assert_response :success
-    assert_select "h2", text: "Produk Premium"
+    assert_select "h2", count: 2
+    css_selectors = css_select("h2")
+    upsell_h2 = css_selectors.find { |h| h.text == "Produk Premium" }
+    assert upsell_h2.present?, "Expected to find h2 with text 'Produk Premium'"
     assert_select "a[href=?]", product_path(recommended.slug), count: 1
   end
 
   test "show displays cross_sells section when cross_sells exist" do
     product = products(:ruby_guide)
     recommended = products(:business_audio_course)
+
+    ProductRecommendation.where(source_product_id: product.id).destroy_all
 
     product.source_recommendations.create!(
       recommended_product: recommended,
@@ -301,16 +308,21 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     get product_path(product.slug)
     assert_response :success
-    assert_select "h2", text: "Produk Terkait"
+    assert_select "h2", count: 2
+    css_selectors = css_select("h2")
+    cross_sell_h2 = css_selectors.find { |h| h.text == "Produk Terkait" }
+    assert cross_sell_h2.present?
     assert_select "a[href=?]", product_path(recommended.slug), count: 1
   end
 
   test "show does not display recommendation sections when no recommendations" do
     product = products(:ruby_guide)
 
+    ProductRecommendation.where(source_product_id: product.id).destroy_all
+
     get product_path(product.slug)
     assert_response :success
-    assert_select "h2", text: "Produk Premium", count: 0
-    assert_select "h2", text: "Produk Terkait", count: 0
+    assert_select "h2", count: 1
+    assert_select "h2", text: "Deskripsi"
   end
 end
