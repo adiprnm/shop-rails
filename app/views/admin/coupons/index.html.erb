@@ -1,0 +1,70 @@
+<div class="admin-coupons-index">
+  <div class="page-header">
+    <h1>Coupons</h1>
+    <%= link_to "New Coupon", new_admin_coupon_path, class: "btn btn-primary" %>
+  </div>
+
+  <div class="filters">
+    <%= form_with url: admin_coupons_path, method: :get, local: true do |f| %>
+      <%= f.text_field :search, placeholder: "Search by code", value: params[:search] %>
+      <%= f.select :state,
+          options_for_select([["All States", ""], *Coupon.states.keys.map { |s| [s.humanize, s] }], params[:state]) %>
+      <%= f.submit "Filter" %>
+    <% end %>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Discount</th>
+        <th>Usage</th>
+        <th>Status</th>
+        <th>Valid Period</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @coupons.each do |coupon| %>
+        <tr>
+          <td><code><%= coupon.code %></code></td>
+          <td><%= coupon.description %></td>
+          <td><%= coupon.discount_type.humanize %></td>
+          <td>
+            <% if coupon.discount_type == "free_shipping" %>
+              Free Shipping
+            <% elsif coupon.discount_type.include?("percent") %>
+              <%= coupon.discount_amount %>%
+            <% else %>
+              <%= number_to_currency(coupon.discount_amount / 100.0) %>
+            <% end %>
+          </td>
+          <td>
+            <%= coupon.usage_count %>/<%= coupon.usage_limit || "∞" %>
+            <% if coupon.usage_limit_per_user.positive? %>
+              <br><small>(<%= coupon.usage_limit_per_user %>/user)</small>
+            <% end %>
+          </td>
+          <td>
+            <span class="badge badge-<%= coupon.state %>"><%= coupon.state.humanize %></span>
+          </td>
+          <td>
+            <small>
+              <%= coupon.starts_at&.to_s(:short) || "-" %> to
+              <%= coupon.expires_at&.to_s(:short) || "-" %>
+            </small>
+          </td>
+          <td>
+            <%= link_to "View", admin_coupon_path(coupon) %>
+            <%= link_to "Edit", edit_admin_coupon_path(coupon) %>
+            <%= button_to "Delete", admin_coupon_path(coupon),
+                method: :delete,
+                data: { confirm: "Are you sure you want to delete this coupon?" } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -83,9 +83,111 @@
 
       <span>order kadaluarsa</span>
     </article>
-  </div>
+   </div>
 
-  <h2 class="text-xl">Produk</h2>
+   <h2 class="text-xl">Kupon</h2>
+   <div class="grid">
+     <article class="mb-0">
+       <h2>
+         <%= @total_coupons %>
+
+         <% if @today_created_coupons.positive? %>
+           <span class="text-green text-xs">+<%= @today_created_coupons %> hari ini</span>
+         <% end %>
+       </h2>
+
+       <span>total kupon</span>
+     </article>
+
+     <article class="mb-0">
+       <h2>
+         <%= @active_coupons %>
+
+         <% if @today_activated_coupons.positive? %>
+           <span class="text-green text-xs">+<%= @today_activated_coupons %> hari ini</span>
+         <% end %>
+       </h2>
+
+       <span>kupon aktif</span>
+     </article>
+
+     <article class="mb-0">
+       <h2>
+         <%= @total_coupon_usage %>
+
+         <% if @today_coupon_usage.positive? %>
+           <span class="text-green text-xs">+<%= @today_coupon_usage %> hari ini</span>
+         <% end %>
+       </h2>
+
+       <span>total penggunaan kupon</span>
+     </article>
+
+     <article>
+       <h2>
+         <%= idr(@total_discount_given, text: false) %>
+
+         <% if @today_discount_given.positive? %>
+           <span class="text-green text-xs">+<%= idr(@today_discount_given, text: false) %> hari ini</span>
+         <% end %>
+       </h2>
+
+       <span>total diskon diberikan</span>
+     </article>
+   </div>
+
+   <div class="mb-4 mt-8">
+     <%= link_to "Kelola Kupon", admin_coupons_path, class: "btn" %>
+   </div>
+
+   <div class="mb-4 mt-8">
+     <h2 class="text-xl mb-4">Statistik Kupon</h2>
+
+     <div class="grid mb-8">
+       <article class="mb-0">
+         <h2>Penggunaan Kupon (30 Hari Terakhir)</h2>
+         <div class="coupon-usage-chart" data-controller="coupon-chart">
+           <%= tag.canvas nil, data: { chart_data: @coupon_usage_chart_data.to_json } %>
+         </div>
+       </article>
+
+       <article class="mb-0">
+         <h2>Kupon Terpopuler</h2>
+         <table class="table">
+           <thead>
+             <tr>
+               <th>Kode</th>
+               <th>Tipe</th>
+               <th>Penggunaan</th>
+               <th>Total Diskon</th>
+             </tr>
+           </thead>
+           <tbody>
+             <% if @top_coupons.any? %>
+               <% @top_coupons.each do |coupon| %>
+                 <tr>
+                   <td><code><%= coupon["code"] %></code></td>
+                   <td><%= coupon["discount_type"].humanize %></td>
+                   <td><%= coupon["usage_count"] %></td>
+                   <td><%= idr(coupon["total_discount"]) %></td>
+                 </tr>
+               <% end %>
+             <% else %>
+               <tr>
+                 <td colspan="4">Belum ada penggunaan kupon</td>
+               </tr>
+             <% end %>
+           </tbody>
+         </table>
+       </article>
+     </div>
+   </div>
+
+   <div class="mb-4 mt-8">
+     <%= link_to "Lihat Laporan Kupon", "#", class: "btn" %>
+   </div>
+
+   <h2 class="text-xl">Produk</h2>
   <table>
     <thead>
       <tr>

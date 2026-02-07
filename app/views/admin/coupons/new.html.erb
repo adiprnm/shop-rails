@@ -1,0 +1,8 @@
+<div class="admin-coupons-new">
+  <div class="page-header">
+    <h1>New Coupon</h1>
+    <%= link_to "Back to Coupons", admin_coupons_path, class: "btn btn-secondary" %>
+  </div>
+
+  <%= render "form", coupon: @coupon, products: @products, categories: @categories %>
+</div>

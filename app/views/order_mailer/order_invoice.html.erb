@@ -19,28 +19,38 @@
     <td style="background-color: #f2f2f2"><strong>Kontak Pemesan</strong></td>
     <td><%= @order.customer_email_address %></td>
   </tr>
-  <tr>
-    <td style="background-color: #f2f2f2"><strong>Total Harga</strong></td>
-    <td><%= idr @order.total_price %></td>
-  </tr>
-</table>
+   <tr>
+     <td style="background-color: #f2f2f2"><strong>Subtotal</strong></td>
+     <td><%= idr @order.subtotal_price %></td>
+   </tr>
+   <% if @order.has_coupon? %>
+     <tr>
+       <td style="background-color: #f2f2f2"><strong>Kupon (<%= @order.coupon_code %>)</strong></td>
+       <td style="color: red;">-<%= idr @order.coupon_discount_amount %></td>
+     </tr>
+   <% end %>
+   <tr>
+     <td style="background-color: #f2f2f2"><strong>Total Harga</strong></td>
+     <td><%= idr @order.final_total_price %></td>
+   </tr>
+ </table>
 
-<% if @order.contains_physical_products? && @order.shipping_cost.present? %>
-  <table style="margin-top: 1rem;">
-    <tr>
-      <td style="background-color: #f2f2f2"><strong>Subtotal Produk</strong></td>
-      <td><%= idr (@order.total_price - @order.shipping_cost) %></td>
-    </tr>
-    <tr>
-      <td style="background-color: #f2f2f2"><strong>Ongkos Kirim</strong></td>
-      <td><%= idr @order.shipping_cost %></td>
-    </tr>
-    <tr>
-      <td style="background-color: #f2f2f2"><strong>Total</strong></td>
-      <td><%= idr @order.total_price %></td>
-    </tr>
-  </table>
-<% end %>
+ <% if @order.contains_physical_products? && @order.shipping_cost.present? %>
+   <table style="margin-top: 1rem;">
+     <tr>
+       <td style="background-color: #f2f2f2"><strong>Subtotal Produk</strong></td>
+       <td><%= idr (@order.final_total_price - @order.shipping_cost + (@order.coupon_discount_amount || 0)) %></td>
+     </tr>
+     <tr>
+       <td style="background-color: #f2f2f2"><strong>Ongkos Kirim</strong></td>
+       <td><%= idr @order.shipping_cost %></td>
+     </tr>
+     <tr>
+       <td style="background-color: #f2f2f2"><strong>Total</strong></td>
+       <td><%= idr @order.final_total_price %></td>
+     </tr>
+   </table>
+ <% end %>
 
 <h3>Rincian</h3>
 

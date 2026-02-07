@@ -3,8 +3,12 @@ class Order < ApplicationRecord
 
   has_many :line_items, class_name: "OrderLineItem", dependent: :delete_all
   has_many :payment_evidences, -> { order(created_at: :desc) }, as: :payable, dependent: :destroy
+  has_many :coupon_usages, dependent: :nullify
 
   belongs_to :shipping_cost_record, class_name: "ShippingCost", optional: true, foreign_key: "shipping_cost_id"
+
+  has_one :coupon_usage, dependent: :nullify
+  has_one :applied_coupon, through: :coupon_usage, source: :coupon
   belongs_to :shipping_province, class_name: "Province", optional: true
   belongs_to :shipping_city, class_name: "City", optional: true
   belongs_to :shipping_district, class_name: "District", optional: true
@@ -22,6 +26,9 @@ class Order < ApplicationRecord
   after_save_commit :send_order_failed_notification, if: -> { saved_change_to_state? && failed? }
   after_create_commit :send_order_created_notification, if: -> { Current.settings["payment_provider"] == "manual" }
   after_save_commit :send_shipping_tracking_notification, if: -> { saved_change_to_tracking_number? && tracking_number.present? }
+
+  before_create :capture_coupon_details
+  after_create :record_coupon_usage
 
   scope :today, -> { where(state_updated_at: Time.now.all_day) }
 
@@ -94,6 +101,22 @@ class Order < ApplicationRecord
     total_price.to_i + unique_code.to_i
   end
 
+  def subtotal_price
+    line_items.sum(&:orderable_price)
+  end
+
+  def coupon_discount_amount
+    self[:coupon_discount_amount] || 0
+  end
+
+  def shipping_cost
+    self[:shipping_cost] || 0
+  end
+
+  def has_coupon?
+    coupon_code.present?
+  end
+
   private
     def send_order_successful_notification
       Notification.with(order: self).notify
@@ -155,5 +178,23 @@ class Order < ApplicationRecord
           errors.add(:shipping_cost_id, "must match the selected shipping province")
         end
       end
+    end
+
+    def capture_coupon_details
+      return unless cart
+
+      if cart.coupon_code.present?
+        self.coupon_code = cart.coupon_code
+        self.coupon_discount_amount = cart.coupon&.calculate_discount(cart) || 0
+
+        base_total = cart.subtotal_price + shipping_cost
+        self.total_price = [ base_total - coupon_discount_amount, 0 ].max
+      end
+    end
+
+    def record_coupon_usage
+      return unless cart&.coupon && coupon_code.present?
+
+      coupon.record_usage!(self)
     end
 end

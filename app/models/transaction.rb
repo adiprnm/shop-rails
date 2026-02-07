@@ -9,8 +9,14 @@ class Transaction
     shipping_cost_obj = ShippingCost.find_by(id: params[:shipping_cost_id])
     shipping_cost_value = shipping_cost_obj&.cost || 0
 
+    subtotal = cart.subtotal_price
+    coupon_discount = cart.coupon&.calculate_discount(cart) || 0
+
+    base_total = subtotal + shipping_cost_value
+    final_total = [ base_total - coupon_discount, 0 ].max
+
     order_params = {
-      total_price: cart.total_price + shipping_cost_value,
+      total_price: final_total,
       shipping_cost: shipping_cost_value,
       shipping_provider: shipping_cost_obj&.courier,
       shipping_method: shipping_cost_obj&.service,
@@ -25,9 +31,9 @@ class Transaction
 
     cart.line_items.each do |line_item|
       weight = if line_item.product_variant
-                 line_item.product_variant.weight
+                  line_item.product_variant.weight
       elsif line_item.cartable.productable.is_a?(PhysicalProduct)
-                 line_item.cartable.productable.weight
+                  line_item.cartable.productable.weight
       end
 
       @order.line_items.create(

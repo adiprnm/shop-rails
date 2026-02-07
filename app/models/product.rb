@@ -9,6 +9,7 @@ class Product < ApplicationRecord
   accepts_nested_attributes_for :product_variants, allow_destroy: true, reject_if: :all_blank
   has_many :order_line_items, as: :orderable
   has_many :completed_orders, -> { paid }, through: :order_line_items, source: :order
+  has_many :coupon_restrictions, as: :restriction, dependent: :nullify
 
   has_many :source_recommendations, class_name: "ProductRecommendation",
            foreign_key: :source_product_id, dependent: :destroy,

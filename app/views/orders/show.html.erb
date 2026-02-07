@@ -12,9 +12,52 @@
 <div class="text-center" data-controller="copy-text">
   <%= status_tag(@order) %>
 
-  <h1 class="mt-4" style="font-size: 2rem; font-weight: 800;"><%= idr @order.final_total_price %></h1>
-  <button style="padding: 0.25rem 0.75rem; font-size: 0.85rem;" data-amount="<%= @order.total_price %>" data-action="copy-text#perform" class="mb-4">Salin</button>
 
+   <h1 class="mt-4" style="font-size:2rem; font-weight:800;"><%= idr @order.final_total_price %></h1>
+   <button style="padding: 0.25rem 0.75rem; font-size: 0.85rem;" data-amount="<%= @order.total_price %>" data-action="copy-text#perform" class="mb-4">Salin</button>
+
+   <div class="max-w-md mx-auto mt-8 text-left">
+     <h2 class="text-lg font-bold mb-4">Ringkasan Pesanan</h2>
+     <div class="space-y-2">
+       <% @order.line_items.each do |item| %>
+           <span><%= item.orderable_name %></span>
+           <span><%= idr item.orderable_price %></span>
+         </div>
+       <% end %>
+     </div>
+     <hr class="my-4">
+     <div class="space-y-2">
+       <div class="flex justify-between">
+         <span>Subtotal</span>
+         <span><%= idr @order.subtotal_price %></span>
+       </div>
+       <% if @order.has_coupon? %>
+         <div class="flex justify-between text-red">
+           <span>Kupon (<%= @order.coupon_code %>)</span>
+           <span>-<%= idr @order.coupon_discount_amount %></span>
+         </div>
+       <% end %>
+       <% if @order.shipping_cost&.positive? %>
+         <div class="flex justify-between">
+           <span>Ongkos Kirim</span>
+           <span><%= idr @order.shipping_cost %></span>
+         </div>
+       <% end %>
+       <% if @order.unique_code.present? %>
+         <div class="flex justify-between">
+           <span>Kode Unik</span>
+           <span><%= @order.unique_code %></span>
+         </div>
+       <% end %>
+     </div>
+     <hr class="my-4">
+     <div class="flex justify-between font-bold text-lg">
+       <span>Total</span>
+       <span><%= idr @order.final_total_price %></span>
+     </div>
+   </div>
+
+  <dialog data-copy-text-target="modal">
   <dialog data-copy-text-target="modal">
     <article>
       <p>Nominal berhasil disalin!</p>

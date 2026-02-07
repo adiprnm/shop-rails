@@ -19,6 +19,10 @@ Rails.application.routes.draw do
   resources :categories, only: %w[ show ]
   resource :cart, only: %w[ show ] do
     resources :line_items, controller: "cart_line_items", only: %w[ destroy ]
+    collection do
+      post :apply_coupon
+      post :remove_coupon
+    end
   end
   resources :supports, controller: "donations", only: %w[ index show create ] do
     resource :payment_evidence, only: %w[ new create ], controller: "donations/payment_evidences"
@@ -43,6 +47,12 @@ Rails.application.routes.draw do
       end
     end
     resources :categories
+    resources :coupons do
+      member do
+        post :activate
+        post :deactivate
+      end
+    end
     resources :donations, only: %w[ index show edit update destroy ]
     resources :emails, only: %w[ index ] do
       collection do
