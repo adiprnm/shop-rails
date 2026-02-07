@@ -26,11 +26,11 @@ class Order < ApplicationRecord
   scope :today, -> { where(state_updated_at: Time.now.all_day) }
 
   validates :customer_agree_to_terms, acceptance: true
-  validates :customer_phone, presence: true, if: :contains_physical_products?
-  validates :address_line, presence: true, if: :contains_physical_products?
-  validates :shipping_province_id, presence: true, if: :contains_physical_products?
-  validates :shipping_city_id, presence: true, if: :contains_physical_products?
-  validates :shipping_cost_id, presence: true, if: :contains_physical_products?
+  validates :customer_phone, presence: true, if: -> { cart&.contains_physical_product? }
+  validates :address_line, presence: true, if: -> { cart&.contains_physical_product? }
+  validates :shipping_province_id, presence: true, if: -> { cart&.contains_physical_product? }
+  validates :shipping_city_id, presence: true, if: -> { cart&.contains_physical_product? }
+  validates :shipping_cost_id, presence: true, if: -> { cart&.contains_physical_product? }
   validate :address_hierarchy_consistency
   validate :shipping_cost_consistency
 

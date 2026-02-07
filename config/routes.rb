@@ -24,7 +24,7 @@ Rails.application.routes.draw do
     resource :payment_evidence, only: %w[ new create ], controller: "donations/payment_evidences"
   end
 
-  resources :orders, only: %w[ show create ] do
+  resources :orders, only: %w[ new show create ] do
     resource :payment_evidence, only: %w[ new create ], controller: "orders/payment_evidences"
   end
 

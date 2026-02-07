@@ -1,10 +1,18 @@
 class OrdersController < ApplicationController
+  def new
+    @payable = if params[:order_id].present?
+      Order.find_or_initialize_by(order_id: params[:order_id])
+    elsif params[:donation_id].present?
+      Donation.find_or_initialize_by(donation_id: params[:donation_id])
+    end
+  end
+
   def create
     begin
       ActiveRecord::Base.transaction do
         @order = Transaction.new(Current.cart).create(checkout_params)
         if @order.invalid?
-          redirect_to cart_path, alert: @order.errors.full_messages.first
+          redirect_to new_order_path, alert: @order.errors.full_messages.first
           return
         end
 
@@ -24,7 +32,7 @@ class OrdersController < ApplicationController
         e.message
       end
 
-      redirect_to cart_path, alert: message
+      redirect_to new_order_path, alert: message
     end
   end
 

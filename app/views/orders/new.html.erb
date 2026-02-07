@@ -1,0 +1,89 @@
+<%= content_for(:title) { "Checkout | #{ Current.settings["site_name"] }" } %>
+<%= content_for :head do %>
+  <%= tag.meta name: "robots", content: "noindex" %>
+<% end %>
+
+<%= render "shared/flash" %>
+
+<h1>Checkout</h1>
+
+<%= form_with url: orders_path, method: :post, data: { turbo: false, controller: "auto-filler address shipping", auto_filler_fields_value: %w[ customer_name customer_email_address customer_phone address_line shipping_province_id shipping_city_id shipping_district_id shipping_subdistrict_id order_notes ], address_show_shipping_value: Current.cart.contains_physical_product?, shipping_base_total_value: Current.cart.total_price } do |f| %>
+  <div class="grouped mb-4">
+    <div class="form-group">
+      <%= f.label :customer_name, "Nama" %>
+      <%= f.text_field :customer_name, required: true, data: { action: "auto-filler#save " } %>
+    </div>
+    <div class="form-group">
+      <%= f.label :customer_email_address, "Email" %>
+      <%= f.email_field :customer_email_address, required: true, data: { action: "auto-filler#save" } %>
+    </div>
+    <% unless Current.cart.digital_items_only? %>
+      <div class="form-group">
+        <%= f.label :customer_phone, "No. HP" %>
+        <%= f.text_field :customer_phone, required: true, data: { action: "auto-filler#save" } %>
+      </div>
+    <% end %>
+  </div>
+
+  <% if Current.cart.contains_physical_product? %>
+    <div class="mb-4 card" data-address-target="shippingSection" style="transition: opacity 0.3s ease-in-out;">
+      <h3>Alamat Pengiriman</h3>
+      <div class="form-group">
+        <%= f.label :address_line, "Alamat Lengkap" %>
+        <%= f.text_area :address_line, rows: 3, data: { action: "auto-filler#save" } %>
+      </div>
+      <div class="grouped">
+        <div class="form-group">
+          <%= f.label :shipping_province_id, "Provinsi" %>
+          <%= f.select :shipping_province_id, options_for_select(Province.all.map { |p| [p.name, p.id] }, selected: f.object&.shipping_province_id), { include_blank: "Select Province" }, { id: "shipping_province_select", data: { address_target: "provinceSelect", action: "change->address#onProvinceChange auto-filler#save" } } %>
+        </div>
+        <div class="form-group">
+          <%= f.label :shipping_city_id, "Kota/Kabupaten" %>
+          <%= f.select :shipping_city_id, [], { include_blank: "Select City" }, { id: "shipping_city_select", data: { address_target: "citySelect", action: "change->address#onCityChange auto-filler#save" }, disabled: true } %>
+        </div>
+        <div class="form-group">
+          <%= f.label :shipping_district_id, "Kecamatan" %>
+          <%= f.select :shipping_district_id, [], { include_blank: "Select District" }, { id: "shipping_district_select", data: { address_target: "districtSelect", action: "change->address#onDistrictChange auto-filler#save" }, disabled: true } %>
+        </div>
+        <div class="form-group">
+          <%= f.label :shipping_subdistrict_id, "Kelurahan" %>
+          <%= f.select :shipping_subdistrict_id, [], { include_blank: "Select Subdistrict" }, { id: "shipping_subdistrict_select", data: { address_target: "subdistrictSelect", action: "change->address#onSubdistrictChange auto-filler#save" }, disabled: true } %>
+        </div>
+      </div>
+      <%= turbo_frame_tag "cities-options", data: { address_target: "citiesFrame" } %>
+      <%= turbo_frame_tag "districts-options", data: { address_target: "districtsFrame" } %>
+      <%= turbo_frame_tag "subdistricts-options", data: { address_target: "subdistrictsFrame" } %>
+    </div>
+  <% end %>
+
+  <%= turbo_frame_tag "shipping-options", data: { shipping_target: "shippingOptions" } %>
+
+  <div class="form-group mb-4 mt-8 text-xl" data-shipping-target="finalTotalSection">
+    <div class="flex justify-between">
+      <strong>Total Akhir</strong>
+      <strong id="final-total-display" data-shipping-target="finalTotalDisplay"><%= idr Current.cart.total_price %></strong>
+    </div>
+  </div>
+
+  <div class="form-group mb-4 mt-8">
+    <%= f.label :order_notes, "Catatan Pesanan" %>
+    <%= f.text_area :order_notes, rows: 2, data: { action: "auto-filler#save" } %>
+  </div>
+
+  <div class="flex items-center gap-2 mb-4">
+    <%= f.check_box :customer_agree_to_terms, style: "aspect-ratio: 1" %>
+    <%= f.label :customer_agree_to_terms do  %>
+      Saya setuju untuk menerima <%= link_to "Syarat dan Ketentuan", Current.settings["site_terms_and_conditions_url"].presence || "/syarat-dan-ketentuan" %> yang berlaku.
+    <% end %>
+    <% if @payable && @payable.errors[:customer_agree_to_terms].present? %>
+      <p class="text-red"><%= @payable.errors[:customer_agree_to_terms].first %></p>
+    <% end %>
+  </div>
+
+  <div class="flex items-center gap-2 mb-4">
+    <%= f.check_box :customer_agree_to_receive_newsletter, style: "aspect-ratio: 1" %>
+    <%= f.label :customer_agree_to_receive_newsletter, "Saya setuju untuk menerima email promosi dan penawaran menarik lainnya" %>
+  </div>
+
+  <%= f.submit "Checkout sekarang juga", class: "mt-4" %>
+<% end %>
