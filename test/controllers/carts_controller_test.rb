@@ -3,6 +3,7 @@ require "test_helper"
 class CartsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @cart = carts(:user_one_cart)
+    @cart.line_items.destroy_all
     Current.cart = @cart
   end
 

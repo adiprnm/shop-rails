@@ -1,0 +1,117 @@
+require "test_helper"
+
+class CartsControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    @cart = carts(:user_one_cart)
+    @cart.line_items.destroy_all
+    Current.cart = @cart
+  end
+
+  test "should show cart" do
+    get cart_path
+    assert_response :success
+  end
+
+  test "should assign order when order_id is present" do
+    order = orders(:paid_order)
+
+    get cart_path(order_id: order.order_id)
+    assert_response :success
+    assert_equal assigns(:payable).class, Order
+  end
+
+  test "should assign donation when donation_id is present" do
+    donation = donations(:named_donation)
+
+    get cart_path(order_id: donation.donation_id)
+    assert_response :success
+    assert_equal assigns(:payable).class, Donation
+  end
+
+  test "should initialize order if order_id not found" do
+    get cart_path(order_id: "non-existent-id")
+    assert_response :success
+    assert assigns(:payable).new_record?
+  end
+
+  test "should not assign payable when no order_id" do
+    get cart_path
+    assert_response :success
+    assert_nil assigns(:payable)
+  end
+
+  test "should load cart_recommendations" do
+    product1 = products(:ruby_guide)
+    product2 = products(:design_collection)
+    recommended_product = products(:business_audio_course)
+
+    Current.cart.add_item(product1)
+    Current.cart.add_item(product2)
+
+    product1.source_recommendations.create!(
+      recommended_product: recommended_product,
+      recommendation_type: "cross_sell"
+    )
+
+    get cart_path, headers: { 'X-Session-ID' => @cart.session_id }
+    assert_response :success
+    assert_not_nil assigns(:cart_recommendations)
+    assert_includes assigns(:cart_recommendations), recommended_product
+  end
+
+  test "should display cart_recommendations section" do
+    product = products(:ruby_guide)
+    recommended = products(:business_audio_course)
+
+    Current.cart.add_item(product)
+
+    product.source_recommendations.create!(
+      recommended_product: recommended,
+      recommendation_type: "cross_sell"
+    )
+
+    get cart_path, headers: { 'X-Session-ID' => @cart.session_id }
+    assert_response :success
+    assert_select "h2", text: "Kamu mungkin juga suka"
+    assert_select "a[href=?]", product_path(recommended.slug), count: 1
+  end
+
+  test "should not display cart_recommendations section when no recommendations" do
+    product = products(:ruby_guide)
+
+    Current.cart.add_item(product)
+
+    get cart_path
+    assert_response :success
+    assert_select "h2", text: "Kamu mungkin juga suka", count: 0
+  end
+end
+
+
+  test "should display cart_recommendations section" do
+    product = products(:ruby_guide)
+    recommended = products(:business_audio_course)
+
+    Current.cart.add_item(product)
+
+    product.source_recommendations.create!(
+      recommended_product: recommended,
+      recommendation_type: "cross_sell"
+    )
+
+    post carts_path, params: { _method: "get" }
+    assert_response :success
+    assert_select "h2", text: "Kamu mungkin juga suka"
+    assert_select "a[href=?]", product_path(recommended.slug), count: 1
+  end
+
+  test "should not display cart_recommendations section when no recommendations" do
+    product = products(:ruby_guide)
+
+    Current.cart.add_item(product)
+
+    post carts_path, params: { _method: "get" }
+    assert_response :success
+    assert_select "h2", text: "Kamu mungkin juga suka", count: 0
+  end
+end

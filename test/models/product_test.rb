@@ -129,4 +129,124 @@ class ProductTest < ActiveSupport::TestCase
     @product.featured_image.attach(io: File.open(Rails.root.join("test", "fixtures", "files", "test.jpg")), filename: "test.jpg", content_type: "image/jpeg")
     assert @product.featured_image.attached?
   end
+
+  test "can set upsell_product_ids" do
+    product = products(:ruby_guide)
+    recommended = products(:design_collection)
+
+    product.upsell_product_ids = [ recommended.id ]
+    product.save!
+
+    assert_equal 1, product.source_recommendations.upsell.count
+    assert_equal recommended, product.upsell_products.first
+  end
+
+  test "can set cross_sell_product_ids" do
+    product = products(:ruby_guide)
+    recommended = products(:business_audio_course)
+
+    product.cross_sell_product_ids = [ recommended.id ]
+    product.save!
+
+    assert_equal 1, product.source_recommendations.cross_sell.count
+    assert_equal recommended, product.cross_sell_products.first
+  end
+
+  test "can update upsell_product_ids" do
+    product = products(:ruby_guide)
+    recommended1 = products(:design_collection)
+    recommended2 = products(:business_audio_course)
+
+    product.upsell_product_ids = [ recommended1.id ]
+    product.save!
+
+    product.upsell_product_ids = [ recommended2.id ]
+    product.save!
+
+    assert_equal 1, product.source_recommendations.upsell.count
+    assert_equal recommended2, product.upsell_products.first
+  end
+
+  test "can remove upsell_product_ids" do
+    product = products(:ruby_guide)
+    recommended = products(:design_collection)
+
+    product.upsell_product_ids = [ recommended.id ]
+    product.save!
+
+    product.upsell_product_ids = []
+    product.save!
+
+    assert_equal 0, product.source_recommendations.upsell.count
+  end
+
+  test "returns active upsells" do
+    product = products(:ruby_guide)
+    active_product = products(:design_collection)
+    inactive_product = products(:business_audio_course)
+
+    inactive_product.update!(state: :inactive)
+
+    product.source_recommendations.create!(recommended_product: active_product, recommendation_type: :upsell)
+    product.source_recommendations.create!(recommended_product: inactive_product, recommendation_type: :upsell)
+
+    upsells = product.active_upsells
+    assert_equal 1, upsells.count
+    assert_equal active_product, upsells.first.recommended_product
+  end
+
+  test "returns active cross_sells" do
+    product = products(:ruby_guide)
+    active_product = products(:design_collection)
+
+    product.source_recommendations.create!(recommended_product: active_product, recommendation_type: "cross_sell")
+
+    cross_sells = product.active_cross_sells
+    assert_equal 1, cross_sells.count
+    assert_equal active_product, cross_sells.first.recommended_product
+  end
+
+  test "respects limit parameter for upsells" do
+    product = products(:ruby_guide)
+    product2 = products(:design_collection)
+    product3 = products(:business_audio_course)
+    product4 = products(:premium_t_shirt)
+    product5 = products(:ebook_reader)
+
+    product.source_recommendations.create!(recommended_product: product2, recommendation_type: :upsell)
+    product.source_recommendations.create!(recommended_product: product3, recommendation_type: :upsell)
+    product.source_recommendations.create!(recommended_product: product4, recommendation_type: :upsell)
+    product.source_recommendations.create!(recommended_product: product5, recommendation_type: :upsell)
+
+    upsells = product.active_upsells(limit: 3)
+    assert_equal 3, upsells.count
+  end
+
+  test "cart_recommendations returns products based on cart items" do
+    cart = carts(:user_one_cart)
+    product1 = products(:ruby_guide)
+    product2 = products(:design_collection)
+    recommended_product = products(:business_audio_course)
+
+    cart.add_item(product1)
+    cart.add_item(product2)
+
+    product1.source_recommendations.create!(
+      recommended_product: recommended_product,
+      recommendation_type: :cross_sell
+    )
+
+    recommendations = Product.cart_recommendations(cart)
+    assert_includes recommendations, recommended_product
+  end
+
+  test "returns empty array for cart with no recommendations" do
+    cart = carts(:user_one_cart)
+    product = products(:ruby_guide)
+
+    cart.add_item(product)
+
+    recommendations = Product.cart_recommendations(cart)
+    assert_empty recommendations
+  end
 end

@@ -42,7 +42,7 @@
       <%= f.label :display_type %>
       <%= f.select :display_type, Product.display_types.keys.map { |type| [ type.humanize, type ] } %>
     </div>
-    <div class="form-group check-boxes">
+    <div class="form-group check-boxes mb-4">
       <%= f.label :category_ids, "Category" %>
       <%= f.collection_check_boxes :category_ids, Category.all, :id, :name do |b| %>
         <%= b.label do %>
@@ -50,6 +50,30 @@
           <%= b.object.name %>
         <% end %>
       <% end %>
+    </div>
+    <div class="form-group check-boxes mb-4">
+      <%= f.label :upsell_product_ids, "Upsell Products" %>
+      <article class="mb-1">
+        <%= f.collection_check_boxes :upsell_product_ids, @available_products, :id, :name do |b| %>
+          <%= b.label class: "flex" do %>
+            <%= b.check_box class: "flex-noshrink", style: "margin-top: 2px;" %>
+            <%= b.object.name %>
+          <% end %>
+        <% end %>
+      </article>
+      <small class="text-gray">Produk dengan harga lebih tinggi untuk upsell</small>
+    </div>
+    <div class="form-group check-boxes mb-4">
+      <%= f.label :cross_sell_product_ids, "Cross-sell Products" %>
+      <article class="mb-1">
+        <%= f.collection_check_boxes :cross_sell_product_ids, @available_products, :id, :name do |b| %>
+          <%= b.label class: "flex" do %>
+            <%= b.check_box class: "flex-noshrink", style: "margin-top: 2px;" %>
+            <%= b.object.name %>
+          <% end %>
+        <% end %>
+      </article>
+      <small class="text-gray">Produk terkait untuk cross-sell</small>
     </div>
     <div class="form-group">
       <%= f.label :price %>

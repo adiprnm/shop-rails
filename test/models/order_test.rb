@@ -82,6 +82,11 @@ class OrderTest < ActiveSupport::TestCase
       cart: carts(:user_one_cart),
       customer_name: "Test Customer",
       customer_email_address: "test@example.com",
+      customer_phone: "08123456789",
+      address_line: "Test Address 123",
+      shipping_province_id: provinces(:jawa_barat).id,
+      shipping_city_id: cities(:jakarta_selatan).id,
+      shipping_cost_id: shipping_costs(:jne_district_yes).id,
       customer_agree_to_terms: true,
       total_price: 10000,
       state: "pending"
@@ -97,6 +102,11 @@ class OrderTest < ActiveSupport::TestCase
       cart: carts(:user_one_cart),
       customer_name: "Test Customer",
       customer_email_address: "test@example.com",
+      customer_phone: "08123456789",
+      address_line: "Test Address 123",
+      shipping_province_id: provinces(:jawa_barat).id,
+      shipping_city_id: cities(:jakarta_selatan).id,
+      shipping_cost_id: shipping_costs(:jne_district_yes).id,
       customer_agree_to_terms: true,
       total_price: 10000,
       state: "pending"
@@ -110,6 +120,11 @@ class OrderTest < ActiveSupport::TestCase
       cart: carts(:user_one_cart),
       customer_name: "Test Customer 1",
       customer_email_address: "test1@example.com",
+      customer_phone: "08123456789",
+      address_line: "Test Address 123",
+      shipping_province_id: provinces(:jawa_barat).id,
+      shipping_city_id: cities(:jakarta_selatan).id,
+      shipping_cost_id: shipping_costs(:jne_district_yes).id,
       customer_agree_to_terms: true,
       total_price: 10000,
       state: "pending"
@@ -136,6 +151,11 @@ class OrderTest < ActiveSupport::TestCase
       cart: carts(:user_one_cart),
       customer_name: "Test Customer 1",
       customer_email_address: "test1@example.com",
+      customer_phone: "08123456789",
+      address_line: "Test Address 123",
+      shipping_province_id: provinces(:jawa_barat).id,
+      shipping_city_id: cities(:jakarta_selatan).id,
+      shipping_cost_id: shipping_costs(:jne_district_yes).id,
       customer_agree_to_terms: true,
       total_price: 10000,
       state: "pending"
@@ -228,6 +248,7 @@ class OrderTest < ActiveSupport::TestCase
 
   test "should set tracking_number_updated_at when tracking_number changes" do
     @order.update(tracking_number: "JP123456789")
+    @order.reload
     assert_not_nil @order.tracking_number_updated_at
   end
 
@@ -243,10 +264,12 @@ class OrderTest < ActiveSupport::TestCase
 
   test "should update tracking_number_updated_at when tracking_number is updated" do
     @order.update(tracking_number: "JP123456789")
+    @order.reload
     original_updated_at = @order.tracking_number_updated_at
 
     sleep(0.01)
     @order.update(tracking_number: "JP987654321")
+    @order.reload
 
     assert @order.tracking_number_updated_at > original_updated_at
   end

@@ -26,15 +26,23 @@ class Order < ApplicationRecord
   scope :today, -> { where(state_updated_at: Time.now.all_day) }
 
   validates :customer_agree_to_terms, acceptance: true
-  validates :customer_phone, presence: true, if: :contains_physical_products?
-  validates :address_line, presence: true, if: :contains_physical_products?
-  validates :shipping_province_id, presence: true, if: :contains_physical_products?
-  validates :shipping_city_id, presence: true, if: :contains_physical_products?
-  validates :shipping_cost_id, presence: true, if: :contains_physical_products?
+  validates :customer_phone, presence: true, if: :shipping_required?
+  validates :address_line, presence: true, if: :shipping_required?
+  validates :shipping_province_id, presence: true, if: :shipping_required?
+  validates :shipping_city_id, presence: true, if: :shipping_required?
+  validates :shipping_cost_id, presence: true, if: :shipping_required?
   validate :address_hierarchy_consistency
   validate :shipping_cost_consistency
 
   def contains_physical_products?
+    has_physical_products == true
+  end
+
+  def requires_shipping?
+    cart && cart.contains_physical_product?
+  end
+
+  def shipping_required?
     has_physical_products == true
   end
 

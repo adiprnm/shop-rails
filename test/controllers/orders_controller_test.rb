@@ -66,7 +66,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
       **@default_headers
     end
 
-    assert_redirected_to cart_path
+    assert_redirected_to new_order_path
     assert_not_nil flash[:alert]
   end
 
@@ -82,7 +82,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
       **@default_headers
     end
 
-    assert_redirected_to cart_path
+    assert_redirected_to new_order_path
     assert_not_nil flash[:alert]
   end
 
@@ -184,7 +184,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
       },
       **@default_headers
 
-      assert_redirected_to cart_path
+      assert_redirected_to new_order_path
       assert_not_nil flash[:alert]
     end
   end
@@ -202,13 +202,13 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
         address_line: "Test Address 123",
         shipping_province_id: 1,
         shipping_city_id: 1
-      },
-      **@default_headers
+       },
+       **@default_headers
 
-      assert_redirected_to cart_path
-      assert_not_nil flash[:alert]
-    end
-  end
+       assert_redirected_to new_order_path
+       assert_not_nil flash[:alert]
+     end
+   end
 
   test "should not allow shipping cost manipulation via shipping_cost_id" do
     physical_product = products(:premium_t_shirt)

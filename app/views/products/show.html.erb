@@ -92,6 +92,24 @@
     <h2>Deskripsi</h2>
     <%= render_markdown_as_html @product.description %>
   </div>
+
+  <% if @upsells.any? %>
+    <section class="mt-16">
+      <h2 class="text-base font-base">Kamu juga mungkin suka:</h2>
+      <% @upsells.each do |recommendation| %>
+        <%= render "products/product_card_compact", product: recommendation.recommended_product %>
+      <% end %>
+    </section>
+  <% end %>
+
+  <% if @cross_sells.any? %>
+    <section class="mt-16">
+      <h2 class="text-base font-base">Produk terkait:</h2>
+      <% @cross_sells.each do |recommendation| %>
+        <%= render "products/product_card_compact", product: recommendation.recommended_product %>
+      <% end %>
+    </div>
+  <% end %>
 </div>
 
 <%= go_to_top_button(@product.slug) %>

@@ -58,4 +58,8 @@ class Cart < ApplicationRecord
   def contains_physical_product?
     line_items.any?(&:physical_product?)
   end
+
+  def digital_items_only?
+    line_items.present? && line_items.none?(&:physical_product?)
+  end
 end
