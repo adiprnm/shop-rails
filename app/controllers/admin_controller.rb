@@ -37,11 +37,21 @@ class AdminController < ApplicationController
     @repeat_customers = repeat_customers_count
     @geographic_distribution = geographic_distribution
     @coupon_effectiveness = coupon_effectiveness_data
-    @coupon_usage_chart_data = coupon_usage_chart_data
-    @top_coupons = top_coupons_data
-  end
+      @coupon_usage_chart_data = coupon_usage_chart_data
+      @top_coupons = top_coupons_data
+    end
 
-  def coupon_usage_report
+    def export_coupons
+      @coupons = Coupon.all.order(created_at: :desc)
+
+      respond_to do |format|
+        format.csv do
+          send_data generate_coupons_csv(@coupons), filename: "coupons_#{Date.current}.csv", type: "text/csv"
+        end
+      end
+    end
+
+    def coupon_usage_report
     @coupon_usages = CouponUsage.includes(:coupon, :order).order(created_at: :desc)
 
     @coupon_code = params[:coupon_code]
@@ -73,10 +83,10 @@ class AdminController < ApplicationController
     end
 
     def generate_coupon_usage_csv(coupon_usages)
-      require 'csv'
+      require "csv"
 
       CSV.generate(headers: true) do |csv|
-        csv << ['ID', 'Kode Kupon', 'Tipe Diskon', 'Jumlah Diskon', 'ID Pesanan', 'Email Pelanggan', 'Tanggal Penggunaan']
+        csv << [ "ID", "Kode Kupon", "Tipe Diskon", "Jumlah Diskon", "ID Pesanan", "Email Pelanggan", "Tanggal Penggunaan" ]
 
         coupon_usages.find_each(batch_size: 1000) do |usage|
           csv << [
@@ -88,10 +98,34 @@ class AdminController < ApplicationController
             usage.order.customer_email_address,
             usage.created_at.to_s(:long)
           ]
-     end
-  end
-  end
-  end
+        end
+      end
+    end
+
+    def generate_coupons_csv(coupons)
+      require "csv"
+
+      CSV.generate(headers: true) do |csv|
+        csv << [ "ID", "Kode", "Deskripsi", "Tipe Diskon", "Jumlah Diskon", "Status", "Limit Penggunaan", "Total Limit", "Tanggal Dibuat", "Berlaku Dari", "Berlaku Hingga", "Jumlah Digunakan" ]
+
+        coupons.each do |coupon|
+          csv << [
+            coupon.id,
+            coupon.code,
+            coupon.description || "-",
+            coupon.discount_type.humanize,
+            coupon.discount_amount,
+            coupon.state.humanize,
+            coupon.usage_limit_per_user,
+            coupon.usage_limit,
+            coupon.created_at.to_s(:long),
+            coupon.starts_at&.to_s(:long) || "-",
+            coupon.expires_at&.to_s(:long) || "-",
+            coupon.usage_count
+          ]
+        end
+      end
+    end
 
     def coupon_usage_chart_data
       last_30_days = 30.days.ago.to_date..Date.current

@@ -52,6 +52,9 @@ Rails.application.routes.draw do
         post :activate
         post :deactivate
       end
+      collection do
+        post :export
+      end
     end
     resources :donations, only: %w[ index show edit update destroy ]
     resources :emails, only: %w[ index ] do

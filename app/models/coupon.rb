@@ -15,17 +15,21 @@ class Coupon < ApplicationRecord
 
   has_many :product_restrictions, -> { where(restriction_type: "Product") },
            class_name: "CouponRestriction"
-  has_many :included_products, -> { where(restriction_kind: "include", restriction_type: "Product") },
-           through: :product_restrictions, source: :restriction, source_type: "Product"
-  has_many :excluded_products, -> { where(restriction_kind: "exclude", restriction_type: "Product") },
-           through: :product_restrictions, source: :restriction, source_type: "Product"
+  has_many :included_product_restrictions, -> { where(restriction_type: "Product", restriction_kind: "include") },
+           class_name: "CouponRestriction"
+  has_many :included_products, through: :included_product_restrictions, source: :restriction, source_type: "Product"
+  has_many :excluded_product_restrictions, -> { where(restriction_type: "Product", restriction_kind: "exclude") },
+           class_name: "CouponRestriction"
+  has_many :excluded_products, through: :excluded_product_restrictions, source: :restriction, source_type: "Product"
 
   has_many :category_restrictions, -> { where(restriction_type: "Category") },
            class_name: "CouponRestriction"
-  has_many :included_categories, -> { where(restriction_kind: "include", restriction_type: "Category") },
-           through: :category_restrictions, source: :restriction, source_type: "Category"
-  has_many :excluded_categories, -> { where(restriction_kind: "exclude", restriction_type: "Category") },
-           through: :category_restrictions, source: :restriction, source_type: "Category"
+  has_many :included_category_restrictions, -> { where(restriction_type: "Category", restriction_kind: "include") },
+           class_name: "CouponRestriction"
+  has_many :included_categories, through: :included_category_restrictions, source: :restriction, source_type: "Category"
+  has_many :excluded_category_restrictions, -> { where(restriction_type: "Category", restriction_kind: "exclude") },
+           class_name: "CouponRestriction"
+  has_many :excluded_categories, through: :excluded_category_restrictions, source: :restriction, source_type: "Category"
 
   scope :active, -> { where(state: "active") }
   scope :valid_now, ->(now: Time.current) do
@@ -135,14 +139,15 @@ class Coupon < ApplicationRecord
   def meets_product_restrictions?(cart)
     return true if included_products.empty? && excluded_products.empty?
 
-    cart_product_ids = cart.line_items.pluck(:cartable_id).uniq
+    cart_product_ids = cart.line_items.map { |item| item.cartable.id }.uniq
 
     if excluded_products.any?
-      return false if excluded_products.where(id: cart_product_ids).exists?
+      excluded_product_ids = excluded_products.respond_to?(:pluck) ? excluded_products.pluck(:id) : excluded_products.map(&:id)
+      return false unless (excluded_product_ids & cart_product_ids).empty?
     end
 
     if included_products.any?
-      included_product_ids = included_products.pluck(:id)
+      included_product_ids = included_products.respond_to?(:pluck) ? included_products.pluck(:id) : included_products.map(&:id)
       return false unless cart_product_ids.any? { |id| included_product_ids.include?(id) }
     end
 
@@ -153,16 +158,17 @@ class Coupon < ApplicationRecord
     return true if included_categories.empty? && excluded_categories.empty?
 
     cart_category_ids = cart.line_items
-      .joins(cartable: :categories)
-      .pluck("categories.id")
+      .flat_map { |item| item.cartable.categories }
+      .map(&:id)
       .uniq
 
     if excluded_categories.any?
-      return false if excluded_categories.where(id: cart_category_ids).exists?
+      excluded_category_ids = excluded_categories.respond_to?(:pluck) ? excluded_categories.pluck(:id) : excluded_categories.map(&:id)
+      return false unless (excluded_category_ids & cart_category_ids).empty?
     end
 
     if included_categories.any?
-      included_category_ids = included_categories.pluck(:id)
+      included_category_ids = included_categories.respond_to?(:pluck) ? included_categories.pluck(:id) : included_categories.map(&:id)
       return false unless cart_category_ids.any? { |id| included_category_ids.include?(id) }
     end
 

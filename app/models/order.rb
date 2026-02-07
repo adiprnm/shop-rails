@@ -3,11 +3,11 @@ class Order < ApplicationRecord
 
   has_many :line_items, class_name: "OrderLineItem", dependent: :delete_all
   has_many :payment_evidences, -> { order(created_at: :desc) }, as: :payable, dependent: :destroy
-  has_many :coupon_usages, dependent: :nullify
+  has_many :coupon_usages, dependent: :destroy
 
   belongs_to :shipping_cost_record, class_name: "ShippingCost", optional: true, foreign_key: "shipping_cost_id"
 
-  has_one :coupon_usage, dependent: :nullify
+  has_one :coupon_usage, dependent: :destroy
   has_one :applied_coupon, through: :coupon_usage, source: :coupon
   belongs_to :shipping_province, class_name: "Province", optional: true
   belongs_to :shipping_city, class_name: "City", optional: true

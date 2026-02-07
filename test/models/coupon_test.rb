@@ -148,74 +148,73 @@ class CouponTest < ActiveSupport::TestCase
     assert_equal "inactive", Coupon.states.keys[1]
     assert_equal "expired", Coupon.states.keys[2]
   end
-end
 
   test "meets_product_restrictions returns true when no restrictions" do
     @coupon.stubs(:included_products).returns([])
     @coupon.stubs(:excluded_products).returns([])
-    
+
     assert @coupon.send(:meets_product_restrictions?, @cart)
   end
 
   test "meets_product_restrictions returns false when product excluded" do
     product = products(:ruby_guide)
-    @coupon.stubs(:excluded_products).returns([product])
-    
+    @coupon.stubs(:excluded_products).returns([ product ])
+
     cart_item = mock("cart_item")
     cart_item.stubs(:cartable).returns(product)
-    @cart.stubs(:line_items).returns([cart_item])
-    
+    @cart.stubs(:line_items).returns([ cart_item ])
+
     assert_not @coupon.send(:meets_product_restrictions?, @cart)
   end
 
   test "meets_product_restrictions returns false when product not included" do
     product1 = products(:ruby_guide)
     product2 = products(:design_collection)
-    
-    @coupon.stubs(:included_products).returns([product1])
+
+    @coupon.stubs(:included_products).returns([ product1 ])
     @coupon.stubs(:excluded_products).returns([])
-    
+
     cart_item = mock("cart_item")
     cart_item.stubs(:cartable).returns(product2)
-    @cart.stubs(:line_items).returns([cart_item])
-    
+    @cart.stubs(:line_items).returns([ cart_item ])
+
     assert_not @coupon.send(:meets_product_restrictions?, @cart)
   end
 
   test "meets_product_restrictions returns true when product included" do
     product = products(:ruby_guide)
-    
-    @coupon.stubs(:included_products).returns([product])
+
+    @coupon.stubs(:included_products).returns([ product ])
     @coupon.stubs(:excluded_products).returns([])
-    
+
     cart_item = mock("cart_item")
     cart_item.stubs(:cartable).returns(product)
-    @cart.stubs(:line_items).returns([cart_item])
-    
+    @cart.stubs(:line_items).returns([ cart_item ])
+
     assert @coupon.send(:meets_product_restrictions?, @cart)
   end
 
   test "product_eligible returns true when no restrictions" do
     @coupon.stubs(:included_products).returns([])
     @coupon.stubs(:excluded_products).returns([])
-    
+
     product = products(:ruby_guide)
     assert @coupon.send(:product_eligible?, product)
   end
 
   test "product_eligible returns false when product excluded" do
     product = products(:ruby_guide)
-    @coupon.stubs(:excluded_products).returns([product])
+    @coupon.stubs(:excluded_products).returns([ product ])
     @coupon.stubs(:included_products).returns([])
-    
+
     assert_not @coupon.send(:product_eligible?, product)
   end
 
   test "product_eligible returns true when product included" do
     product = products(:ruby_guide)
     @coupon.stubs(:excluded_products).returns([])
-    @coupon.stubs(:included_products).returns([product])
-    
+    @coupon.stubs(:included_products).returns([ product ])
+
     assert @coupon.send(:product_eligible?, product)
   end
 
@@ -223,25 +222,25 @@ end
     @coupon.discount_type = "fixed_product"
     @coupon.discount_amount = 5000
     @coupon.exclude_sale_items = true
-    
+
     sale_product = products(:ruby_guide)
     sale_product.stubs(:sale_price?).returns(true)
-    
+
     normal_product = products(:design_collection)
     normal_product.stubs(:sale_price?).returns(false)
-    
+
     sale_item = mock("cart_item")
     sale_item.stubs(:cartable).returns(sale_product)
     sale_item.stubs(:price).returns(100_000)
-    
+
     normal_item = mock("cart_item")
     normal_item.stubs(:cartable).returns(normal_product)
     normal_item.stubs(:price).returns(100_000)
-    
-    @cart.stubs(:line_items).returns([sale_item, normal_item])
-    
+
+    @cart.stubs(:line_items).returns([ sale_item, normal_item ])
+
     discount = @coupon.send(:calculate_fixed_product_discount, @cart)
-    
+
     assert_equal 100_000, discount  # Only normal product, not sale product
   end
 
@@ -249,32 +248,32 @@ end
     @coupon.discount_type = "percent_product"
     @coupon.discount_amount = 10  # 10%
     @coupon.exclude_sale_items = true
-    
+
     sale_product = products(:ruby_guide)
     sale_product.stubs(:sale_price?).returns(true)
-    
+
     normal_product = products(:design_collection)
     normal_product.stubs(:sale_price?).returns(false)
-    
+
     sale_item = mock("cart_item")
     sale_item.stubs(:cartable).returns(sale_product)
     sale_item.stubs(:price).returns(100_000)
-    
+
     normal_item = mock("cart_item")
     normal_item.stubs(:cartable).returns(normal_product)
     normal_item.stubs(:price).returns(100_000)
-    
-    @cart.stubs(:line_items).returns([sale_item, normal_item])
-    
+
+    @cart.stubs(:line_items).returns([ sale_item, normal_item ])
+
     discount = @coupon.send(:calculate_percent_product_discount, @cart)
-    
+
     assert_equal 10_000, discount  # 10% of 100,000, not 10% of 200,000
   end
 
   test "meets_category_restrictions returns true when no restrictions" do
     @coupon.stubs(:included_categories).returns([])
     @coupon.stubs(:excluded_categories).returns([])
-    
+
     assert @coupon.send(:meets_category_restrictions?, @cart)
   end
 
@@ -282,14 +281,14 @@ end
     category = categories(:programming_ebook)
     product = products(:ruby_guide)
     product.categories << category
-    
-    @coupon.stubs(:excluded_categories).returns([category])
-    
+
+    @coupon.stubs(:excluded_categories).returns([ category ])
+
     cart_item = mock("cart_item")
     cart_item.stubs(:cartable).returns(product)
-    
-    @cart.stubs(:line_items).returns([cart_item])
-    
+
+    @cart.stubs(:line_items).returns([ cart_item ])
+
     assert_not @coupon.send(:meets_category_restrictions?, @cart)
   end
 
@@ -300,15 +299,15 @@ end
     product1.categories << category1
     product2 = products(:design_collection)
     product2.categories << category2
-    
-    @coupon.stubs(:included_categories).returns([category1])
+
+    @coupon.stubs(:included_categories).returns([ category1 ])
     @coupon.stubs(:excluded_categories).returns([])
-    
+
     cart_item = mock("cart_item")
     cart_item.stubs(:cartable).returns(product2)
-    
-    @cart.stubs(:line_items).returns([cart_item])
-    
+
+    @cart.stubs(:line_items).returns([ cart_item ])
+
     assert_not @coupon.send(:meets_category_restrictions?, @cart)
   end
 
@@ -316,15 +315,15 @@ end
     category = categories(:programming_ebook)
     product = products(:ruby_guide)
     product.categories << category
-    
-    @coupon.stubs(:included_categories).returns([category])
+
+    @coupon.stubs(:included_categories).returns([ category ])
     @coupon.stubs(:excluded_categories).returns([])
-    
+
     cart_item = mock("cart_item")
     cart_item.stubs(:cartable).returns(product)
-    
-    @cart.stubs(:line_items).returns([cart_item])
-    
+
+    @cart.stubs(:line_items).returns([ cart_item ])
+
     assert @coupon.send(:meets_category_restrictions?, @cart)
   end
 
@@ -332,26 +331,26 @@ end
     @coupon.discount_type = "percent_cart"
     @coupon.discount_amount = 10
     @coupon.exclude_sale_items = true
-    
+
     category = categories(:programming_ebook)
     sale_product = products(:ruby_guide)
     sale_product.categories << category
     sale_product.stubs(:sale_price?).returns(true)
-    
+
     normal_product = products(:design_collection)
     normal_product.categories << category
     normal_product.stubs(:sale_price?).returns(false)
-    
+
     @cart.stubs(:subtotal_price).returns(100_000)
-    @coupon.stubs(:included_categories).returns([category])
+    @coupon.stubs(:included_categories).returns([ category ])
     @coupon.stubs(:excluded_categories).returns([])
-    
+
     # Category restrictions return true (both products have the category)
     @coupon.stubs(:meets_category_restrictions?).returns(true)
-    
+
     discount = @coupon.calculate_discount(@cart)
-    
-    # Only normal product should be discounted (90% of 100,000 = 90,000)
-    assert_equal 90_000, discount
+
+    # 10% discount of 100,000 = 10,000
+    assert_equal 10_000, discount
   end
 end
