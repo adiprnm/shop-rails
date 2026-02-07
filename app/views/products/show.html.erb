@@ -95,24 +95,20 @@
 
   <% if @upsells.any? %>
     <section class="mt-16">
-      <h2>Produk Premium</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <% @upsells.each do |recommendation| %>
-          <%= render "products/product_card", product: recommendation.recommended_product %>
-        <% end %>
-      </div>
+      <h2 class="text-base font-base">Kamu juga mungkin suka:</h2>
+      <% @upsells.each do |recommendation| %>
+        <%= render "products/product_card_compact", product: recommendation.recommended_product %>
+      <% end %>
     </section>
   <% end %>
 
   <% if @cross_sells.any? %>
     <section class="mt-16">
-      <h2>Produk Terkait</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <% @cross_sells.each do |recommendation| %>
-          <%= render "products/product_card", product: recommendation.recommended_product %>
-        <% end %>
-      </div>
-    </section>
+      <h2 class="text-base font-base">Produk terkait:</h2>
+      <% @cross_sells.each do |recommendation| %>
+        <%= render "products/product_card_compact", product: recommendation.recommended_product %>
+      <% end %>
+    </div>
   <% end %>
 </div>
 
