@@ -51,12 +51,10 @@
 
     <% if @cart_recommendations.any? %>
       <section class="mt-8">
-        <h2>Kamu mungkin juga suka</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <% @cart_recommendations.each do |product| %>
-            <%= render "products/product_card", product: product %>
-          <% end %>
-        </div>
+        <h2 class="text-base font-base">Kamu mungkin juga suka:</h2>
+        <% @cart_recommendations.each do |product| %>
+          <%= render "products/product_card_compact", product: product %>
+        <% end %>
       </section>
     <% end %>
 
