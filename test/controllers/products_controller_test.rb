@@ -288,10 +288,10 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     get product_path(product.slug)
     assert_response :success
-    assert_select "h2", count: 2
+    assert_select "h2", count: 3
     css_selectors = css_select("h2")
-    upsell_h2 = css_selectors.find { |h| h.text == "Produk Premium" }
-    assert upsell_h2.present?, "Expected to find h2 with text 'Produk Premium'"
+    upsell_h2 = css_selectors.find { |h| h.text == "Kamu juga mungkin suka:" }
+    assert upsell_h2.present?, "Expected to find h2 with text 'Kamu juga mungkin suka:'"
     assert_select "a[href=?]", product_path(recommended.slug), count: 1
   end
 
@@ -308,9 +308,9 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     get product_path(product.slug)
     assert_response :success
-    assert_select "h2", count: 2
+    assert_select "h2", count: 3
     css_selectors = css_select("h2")
-    cross_sell_h2 = css_selectors.find { |h| h.text == "Produk Terkait" }
+    cross_sell_h2 = css_selectors.find { |h| h.text == "Produk terkait:" }
     assert cross_sell_h2.present?
     assert_select "a[href=?]", product_path(recommended.slug), count: 1
   end
