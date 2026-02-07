@@ -17,6 +17,40 @@
       <%= f.label :customer_email_address, "Email" %>
       <%= f.email_field :customer_email_address, required: true, data: { action: "auto-filler#save" } %>
     </div>
+  </div>
+
+  <div class="mb-4 card">
+    <h3>Ringkasan Pesanan</h3>
+    <table class="mb-4">
+      <thead>
+        <tr>
+          <td>Produk</td>
+          <td>Qty</td>
+          <td>Harga</td>
+        </tr>
+      </thead>
+      <tbody>
+        <% Current.cart.line_items.each do |line_item| %>
+          <tr>
+            <td>
+              <%= line_item.cartable.name %>
+              <% if line_item.product_variant %>
+                <br><small><%= line_item.product_variant.name %></small>
+              <% end %>
+            </td>
+            <td><%= line_item.quantity %></td>
+            <td><%= idr line_item.price %></td>
+          </tr>
+        <% end %>
+        <tr>
+          <td colspan="2"><strong>Subtotal</strong></td>
+          <td><strong><%= idr Current.cart.total_price %></strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grouped mb-4">
     <% unless Current.cart.digital_items_only? %>
       <div class="form-group">
         <%= f.label :customer_phone, "No. HP" %>
