@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_02_032407) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_07_091915) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -208,6 +208,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_032407) do
     t.boolean "requires_shipping"
   end
 
+  create_table "product_recommendations", force: :cascade do |t|
+    t.integer "source_product_id", null: false
+    t.integer "recommended_product_id", null: false
+    t.string "recommendation_type", default: "upsell", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recommended_product_id"], name: "index_product_recommendations_on_recommended_product"
+    t.index ["source_product_id", "recommendation_type", "position"], name: "index_product_recommendations_ordered"
+    t.index ["source_product_id", "recommended_product_id", "recommendation_type"], name: "index_unique_recommendation", unique: true
+    t.index ["source_product_id"], name: "index_product_recommendations_on_source_product"
+  end
+
   create_table "product_variants", force: :cascade do |t|
     t.integer "product_id", null: false
     t.string "name"
@@ -298,6 +311,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_032407) do
   add_foreign_key "orders", "provinces", column: "shipping_province_id"
   add_foreign_key "orders", "shipping_costs"
   add_foreign_key "orders", "subdistricts", column: "shipping_subdistrict_id"
+  add_foreign_key "product_recommendations", "products", column: "recommended_product_id"
+  add_foreign_key "product_recommendations", "products", column: "source_product_id"
   add_foreign_key "product_variants", "products"
   add_foreign_key "subdistricts", "districts"
 end

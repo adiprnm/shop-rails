@@ -6,6 +6,8 @@ class ProductsController < ApplicationController
   end
 
   def show
+    @upsells = @product.active_upsells
+    @cross_sells = @product.active_cross_sells
   end
 
   def add_to_cart

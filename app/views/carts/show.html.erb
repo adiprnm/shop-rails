@@ -49,6 +49,17 @@
       </tbody>
     </table>
 
+    <% if @cart_recommendations.any? %>
+      <section class="mt-8">
+        <h2>Kamu mungkin juga suka</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <% @cart_recommendations.each do |product| %>
+            <%= render "products/product_card", product: product %>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
     <h2 class="mt-8">Checkout</h2>
 
     <%= form_with url: orders_path, method: :post, data: { turbo: false, controller: "auto-filler address shipping", auto_filler_fields_value: %w[ customer_name customer_email_address customer_phone address_line shipping_province_id shipping_city_id shipping_district_id shipping_subdistrict_id order_notes ], address_show_shipping_value: Current.cart.contains_physical_product?, shipping_base_total_value: Current.cart.total_price } do |f| %>

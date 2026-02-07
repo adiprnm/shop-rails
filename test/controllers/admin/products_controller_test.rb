@@ -422,4 +422,109 @@ class Admin::ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_admin_product_path(product)
     assert_equal "Gambar berhasil dihapus!", flash[:notice]
   end
+
+  test "should set available_products on new" do
+    get new_admin_product_path, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_response :success
+    assert_not_nil assigns(:available_products)
+  end
+
+  test "should set available_products on edit" do
+    get edit_admin_product_path(@product), headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    assert_response :success
+    assert_not_nil assigns(:available_products)
+  end
+
+  test "available_products should exclude current product" do
+    get edit_admin_product_path(@product), headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+
+    available_products = assigns(:available_products)
+    refute_includes available_products, @product
+  end
+
+  test "can create product with upsells" do
+    upsell_product = products(:design_collection)
+
+    assert_difference("Product.count") do
+      assert_difference("ProductRecommendation.count") do
+        post admin_products_path, params: {
+          product: {
+            name: "Test Product",
+            description: "Test",
+            price: 10000,
+            slug: "test-product",
+            productable_type: "DigitalProduct",
+            productable: {
+              resource_type: "file",
+              resource_url: "http://example.com/resource.pdf"
+            },
+            upsell_product_ids: [ upsell_product.id ]
+          }
+        }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+      end
+    end
+
+    assert_redirected_to admin_products_path
+  end
+
+  test "can create product with cross_sells" do
+    cross_sell_product = products(:business_audio_course)
+
+    assert_difference("Product.count") do
+      assert_difference("ProductRecommendation.count") do
+        post admin_products_path, params: {
+          product: {
+            name: "Test Product",
+            description: "Test",
+            price: 10000,
+            slug: "test-product",
+            productable_type: "DigitalProduct",
+            productable: {
+              resource_type: "file",
+              resource_url: "http://example.com/resource.pdf"
+            },
+            cross_sell_product_ids: [ cross_sell_product.id ]
+          }
+        }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+      end
+    end
+
+    assert_redirected_to admin_products_path
+  end
+
+  test "can update product with recommendations" do
+    upsell_product = products(:design_collection)
+    cross_sell_product = products(:business_audio_course)
+
+    assert_difference("ProductRecommendation.count", 2) do
+      patch admin_product_path(@product), params: {
+        product: {
+          upsell_product_ids: [ upsell_product.id ],
+          cross_sell_product_ids: [ cross_sell_product.id ]
+        }
+      }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    end
+
+    assert_redirected_to edit_admin_product_path(@product)
+    assert_equal "Update berhasil!", flash[:notice]
+  end
+
+  test "can remove recommendations" do
+    upsell_product = products(:design_collection)
+
+    @product.upsell_product_ids = [ upsell_product.id ]
+    @product.save!
+
+    assert_difference("ProductRecommendation.count", -1) do
+      patch admin_product_path(@product), params: {
+        product: {
+          upsell_product_ids: []
+        }
+      }, headers: { "HTTP_AUTHORIZATION" => @admin_auth }
+    end
+
+    assert_redirected_to edit_admin_product_path(@product)
+  end
 end

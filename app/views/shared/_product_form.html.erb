@@ -51,6 +51,26 @@
         <% end %>
       <% end %>
     </div>
+    <div class="form-group check-boxes">
+      <%= f.label :upsell_product_ids, "Upsell Products" %>
+      <%= f.collection_check_boxes :upsell_product_ids, @available_products, :id, :name do |b| %>
+        <%= b.label do %>
+          <%= b.check_box %>
+          <%= b.object.name %>
+        <% end %>
+      <% end %>
+      <small class="block">Produk dengan harga lebih tinggi untuk upsell</small>
+    </div>
+    <div class="form-group check-boxes">
+      <%= f.label :cross_sell_product_ids, "Cross-sell Products" %>
+      <%= f.collection_check_boxes :cross_sell_product_ids, @available_products, :id, :name do |b| %>
+        <%= b.label do %>
+          <%= b.check_box %>
+          <%= b.object.name %>
+        <% end %>
+      <% end %>
+      <small class="block">Produk terkait untuk cross-sell</small>
+    </div>
     <div class="form-group">
       <%= f.label :price %>
       <%= f.number_field :price, required: true %>

@@ -1,5 +1,6 @@
 class Admin::ProductsController < AdminController
   before_action :set_product, only: %i[ show edit update destroy delete_image ]
+  before_action :set_available_products, only: %i[ new edit ]
 
   def index
     @products = Product.order(id: :desc)
@@ -59,6 +60,7 @@ class Admin::ProductsController < AdminController
       :name, :slug, :short_description, :description, :display_type,
       :price, :sale_price, :sale_price_starts_at, :sale_price_ends_at, :minimum_price,
       :productable_type, :featured_image, images: [], category_ids: [],
+      upsell_product_ids: [], cross_sell_product_ids: [],
       product_variants_attributes: [ :id, :name, :price, :weight, :stock, :is_active, :_destroy ]
     )
   end
@@ -76,5 +78,9 @@ class Admin::ProductsController < AdminController
 
   def set_product
     @product = Product.find(params[:id])
+  end
+
+  def set_available_products
+    @available_products = Product.active.where.not(id: @product&.id)
   end
 end
