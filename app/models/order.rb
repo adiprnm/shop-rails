@@ -195,6 +195,6 @@ class Order < ApplicationRecord
     def record_coupon_usage
       return unless cart&.coupon && coupon_code.present?
 
-      coupon.record_usage!(self)
+      cart.coupon.record_usage!(self)
     end
 end
