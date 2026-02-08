@@ -31,9 +31,6 @@ body[data-theme="neobrutalism"] {
 
 @media (prefers-color-scheme: dark) {
   body[data-theme="neobrutalism"] {
-    article {
-      border-color: var(--pico-muted-border-color);
-      box-shadow: 4px 4px 0 var(--pico-muted-border-color);
-    }
+    --border-color: var(--pico-muted-border-color);
   }
 }
