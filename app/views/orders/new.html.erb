@@ -8,7 +8,7 @@
 <h1>Checkout</h1>
 
 <%= form_with url: orders_path, method: :post, data: { turbo: false, controller: "auto-filler address shipping", auto_filler_fields_value: %w[ customer_name customer_email_address customer_phone address_line shipping_province_id shipping_city_id shipping_district_id shipping_subdistrict_id order_notes ], address_show_shipping_value: Current.cart.contains_physical_product?, shipping_base_total_value: Current.cart.total_price } do |f| %>
-  <div class="grouped mb-4">
+  <div class="grouped">
     <div class="form-group">
       <%= f.label :customer_name, "Nama" %>
       <%= f.text_field :customer_name, required: true, data: { action: "auto-filler#save " } %>
@@ -19,19 +19,26 @@
     </div>
   </div>
 
-  <div class="mb-4">
+  <% unless Current.cart.digital_items_only? %>
+    <div class="form-group">
+      <%= f.label :customer_phone, "No. HP" %>
+      <%= f.text_field :customer_phone, required: true, data: { action: "auto-filler#save" } %>
+    </div>
+  <% end %>
+
+  <div class="mb-4 mt-4">
     <h3>Ringkasan Pesanan</h3>
     <table class="mb-4">
       <thead>
         <tr>
-          <td colspan="2">Produk</td>
+          <td>Produk</td>
           <td>Harga</td>
         </tr>
       </thead>
       <tbody>
         <% Current.cart.line_items.each do |line_item| %>
           <tr class="text-sm">
-            <td colspan="2">
+            <td>
               <%= line_item.cartable.name %>
               <% if line_item.product_variant %>
                 <br><small class="text-gray"><%= line_item.product_variant.name %></small>
@@ -44,21 +51,18 @@
             <td><%= idr line_item.price %></td>
           </tr>
         <% end %>
+        <% if Current.cart.coupon_code %>
+          <tr>
+            <td>Kupon <%= tag.code Current.cart.coupon_code %></td>
+            <td class="text-red" style="white-space: nowrap;">- <%= idr Current.cart.discount_amount %></td>
+          </tr>
+        <% end %>
         <tr>
-          <td colspan="2"><strong>Subtotal</strong></td>
+          <td><strong>Subtotal</strong></td>
           <td><strong><%= idr Current.cart.total_price %></strong></td>
         </tr>
       </tbody>
     </table>
-  </div>
-
-  <div class="grouped mb-4">
-    <% unless Current.cart.digital_items_only? %>
-      <div class="form-group">
-        <%= f.label :customer_phone, "No. HP" %>
-        <%= f.text_field :customer_phone, required: true, data: { action: "auto-filler#save" } %>
-      </div>
-    <% end %>
   </div>
 
   <% if Current.cart.contains_physical_product? %>
