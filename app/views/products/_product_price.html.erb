@@ -1,5 +1,5 @@
 <div>
-  <small>
+  <%= tag.small **local_assigns.slice(:class) do %>
     <% if product.minimum_price.present? %>
       <strong>Mulai dari <%= idr product.minimum_price, text: false %></strong>
     <% elsif product.coming_soon? %>
@@ -10,5 +10,5 @@
     <% else %>
       <strong><%= idr product.price %></strong>
     <% end %>
-  </small>
+  <% end %>
 </div>

@@ -16,11 +16,11 @@
       <%= render "product_carousel", images: @product.images, featured_image: @product.featured_image %>
     </div>
     <div id="<%= @product.slug %>">
-      <%= render "product_price", product: @product %>
+      <h1 class="mt-2"><%= @product.name %></h1>
+      <%= render "product_price", product: @product, class: "text-base inline-block mb-1" %>
       <p>
         <%= render "product_sold", product: @product %>
       </p>
-      <h1 class="mt-2"><%= @product.name %></h1>
       <p><%= @product.short_description %></p>
 
       <% unless @product.coming_soon? %>
