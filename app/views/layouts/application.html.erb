@@ -33,7 +33,7 @@
         <div class="flex justify-between items-center mb-4">
           <%= link_to Current.settings["site_name"], root_path, class: "site-title" %>
           <% cart_count = Current.cart.line_items.count %>
-          <%= link_to cart_path, class: "cart flex items-center gap-1 relative" do %>
+          <%= link_to cart_path, class: "cart flex items-center gap-1 relative", style: "width: 32px;" do %>
             <% if cart_count.positive? %>
               <span class="cart-filled-indicator"> <%= cart_count %></span>
             <% end %>
@@ -56,7 +56,7 @@
     <% end %>
 
     <footer class="text-sm text-center mt-8">
-      <p>
+ 0     <p>
         <%= link_to "Syarat dan Ketentuan", Current.settings["site_terms_and_conditions_url"], class: "mr-2" %>
         <%= link_to "Refund Policy", Current.settings["site_refund_policies_url"] %>
       </p>

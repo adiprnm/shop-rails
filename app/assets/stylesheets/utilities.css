@@ -305,7 +305,6 @@ a:has(> article.product-card), a:has(> article.product-card-compact-list) {
   top: 0;
   right: 0;
   margin-top: -8px;
-  margin-right: -10px;
   outline: 2px solid var(--pico-background-color);
 }
 
