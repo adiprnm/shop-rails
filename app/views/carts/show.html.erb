@@ -36,7 +36,7 @@
                 <br>
                 <%= tag.strong "x #{ line_item.quantity }" %>
               <% end %>
-              <%= link_to "Hapus", cart_line_item_path(line_item), data: { turbo_method: :delete, turbo_confirm: "Hapus #{line_item.cartable.name} dari keranjang?" }, class: "text-red block mt-2" %>
+              <%= link_to "Hapus", cart_line_item_path(line_item), data: { turbo_method: :delete, turbo_confirm: "Hapus #{line_item.cartable.name} dari keranjang?" }, class: "text-red block mt-2 text-xs underline" %>
             </td>
             <td><%= idr line_item.price %></td>
           </tr>
@@ -49,15 +49,17 @@
             <tr>
               <td>
                 Kupon <%= tag.code Current.cart.coupon_code %>
-                <%= link_to "Hapus Kupon", remove_coupon_cart_path, data: { turbo_method: :post }, class: "text-red block mt-2 text-sm" %>
+                <%= link_to "Hapus", remove_coupon_cart_path, data: { turbo_method: :post }, class: "text-red block mt-2 text-xs underline" %>
               </td>
-              <td class="text-red" style="white-space: nowrap;">
-                <% if Current.cart.coupon&.free_shipping? %>
+              <% if Current.cart.coupon&.free_shipping? %>
+                <td>
                   Diskon akan diterapkan saat checkout
-                <% else %>
+                </td>
+              <% else %>
+                <td class="text-red text-nowrap">
                   - <%= idr Current.cart.discount_amount %>
-                <% end %>
-              </td>
+                </td>
+              <% end %>
             </tr>
           <% end %>
          <tr>

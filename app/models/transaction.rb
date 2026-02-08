@@ -7,7 +7,11 @@ class Transaction
 
   def create(params)
     shipping_cost_obj = ShippingCost.find_by(id: params[:shipping_cost_id])
-    shipping_cost_value = shipping_cost_obj&.cost || 0
+    shipping_cost_value = if cart.coupon&.free_shipping?
+      0
+    else
+      shipping_cost_obj&.cost || 0
+    end
 
     subtotal = cart.subtotal_price
     coupon_discount = cart.coupon&.calculate_discount(cart) || 0
@@ -47,6 +51,7 @@ class Transaction
       )
     end
     cart.line_items.delete_all
+    cart.update coupon_code: nil
     @order
   end
 end

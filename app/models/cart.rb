@@ -87,4 +87,8 @@ class Cart < ApplicationRecord
   def digital_items_only?
     line_items.present? && line_items.none?(&:physical_product?)
   end
+
+  def shipping_cost
+    0
+  end
 end

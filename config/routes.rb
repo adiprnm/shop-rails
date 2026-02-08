@@ -16,6 +16,11 @@ Rails.application.routes.draw do
       post :add_to_cart
     end
   end
+  resources :product, only: %w[ index show ], controller: "products" do
+    member do
+      post :add_to_cart
+    end
+  end
   resources :categories, only: %w[ show ]
   resource :cart, only: %w[ show ] do
     resources :line_items, controller: "cart_line_items", only: %w[ destroy ]

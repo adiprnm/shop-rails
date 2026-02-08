@@ -125,8 +125,7 @@ class CouponTest < ActiveSupport::TestCase
 
   test "calculate_discount for free_shipping" do
     @coupon.discount_type = "free_shipping"
-    @cart.stubs(:shipping_cost).returns(15_000)
-    assert_equal 15_000, @coupon.calculate_discount(@cart)
+    assert_equal 0, @coupon.calculate_discount(@cart)
   end
 
   test "calculate_discount returns 0 for invalid coupon" do

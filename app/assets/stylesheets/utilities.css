@@ -332,3 +332,4 @@ a:has(> article.product-card), a:has(> article.product-card-compact-list) {
 .font-base { font-weight: 400; }
 .font-mono { font-family: monospace; }
 .font-bold { font-weight: 800; }
+.text-nowrap { white-space: nowrap; }
