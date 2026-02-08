@@ -45,10 +45,13 @@
            <td><strong>Subtotal</strong></td>
            <td><%= idr Current.cart.subtotal_price %></td>
          </tr>
-         <% if Current.cart.coupon %>
+         <% if Current.cart.coupon_code %>
            <tr>
-             <td>Kupon (<%= Current.cart.coupon.code %>)</td>
-             <td class="text-red">-<%= idr Current.cart.discount_amount %></td>
+             <td>
+               Kupon <%= tag.code Current.cart.coupon_code %>
+               <%= link_to "Hapus Kupon", remove_coupon_cart_path, data: { turbo_method: :post }, class: "text-red block mt-2 text-sm" %>
+             </td>
+             <td class="text-red" style="white-space: nowrap;">- <%= idr Current.cart.discount_amount %></td>
            </tr>
          <% end %>
          <tr>
@@ -60,32 +63,14 @@
 
     <div class="mt-8 p-4 border rounded">
       <h2 class="text-base font-base mb-4">Gunakan Kupon</h2>
-
-      <% if Current.cart.coupon %>
-        <div class="mb-4">
-          <p class="text-green font-bold">
-            Kupon terpasang: <code><%= Current.cart.coupon.code %></code>
-          </p>
-          <p class="text-sm text-gray mt-1">
-            <%= Current.cart.coupon.description %>
-          </p>
-          <p class="text-red mt-2">
-            Diskon: <%= idr Current.cart.discount_amount %>
-          </p>
-          <%= form_with url: remove_coupon_cart_path, method: :post, local: true do %>
-            <%= submit_tag "Hapus Kupon", class: "text-red text-sm underline cursor-pointer border-0 bg-transparent p-0" %>
-          <% end %>
+      <%= form_with url: apply_coupon_cart_path, local: true do |f| %>
+        <div class="flex gap-2">
+          <%= f.text_field :coupon_code,
+              placeholder: "Masukkan kode kupon",
+              value: params[:coupon_code],
+              class: "flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+          <%= f.submit "Terapkan", class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer" %>
         </div>
-      <% else %>
-        <%= form_with url: apply_coupon_cart_path, local: true do |f| %>
-          <div class="flex gap-2">
-            <%= f.text_field :coupon_code,
-                placeholder: "Masukkan kode kupon",
-                value: params[:coupon_code],
-                class: "flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" %>
-            <%= f.submit "Terapkan", class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer" %>
-          </div>
-        <% end %>
       <% end %>
     </div>
 

@@ -162,6 +162,7 @@ class CouponTest < ActiveSupport::TestCase
 
     cart_item = mock("cart_item")
     cart_item.stubs(:cartable).returns(product)
+    cart_item.stubs(:cartable_id).returns(product.id)
     @cart.stubs(:line_items).returns([ cart_item ])
 
     assert_not @coupon.send(:meets_product_restrictions?, @cart)
@@ -176,6 +177,7 @@ class CouponTest < ActiveSupport::TestCase
 
     cart_item = mock("cart_item")
     cart_item.stubs(:cartable).returns(product2)
+    cart_item.stubs(:cartable_id).returns(product2.id)
     @cart.stubs(:line_items).returns([ cart_item ])
 
     assert_not @coupon.send(:meets_product_restrictions?, @cart)
@@ -188,6 +190,7 @@ class CouponTest < ActiveSupport::TestCase
     @coupon.stubs(:excluded_products).returns([])
 
     cart_item = mock("cart_item")
+    cart_item.stubs(:cartable_id).returns(product.id)
     cart_item.stubs(:cartable).returns(product)
     @cart.stubs(:line_items).returns([ cart_item ])
 

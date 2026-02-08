@@ -31,6 +31,8 @@ class Coupon < ApplicationRecord
            class_name: "CouponRestriction"
   has_many :excluded_categories, through: :excluded_category_restrictions, source: :restriction, source_type: "Category"
 
+  before_save -> { self.code = code.upcase }
+
   scope :active, -> { where(state: "active") }
   scope :valid_now, ->(now: Time.current) do
     where(state: "active")
@@ -136,17 +138,17 @@ class Coupon < ApplicationRecord
   end
 
   def meets_product_restrictions?(cart)
-    return true if included_products.empty? && excluded_products.empty?
+    excluded_product_ids = excluded_products.pluck(:id)
+    included_product_ids = included_products.pluck(:id)
+    return true if included_product_ids.empty? && excluded_product_ids.empty?
 
-    cart_product_ids = cart.line_items.map { |item| item.cartable.id }.uniq
+    cart_product_ids = cart.line_items.map { |item| item.cartable_id }.uniq
 
-    if excluded_products.any?
-      excluded_product_ids = excluded_products.respond_to?(:pluck) ? excluded_products.pluck(:id) : excluded_products.map(&:id)
+    if excluded_product_ids.any?
       return false unless (excluded_product_ids & cart_product_ids).empty?
     end
 
-    if included_products.any?
-      included_product_ids = included_products.respond_to?(:pluck) ? included_products.pluck(:id) : included_products.map(&:id)
+    if included_product_ids.any?
       return false unless cart_product_ids.any? { |id| included_product_ids.include?(id) }
     end
 
@@ -154,20 +156,19 @@ class Coupon < ApplicationRecord
   end
 
   def meets_category_restrictions?(cart)
-    return true if included_categories.empty? && excluded_categories.empty?
+    excluded_category_ids = excluded_categories.pluck(:id)
+    included_category_ids = included_categories.pluck(:id)
+    return true if included_category_ids.empty? && excluded_category_ids.empty?
 
     cart_category_ids = cart.line_items
-      .flat_map { |item| item.cartable.categories }
-      .map(&:id)
+      .flat_map { |item| item.cartable.categories.pluck(:id) }
       .uniq
 
-    if excluded_categories.any?
-      excluded_category_ids = excluded_categories.respond_to?(:pluck) ? excluded_categories.pluck(:id) : excluded_categories.map(&:id)
+    if excluded_category_ids.any?
       return false unless (excluded_category_ids & cart_category_ids).empty?
     end
 
     if included_categories.any?
-      included_category_ids = included_categories.respond_to?(:pluck) ? included_categories.pluck(:id) : included_categories.map(&:id)
       return false unless cart_category_ids.any? { |id| included_category_ids.include?(id) }
     end
 
