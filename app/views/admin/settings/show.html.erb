@@ -16,7 +16,7 @@
 
       <div class="form-group" data-controller="image-preview">
         <%= f.label :site_favicon, "Favicon" %>
-        <%= image_tag Current.settings["site_favicon"].present? ? request.base_url + Current.settings["site_favicon"] : "", data: { image_preview_target: "preview" }, class: "icon-xlarge block" %>
+        <%= image_tag Current.settings["site_favicon"].present? ? request.base_url + Current.settings["site_favicon"] : "", data: { image_preview_target: "preview" }, class: "icon-xlarge block mb-4" %>
         <%= f.file_field :site_favicon, data: { action: "image-preview#perform" } %>
       </div>
 
@@ -37,7 +37,7 @@
 
       <div class="form-group" data-controller="image-preview">
         <%= f.label :og_image, "Open Graph Image" %>
-        <%= image_tag Current.settings["og_image"].present? ? request.base_url + Current.settings["og_image"] : "", data: { image_preview_target: "preview" } %>
+        <%= image_tag Current.settings["og_image"].present? ? request.base_url + Current.settings["og_image"] : "", data: { image_preview_target: "preview" }, class: "mb-4" %>
         <%= f.file_field :og_image, data: { action: "image-preview#perform" } %>
       </div>
 

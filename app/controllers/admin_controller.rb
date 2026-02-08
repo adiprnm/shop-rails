@@ -148,7 +148,7 @@ class AdminController < ApplicationController
           coupon_data = usage_by_date.select { |u| u[:code] == coupon_code }
           dates.map do |date|
             record = coupon_data.find { |u| u[:date].to_s == date }
-            record&.fetch(:count, 0) || 0
+            record&.try(:count) || 0
           end
         end
       }

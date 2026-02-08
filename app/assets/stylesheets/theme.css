@@ -27,10 +27,17 @@ body[data-theme="neobrutalism"] {
   }
 
   .outline { color: var(--border-color) }
+
+  input[type=file]::file-selector-button {
+    margin-left: 0.25rem;
+    margin-top: 3px;
+    padding: 4px 8px;
+    margin-right: 0.5rem;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   body[data-theme="neobrutalism"] {
-    --border-color: var(--pico-muted-border-color);
+    --border-color: var(--pico-color);
   }
 }
