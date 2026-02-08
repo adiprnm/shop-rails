@@ -67,10 +67,6 @@ class Admin::CouponsController < AdminController
 
   def set_coupon
     @coupon = Coupon.find(params[:id])
-    @coupon.included_product_ids = @coupon.included_products.pluck(:id)
-    @coupon.excluded_product_ids = @coupon.excluded_products.pluck(:id)
-    @coupon.included_category_ids = @coupon.included_categories.pluck(:id)
-    @coupon.excluded_category_ids = @coupon.excluded_categories.pluck(:id)
   end
 
   def set_products_and_categories

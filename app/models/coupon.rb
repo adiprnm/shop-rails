@@ -44,8 +44,6 @@ class Coupon < ApplicationRecord
   before_create :set_default_usage_count
   before_save :mark_expired_if_past_expiry
 
-  attr_accessor :included_product_ids, :excluded_product_ids, :included_category_ids, :excluded_category_ids
-
   def valid_for_cart?(cart, customer_email: nil)
     return false unless valid_now?
     return false if usage_limit_reached?
