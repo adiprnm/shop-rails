@@ -39,6 +39,7 @@ class Coupon < ApplicationRecord
   end
   scope :not_expired, -> { where("expires_at IS NULL OR expires_at >= ?", Time.current) }
   scope :started, -> { where("starts_at IS NULL OR starts_at <= ?", Time.current) }
+  scope :today, -> { where(created_at: Time.now.all_day) }
 
   before_create :set_default_usage_count
   before_save :mark_expired_if_past_expiry

@@ -1,200 +1,201 @@
-<%= form_with model: [:admin, coupon], local: true do |f| %>
-  <div class="coupon-form">
-    <%= render "admin/shared/form_errors", resource: coupon if defined?(render) %>
+ <%= form_with model: [:admin, coupon], local: true do |f| %>
+   <div class="coupon-form">
+     <% if coupon.errors.any? %>
+       <div class="alert alert-danger">
+         <h2><%= pluralize(coupon.errors.count, "error") %> prohibited this coupon from being saved:</h2>
+         <ul>
+           <% coupon.errors.full_messages.each do |message| %>
+             <li><%= message %></li>
+           <% end %>
+         </ul>
+       </div>
+     <% end %>
 
-    <div class="form-section">
-      <h2>Basic Information</h2>
+     <div class="form-section">
+       <h2>Basic Information</h2>
 
-      <div class="form-group">
-        <%= f.label :code %>
-        <%= f.text_field :code, required: true, autofocus: true %>
-        <small class="form-text">Unique coupon code that customers will enter</small>
-      </div>
+       <div class="form-group">
+         <%= f.label :code %>
+         <%= f.text_field :code, required: true, autofocus: true %>
+         <small class="form-text">Unique coupon code that customers will enter</small>
+       </div>
 
-      <div class="form-group">
-        <%= f.label :description %>
-        <%= f.text_area :description, rows: 3 %>
-        <small class="form-text">Internal description for admin reference</small>
-      </div>
+       <div class="form-group">
+         <%= f.label :description %>
+         <%= f.text_area :description, rows: 3 %>
+         <small class="form-text">Internal description for admin reference</small>
+       </div>
 
-      <div class="form-group">
-        <%= f.label :state %>
-        <%= f.select :state,
-            options_for_select(Coupon.states.keys.map { |s| [s.humanize, s] }, coupon.state) %>
-      </div>
-    </div>
+       <div class="form-group">
+         <%= f.label :state %>
+         <%= f.select :state,
+             options_for_select(Coupon.states.keys.map { |s| [s.humanize, s] }, coupon.state) %>
+       </div>
+     </div>
 
-    <div class="form-section">
-      <h2>Discount Configuration</h2>
+     <div class="form-section">
+       <h2>Discount Configuration</h2>
 
-      <div class="form-group">
-        <%= f.label :discount_type %>
-        <%= f.select :discount_type,
-            options_for_select(Coupon.discount_types.keys.map { |dt|
-              case dt
-              when "fixed_cart"
-                ["Fixed Cart Discount", "fixed_cart"]
-              when "percent_cart"
-                ["Percentage Cart Discount", "percent_cart"]
-              when "fixed_product"
-                ["Fixed Product Discount", "fixed_product"]
-              when "percent_product"
-                ["Percentage Product Discount", "percent_product"]
-              when "free_shipping"
-                ["Free Shipping", "free_shipping"]
-              end
-            }, coupon.discount_type) %>
-        <small class="form-text">
-          Choose how to discount is applied
-        </small>
-      </div>
+       <div class="form-group">
+         <%= f.label :discount_type %>
+         <%= f.select :discount_type,
+             options_for_select(Coupon.discount_types.keys.map { |dt|
+               case dt
+               when "fixed_cart"
+                 ["Fixed Cart Discount", "fixed_cart"]
+               when "percent_cart"
+                 ["Percentage Cart Discount", "percent_cart"]
+               when "fixed_product"
+                 ["Fixed Product Discount", "fixed_product"]
+               when "percent_product"
+                 ["Percentage Product Discount", "percent_product"]
+               when "free_shipping"
+                 ["Free Shipping", "free_shipping"]
+               end
+             }, coupon.discount_type) %>
+         <small class="form-text">
+           Choose how to discount is applied
+         </small>
+       </div>
 
-      <div class="form-group" id="discount-amount-group">
-        <%= f.label :discount_amount %>
-        <%= f.number_field :discount_amount, min: 0, step: 0.01 %>
-        <small class="form-text">
-          Amount in <%= Current.settings["currency"] || "IDR" %>. For percentage, enter the value (e.g., 10 for 10%)
-        </small>
-      </div>
-    </div>
+       <div class="form-group" id="discount-amount-group">
+         <%= f.label :discount_amount %>
+         <%= f.number_field :discount_amount, min: 0, step: 0.01 %>
+         <small class="form-text">
+           Amount in <%= Current.settings["currency"] || "IDR" %>. For percentage, enter value (e.g., 10 for 10%)
+         </small>
+       </div>
+     </div>
 
-    <div class="form-section">
-      <h2>Usage Restrictions</h2>
+     <div class="form-section">
+       <h2>Usage Restrictions</h2>
 
-      <div class="form-group">
-        <%= f.label :minimum_amount %>
-        <%= f.number_field :minimum_amount, min: 0, step: 0.01 %>
-        <small class="form-text">Minimum cart subtotal required (in <%= Current.settings["currency"] || "IDR" %>)</small>
-      </div>
+       <div class="form-group">
+         <%= f.label :minimum_amount %>
+         <%= f.number_field :minimum_amount, min: 0, step: 0.01 %>
+         <small class="form-text">Minimum cart subtotal required (in <%= Current.settings["currency"] || "IDR" %>)</small>
+       </div>
 
-      <div class="form-group">
-        <%= f.label :usage_limit_per_user %>
-        <%= f.number_field :usage_limit_per_user, min: 0 %>
-        <small class="form-text">Maximum times each customer can use this coupon (0 for unlimited)</small>
-      </div>
+       <div class="form-group">
+         <%= f.label :maximum_amount %>
+         <%= f.number_field :maximum_amount, min: 0, step: 0.01 %>
+         <small class="form-text">Maximum cart subtotal allowed (in <%= Current.settings["currency"] || "IDR" %>)</small>
+       </div>
 
-      <div class="form-group">
-        <%= f.label :restriction_kind %>
-        <%= f.select :restriction_kind,
-            options_for_select(%w[Product Category].map { |t| [t.humanize, t] }) %>
-        <small class="form-text">Type of restriction (include or exclude)</small>
-      </div>
+       <div class="form-group">
+         <%= f.label :usage_limit %>
+         <%= f.number_field :usage_limit, min: 0 %>
+         <small class="form-text">Maximum times this coupon can be used total (0 for unlimited)</small>
+       </div>
 
-      <div class="form-group">
-        <%= f.label :minimum_amount %>
-        <%= f.number_field :minimum_amount, min: 0, step: 0.01 %>
-        <small class="form-text">Minimum cart subtotal required (in <%= Current.settings["currency"] || "IDR" %>)</small>
-      </div>
-    </div>
+       <div class="form-group">
+         <%= f.label :usage_limit_per_user %>
+         <%= f.number_field :usage_limit_per_user, min: 0 %>
+         <small class="form-text">Maximum times each customer can use this coupon (0 for unlimited)</small>
+       </div>
+     </div>
 
-      <div class="form-group">
-        <%= f.label :maximum_amount %>
-        <%= f.number_field :maximum_amount, min: 0, step: 0.01 %>
-        <small class="form-text">Maximum cart subtotal allowed (in <%= Current.settings["currency"] || "IDR" %>)</small>
-      </div>
-    </div>
+     <div class="form-section">
+       <h2>Date Restrictions</h2>
 
-    <div class="form-section">
-      <h2>Date Restrictions</h2>
+       <div class="form-group">
+         <%= f.label :starts_at %>
+         <%= f.datetime_field :starts_at %>
+         <small class="form-text">When coupon becomes valid (leave blank for immediate)</small>
+       </div>
 
-      <div class="form-group">
-        <%= f.label :starts_at %>
-        <%= f.datetime_field :starts_at %>
-        <small class="form-text">When coupon becomes valid (leave blank for immediate)</small>
-      </div>
+       <div class="form-group">
+         <%= f.label :expires_at %>
+         <%= f.datetime_field :expires_at %>
+         <small class="form-text">When coupon expires (leave blank for never)</small>
+       </div>
+     </div>
 
-      <div class="form-group">
-        <%= f.label :expires_at %>
-        <%= f.datetime_field :expires_at %>
-        <small class="form-text">When coupon expires (leave blank for never)</small>
-      </div>
-    </div>
+     <div class="form-section">
+       <h2>Additional Options</h2>
 
-    <div class="form-section">
-      <h2>Additional Options</h2>
+       <div class="form-group checkbox">
+         <%= f.check_box :exclude_sale_items %>
+         <%= f.label :exclude_sale_items, "Exclude sale items from discount" %>
+       </div>
+     </div>
 
-      <div class="form-group checkbox">
-        <%= f.check_box :exclude_sale_items %>
-        <%= f.label :exclude_sale_items, "Exclude sale items from discount" %>
-      </div>
-    </div>
+     <div class="form-section">
+       <h2>Product Restrictions</h2>
+       <p class="form-text">Restrict which products this coupon applies to</p>
 
-    <div class="form-section">
-      <h2>Product Restrictions</h2>
-      <p class="form-text">Restrict which products this coupon applies to</p>
+       <div class="form-group">
+         <label>Include Products</label>
+         <%= f.select :included_product_ids,
+             options_from_collection_for_select(products, :id, :name,
+               coupon.included_product_ids),
+             multiple: true,
+             include_blank: true,
+             class: "form-control select2" %>
+         <small class="form-text">Coupon will only apply to these products (leave blank to apply to all)</small>
+       </div>
 
-      <div class="form-group">
-        <label>Include Products</label>
-        <%= f.select :included_product_ids,
-            options_from_collection_for_select(products, :id, :name,
-              coupon.included_product_ids),
-            multiple: true,
-            include_blank: true,
-            class: "form-control select2" %>
-        <small class="form-text">Coupon will only apply to these products (leave blank to apply to all)</small>
-      </div>
+       <div class="form-group">
+         <label>Exclude Products</label>
+         <%= f.select :excluded_product_ids,
+             options_from_collection_for_select(products, :id, :name,
+               coupon.excluded_product_ids),
+             multiple: true,
+             include_blank: true,
+             class: "form-control select2" %>
+         <small class="form-text">Coupon will NOT apply to these products</small>
+       </div>
+     </div>
 
-      <div class="form-group">
-        <label>Exclude Products</label>
-        <%= f.select :excluded_product_ids,
-            options_from_collection_for_select(products, :id, :name,
-              coupon.excluded_product_ids),
-            multiple: true,
-            include_blank: true,
-            class: "form-control select2" %>
-        <small class="form-text">Coupon will NOT apply to these products</small>
-      </div>
-    </div>
+     <div class="form-section">
+       <h2>Category Restrictions</h2>
+       <p class="form-text">Restrict which categories this coupon applies to</p>
 
-    <div class="form-section">
-      <h2>Category Restrictions</h2>
-      <p class="form-text">Restrict which categories this coupon applies to</p>
+       <div class="form-group">
+         <label>Include Categories</label>
+         <%= f.select :included_category_ids,
+             options_from_collection_for_select(categories, :id, :name,
+               coupon.included_category_ids),
+             multiple: true,
+             include_blank: true,
+             class: "form-control select2" %>
+         <small class="form-text">Coupon will only apply to products in these categories (leave blank to apply to all)</small>
+       </div>
 
-      <div class="form-group">
-        <label>Include Categories</label>
-        <%= f.select :included_category_ids,
-            options_from_collection_for_select(categories, :id, :name,
-              coupon.included_category_ids),
-            multiple: true,
-            include_blank: true,
-            class: "form-control select2" %>
-        <small class="form-text">Coupon will only apply to products in these categories (leave blank to apply to all)</small>
-      </div>
+       <div class="form-group">
+         <label>Exclude Categories</label>
+         <%= f.select :excluded_category_ids,
+             options_from_collection_for_select(categories, :id, :name,
+               coupon.excluded_category_ids),
+             multiple: true,
+             include_blank: true,
+             class: "form-control select2" %>
+         <small class="form-text">Coupon will NOT apply to products in these categories</small>
+       </div>
+     </div>
 
-      <div class="form-group">
-        <label>Exclude Categories</label>
-        <%= f.select :excluded_category_ids,
-            options_from_collection_for_select(categories, :id, :name,
-              coupon.excluded_category_ids),
-            multiple: true,
-            include_blank: true,
-            class: "form-control select2" %>
-        <small class="form-text">Coupon will NOT apply to products in these categories</small>
-      </div>
-    </div>
+     <div class="form-actions">
+       <%= f.submit "Save Coupon", class: "btn btn-primary" %>
+       <%= link_to "Cancel", admin_coupons_path, class: "btn btn-secondary" %>
+     </div>
+   </div>
 
-    <div class="form-actions">
-      <%= f.submit "Save Coupon", class: "btn btn-primary" %>
-      <%= link_to "Cancel", admin_coupons_path, class: "btn btn-secondary" %>
-    </div>
-  </div>
+   <script>
+     document.addEventListener('DOMContentLoaded', function() {
+       const discountTypeSelect = document.querySelector('#coupon_discount_type');
+       const discountAmountGroup = document.querySelector('#discount-amount-group');
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const discountTypeSelect = document.querySelector('#coupon_discount_type');
-      const discountAmountGroup = document.querySelector('#discount-amount-group');
+       function toggleDiscountAmount() {
+         const discountType = discountTypeSelect.value;
+         if (discountType === 'free_shipping') {
+           discountAmountGroup.style.display = 'none';
+         } else {
+           discountAmountGroup.style.display = 'block';
+         }
+       }
 
-      function toggleDiscountAmount() {
-        const discountType = discountTypeSelect.value;
-        if (discountType === 'free_shipping') {
-          discountAmountGroup.style.display = 'none';
-        } else {
-          discountAmountGroup.style.display = 'block';
-        }
-      }
-
-      discountTypeSelect.addEventListener('change', toggleDiscountAmount);
-      toggleDiscountAmount();
-    });
-  </script>
-<% end %>
+       discountTypeSelect.addEventListener('change', toggleDiscountAmount);
+       toggleDiscountAmount();
+     });
+   </script>
+ <% end %>

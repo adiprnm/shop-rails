@@ -25,7 +25,7 @@
         </dd>
 
         <dt>Created</dt>
-        <dd><%= @coupon.created_at.to_s(:long) %></dd>
+        <dd><%= @coupon.created_at.strftime("%B %d, %Y at %H:%M") %></dd>
       </dl>
     </div>
 
@@ -77,10 +77,10 @@
       <h2>Date Restrictions</h2>
       <dl>
         <dt>Valid From</dt>
-        <dd><%= @coupon.starts_at&.to_s(:long) || "No start date" %></dd>
+        <dd><%= @coupon.starts_at&.strftime("%B %d, %Y at %H:%M") || "No start date" %></dd>
 
         <dt>Valid Until</dt>
-        <dd><%= @coupon.expires_at&.to_s(:long) || "No expiry" %></dd>
+        <dd><%= @coupon.expires_at&.strftime("%B %d, %Y at %H:%M") || "No expiry" %></dd>
 
         <dt>Currently Valid</dt>
         <dd>
@@ -151,9 +151,9 @@
             <% @coupon_usages.each do |usage| %>
               <tr>
                 <td><%= link_to usage.order.order_id, admin_order_path(usage.order) %></td>
-                <td><%= usage.order.customer_email_address %></td>
-                <td><%= number_to_currency(usage.discount_amount / 100.0) %></td>
-                <td><%= usage.created_at.to_s(:short) %></td>
+                 <td><%= usage.order.customer_email_address %></td>
+                 <td><%= number_to_currency(usage.discount_amount / 100.0) %></td>
+                 <td><%= usage.created_at.strftime("%Y-%m-%d %H:%M") %></td>
               </tr>
             <% end %>
           </tbody>

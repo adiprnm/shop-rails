@@ -1,5 +1,5 @@
 class Admin::CouponsController < AdminController
-  before_action :set_coupon, only: %i[edit update destroy activate deactivate]
+  before_action :set_coupon, only: %i[show edit update destroy activate deactivate]
   before_action :set_products_and_categories, only: %i[new edit]
 
   def index

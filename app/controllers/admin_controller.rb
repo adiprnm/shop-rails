@@ -32,26 +32,26 @@ class AdminController < ApplicationController
     @revenue_chart_data = revenue_chart_data
     @order_trend_data = order_trend_data
     @category_sales_data = category_sales_data
-    @top_products = top_products
+    @products = top_products
     @average_order_value = average_order_value
     @repeat_customers = repeat_customers_count
     @geographic_distribution = geographic_distribution
     @coupon_effectiveness = coupon_effectiveness_data
-      @coupon_usage_chart_data = coupon_usage_chart_data
-      @top_coupons = top_coupons_data
-    end
+    @coupon_usage_chart_data = coupon_usage_chart_data
+    @top_coupons = top_coupons_data
+  end
 
-    def export_coupons
-      @coupons = Coupon.all.order(created_at: :desc)
+  def export_coupons
+    @coupons = Coupon.all.order(created_at: :desc)
 
-      respond_to do |format|
-        format.csv do
-          send_data generate_coupons_csv(@coupons), filename: "coupons_#{Date.current}.csv", type: "text/csv"
-        end
+    respond_to do |format|
+      format.csv do
+        send_data generate_coupons_csv(@coupons), filename: "coupons_#{Date.current}.csv", type: "text/csv"
       end
     end
+  end
 
-    def coupon_usage_report
+  def coupon_usage_report
     @coupon_usages = CouponUsage.includes(:coupon, :order).order(created_at: :desc)
 
     @coupon_code = params[:coupon_code]
@@ -162,5 +162,83 @@ class AdminController < ApplicationController
         .order("usage_count DESC")
         .limit(10)
         .to_a
+    end
+
+    def revenue_chart_data
+      last_30_days = 30.days.ago.to_date..Date.current
+
+      Order.paid
+        .where(created_at: last_30_days)
+        .group("DATE(created_at)")
+        .sum(:total_price)
+        .transform_keys(&:to_s)
+    end
+
+    def order_trend_data
+      last_30_days = 30.days.ago.to_date..Date.current
+
+      dates = last_30_days.to_a
+      counts = Order.where(created_at: last_30_days)
+        .group("DATE(created_at)")
+        .count
+
+      dates.map { |date| { date: date.to_s, count: counts[date] || 0 } }
+    end
+
+    def category_sales_data
+      category_sales = {}
+
+      OrderLineItem
+        .joins(:order)
+        .where(orders: { state: :paid })
+        .find_each do |item|
+          product = item.orderable
+          next unless product
+
+          product.categories.each do |category|
+            category_sales[category.id] ||= { id: category.id, name: category.name, total: 0 }
+            category_sales[category.id][:total] += item.orderable_price
+          end
+        end
+
+      category_sales.values.sort_by { |c| -c[:total] }.take(10)
+    end
+
+    def top_products
+      Product.joins(order_line_items: :order)
+        .where(orders: { state: :paid })
+        .select("products.*, COUNT(order_line_items.id) as total_quantity, SUM(order_line_items.orderable_price) as total_revenue")
+        .group("products.id")
+        .order("total_quantity DESC")
+        .limit(10)
+        .to_a
+    end
+
+    def average_order_value
+      paid_orders = Order.paid
+      return 0 if paid_orders.empty?
+
+      (paid_orders.sum(:total_price) / paid_orders.count.to_f).round
+    end
+
+    def repeat_customers_count
+      Order.paid.group(:customer_email_address).having("COUNT(*) > 1").count.count
+    end
+
+    def geographic_distribution
+      Order.paid.group(:shipping_province_id).count
+    end
+
+    def coupon_effectiveness_data
+      active_coupons = Coupon.active
+      return [] if active_coupons.empty?
+
+      active_coupons.map do |coupon|
+        {
+          code: coupon.code,
+          total_usage: coupon.coupon_usages.joins(:order).where(orders: { state: :paid }).count,
+          total_discount: coupon.coupon_usages.joins(:order).where(orders: { state: :paid }).sum(:discount_amount)
+        }
+      end.sort_by { |c| -c[:total_discount] }
     end
 end
