@@ -12,7 +12,7 @@
 <div class="text-center" data-controller="copy-text">
   <%= status_tag(@order) %>
 
-  <h1 class="mt-4" style="font-size:2rem; font-weight:800;"><%= idr @order.final_total_price %></h1>
+  <h1 class="mt-8" style="font-size:2rem; font-weight:800;"><%= idr @order.final_total_price %></h1>
   <button style="padding: 0.25rem 0.75rem; font-size: 0.85rem;" data-amount="<%= @order.total_price %>" data-action="copy-text#perform" class="mb-4">Salin</button>
 
   <dialog data-copy-text-target="modal">

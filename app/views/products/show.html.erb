@@ -78,11 +78,11 @@
             <button type="submit" data-action="busy-handler#handle" disabled data-form-control-target="submitButton" >+ Keranjangin</button>
           <% end %>
         <% else %>
-          <%= button_to "+ Keranjangin", add_to_cart_product_path(@product.slug), method: :post, form: { data: { controller: "busy-handler" } }, data: { action: "busy-handler#handle" } %>
+          <%= button_to "+ Keranjangin", add_to_cart_product_path(@product.slug), method: :post, form: { data: { controller: "busy-handler" } }, data: { action: "busy-handler#handle" }, form: { class: "w-max inline-block" } %>
         <% end %>
 
         <% if @product.digital_product? && @product.productable.sample.attached? %>
-          <%= link_to "Unduh Sampel", rails_blob_path(@product.productable.sample), role: "button", class: "secondary outline w-full block" %>
+          <%= link_to "Unduh Sampel", rails_blob_path(@product.productable.sample), role: "button", class: "secondary outline ml-2" %>
         <% end %>
       <% end %>
     </div>

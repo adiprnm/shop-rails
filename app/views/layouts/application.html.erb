@@ -27,13 +27,13 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body data-theme="<%= Current.settings["site_theme"].presence || "default" %>">
     <main class="container-md px-4">
       <heading>
         <div class="flex justify-between items-center mb-4">
           <%= link_to Current.settings["site_name"], root_path, class: "site-title" %>
           <% cart_count = Current.cart.line_items.count %>
-          <%= link_to cart_path, class: "cart flex items-center gap-1 relative", style: "width: 32px;" do %>
+          <%= link_to cart_path, class: "cart flex items-center gap-1 relative" do %>
             <% if cart_count.positive? %>
               <span class="cart-filled-indicator"> <%= cart_count %></span>
             <% end %>

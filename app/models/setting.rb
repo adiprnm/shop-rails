@@ -10,6 +10,7 @@ class Setting < ApplicationRecord
     site_storage_host
     site_terms_and_conditions_url
     site_refund_policies_url
+    site_theme
     og_image
     payment_provider
     payment_client_id

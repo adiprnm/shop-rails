@@ -196,8 +196,9 @@ a:has(> article.product-card), a:has(> article.product-card-compact-list) {
   --expired-h: 250;
   --failed-h: 25;
 
+  font-size: 14px;
   border-radius: 999px;
-  padding: 0.25rem 0.75rem;
+  padding: 0.375rem 0.75rem;
   border: 1px solid var(--badge-border-color);
   color: var(--badge-color);
   background-color: var(--badge-background-color);
@@ -290,6 +291,7 @@ a:has(> article.product-card), a:has(> article.product-card-compact-list) {
     --pico-background-color: rgb(19, 22.5, 30.5);
   }
 
+  color: white;
   background-color: red;
   border-radius: 999px;
   position: absolute;
@@ -303,6 +305,7 @@ a:has(> article.product-card), a:has(> article.product-card-compact-list) {
   top: 0;
   right: 0;
   margin-top: -8px;
+  margin-right: -10px;
   outline: 2px solid var(--pico-background-color);
 }
 

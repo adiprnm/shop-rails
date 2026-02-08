@@ -1,0 +1,39 @@
+body[data-theme="neobrutalism"] {
+  --border-color: #010101;
+
+  article,
+  input,
+  textarea,
+  select,
+  button,
+  *[role=button],
+  img:not([src=""]),
+  .flash-success,
+  .flash-error,
+  table,
+  .badge {
+    border-radius: 0px;
+    border: 2px solid var(--border-color);
+    box-shadow: 4px 4px 0 var(--border-color);
+  }
+
+  article img {
+    border: none!important;
+    box-shadow: none!important;
+  }
+
+  table td, hr, th {
+    border-color: var(--border-color);
+  }
+
+  .outline { color: var(--border-color) }
+}
+
+@media (prefers-color-scheme: dark) {
+  body[data-theme="neobrutalism"] {
+    article {
+      border-color: var(--pico-muted-border-color);
+      box-shadow: 4px 4px 0 var(--pico-muted-border-color);
+    }
+  }
+}

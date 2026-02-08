@@ -47,6 +47,15 @@
       </div>
 
       <div class="form-group">
+        <%= f.label :site_theme, "Tema" %>
+        <%= f.select :site_theme, [ [ "Default", "default" ], [ "Neobrutalism", "neobrutalism" ] ], { selected: Current.settings["site_theme"] } %>
+      </div>
+    </details>
+
+    <details>
+      <summary>Pembayaran</summary>
+
+      <div class="form-group">
         <%= f.label :payment_provider, "Provider Pembayaran" %>
         <%= f.select :payment_provider, [ [ "Midtrans", "midtrans" ], [ "Manual", "manual" ] ], { selected: Current.settings["payment_provider"] } %>
       </div>
@@ -56,10 +65,6 @@
         <%= f.number_field :manual_payment_unique_code_max, value: Current.settings["manual_payment_unique_code_max"].presence || 500, min: 1, data: { dependent_select_target: "field" } %>
         <small class="text-gray">Kode unik akan di-generate secara acak dari 1 hingga angka ini saat pembayaran manual.</small>
       </div>
-    </details>
-
-    <details>
-      <summary>QRIS dan Nomor Rekening</summary>
 
       <div class="form-group" data-controller="image-preview">
         <%= f.label :payment_qris, "QRIS" %>
