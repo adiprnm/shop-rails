@@ -8,7 +8,7 @@
 <h1>Checkout</h1>
 
 <%= form_with url: orders_path, method: :post, data: { turbo: false, controller: "auto-filler address shipping", auto_filler_fields_value: %w[ customer_name customer_email_address customer_phone address_line shipping_province_id shipping_city_id shipping_district_id shipping_subdistrict_id order_notes ], address_show_shipping_value: Current.cart.contains_physical_product?, shipping_base_total_value: Current.cart.total_price } do |f| %>
-  <div class="grouped mb-4">
+  <div class="grouped">
     <div class="form-group">
       <%= f.label :customer_name, "Nama" %>
       <%= f.text_field :customer_name, required: true, data: { action: "auto-filler#save " } %>
@@ -19,19 +19,26 @@
     </div>
   </div>
 
-  <div class="mb-4">
+  <% unless Current.cart.digital_items_only? %>
+    <div class="form-group">
+      <%= f.label :customer_phone, "No. HP" %>
+      <%= f.text_field :customer_phone, required: true, data: { action: "auto-filler#save" } %>
+    </div>
+  <% end %>
+
+  <div class="mb-4 mt-4">
     <h3>Ringkasan Pesanan</h3>
     <table class="mb-4">
       <thead>
         <tr>
-          <td colspan="2">Produk</td>
+          <td>Produk</td>
           <td>Harga</td>
         </tr>
       </thead>
       <tbody>
         <% Current.cart.line_items.each do |line_item| %>
           <tr class="text-sm">
-            <td colspan="2">
+            <td>
               <%= line_item.cartable.name %>
               <% if line_item.product_variant %>
                 <br><small class="text-gray"><%= line_item.product_variant.name %></small>
@@ -45,20 +52,11 @@
           </tr>
         <% end %>
         <tr>
-          <td colspan="2"><strong>Subtotal</strong></td>
-          <td><strong><%= idr Current.cart.total_price %></strong></td>
+          <td><strong>Subtotal</strong></td>
+          <td><strong><%= idr Current.cart.subtotal_price %></strong></td>
         </tr>
       </tbody>
     </table>
-  </div>
-
-  <div class="grouped mb-4">
-    <% unless Current.cart.digital_items_only? %>
-      <div class="form-group">
-        <%= f.label :customer_phone, "No. HP" %>
-        <%= f.text_field :customer_phone, required: true, data: { action: "auto-filler#save" } %>
-      </div>
-    <% end %>
   </div>
 
   <% if Current.cart.contains_physical_product? %>
@@ -68,23 +66,21 @@
         <%= f.label :address_line, "Alamat Lengkap" %>
         <%= f.text_area :address_line, rows: 3, data: { action: "auto-filler#save" } %>
       </div>
-      <div class="grouped">
-        <div class="form-group">
-          <%= f.label :shipping_province_id, "Provinsi" %>
-          <%= f.select :shipping_province_id, options_for_select(Province.all.map { |p| [p.name, p.id] }, selected: f.object&.shipping_province_id), { include_blank: "Select Province" }, { id: "shipping_province_select", data: { address_target: "provinceSelect", action: "change->address#onProvinceChange auto-filler#save" } } %>
-        </div>
-        <div class="form-group">
-          <%= f.label :shipping_city_id, "Kota/Kabupaten" %>
-          <%= f.select :shipping_city_id, [], { include_blank: "Select City" }, { id: "shipping_city_select", data: { address_target: "citySelect", action: "change->address#onCityChange auto-filler#save" }, disabled: true } %>
-        </div>
-        <div class="form-group">
-          <%= f.label :shipping_district_id, "Kecamatan" %>
-          <%= f.select :shipping_district_id, [], { include_blank: "Select District" }, { id: "shipping_district_select", data: { address_target: "districtSelect", action: "change->address#onDistrictChange auto-filler#save" }, disabled: true } %>
-        </div>
-        <div class="form-group">
-          <%= f.label :shipping_subdistrict_id, "Kelurahan" %>
-          <%= f.select :shipping_subdistrict_id, [], { include_blank: "Select Subdistrict" }, { id: "shipping_subdistrict_select", data: { address_target: "subdistrictSelect", action: "change->address#onSubdistrictChange auto-filler#save" }, disabled: true } %>
-        </div>
+      <div class="form-group">
+        <%= f.label :shipping_province_id, "Provinsi" %>
+        <%= f.select :shipping_province_id, options_for_select(Province.all.map { |p| [p.name, p.id] }, selected: f.object&.shipping_province_id), { include_blank: "Select Province" }, { id: "shipping_province_select", data: { address_target: "provinceSelect", action: "change->address#onProvinceChange auto-filler#save" } } %>
+      </div>
+      <div class="form-group">
+        <%= f.label :shipping_city_id, "Kota/Kabupaten" %>
+        <%= f.select :shipping_city_id, [], { include_blank: "Select City" }, { id: "shipping_city_select", data: { address_target: "citySelect", action: "change->address#onCityChange auto-filler#save" }, disabled: true } %>
+      </div>
+      <div class="form-group">
+        <%= f.label :shipping_district_id, "Kecamatan" %>
+        <%= f.select :shipping_district_id, [], { include_blank: "Select District" }, { id: "shipping_district_select", data: { address_target: "districtSelect", action: "change->address#onDistrictChange auto-filler#save" }, disabled: true } %>
+      </div>
+      <div class="form-group">
+        <%= f.label :shipping_subdistrict_id, "Kelurahan" %>
+        <%= f.select :shipping_subdistrict_id, [], { include_blank: "Select Subdistrict" }, { id: "shipping_subdistrict_select", data: { address_target: "subdistrictSelect", action: "change->address#onSubdistrictChange auto-filler#save" }, disabled: true } %>
       </div>
       <%= turbo_frame_tag "cities-options", data: { address_target: "citiesFrame" } %>
       <%= turbo_frame_tag "districts-options", data: { address_target: "districtsFrame" } %>
@@ -94,8 +90,18 @@
 
   <%= turbo_frame_tag "shipping-options", data: { shipping_target: "shippingOptions" } %>
 
-  <div class="form-group mb-4 mt-8 text-xl" data-shipping-target="finalTotalSection">
-    <div class="flex justify-between">
+  <div class="form-group mb-4 mt-8" data-shipping-target="finalTotalSection">
+    <% if Current.cart.coupon_code? %>
+      <div class="flex justify-between">
+        <span>Kupon <%= tag.code Current.cart.coupon_code %></span>
+        <% if Current.cart.coupon.free_shipping? %>
+          <span data-shipping-target="shippingCost">Gratis ongkir</span>
+        <% else %>
+          <span class="text-red text-nowrap">- <%= idr Current.cart.discount_amount %></span>
+        <% end %>
+      </div>
+    <% end %>
+    <div class="flex justify-between text-xl">
       <strong>Total Akhir</strong>
       <strong id="final-total-display" data-shipping-target="finalTotalDisplay"><%= idr Current.cart.total_price %></strong>
     </div>

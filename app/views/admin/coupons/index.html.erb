@@ -1,0 +1,83 @@
+<div class="admin-coupons-index">
+  <div class="page-header">
+    <h1>Kupon</h1>
+    <%= link_to "+ Kupon Baru", new_admin_coupon_path , class: "inline-block mb-8" %>
+  </div>
+
+  <div class="filters">
+    <%= form_with url: admin_coupons_path, method: :get, local: true, class: "grid", data: { controller: "auto-submit" } do |f| %>
+      <%= f.text_field :search, placeholder: "Search by code", value: params[:search], data: { action: "change->auto-submit#perform"  } %>
+      <%= f.select :state,
+        options_for_select([["All States", ""], *Coupon.states.keys.map { |s| [s.humanize, s] }], params[:state]),
+        {},
+        data: { action: "auto-submit#perform" }
+      %>
+    <% end %>
+  </div>
+
+  <div class="full-width overflow-x-scroll mt-8">
+    <table class="nowrap">
+      <thead>
+        <tr>
+          <th>Kode</th>
+          <th>Deskripsi</th>
+          <th>Jenis</th>
+          <th>Diskon</th>
+          <th>Penggunaan</th>
+          <th>Status</th>
+          <th>Period</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @coupons.each do |coupon| %>
+          <tr>
+            <td>
+              <%= link_to admin_coupon_path(coupon) do %>
+                <code><%= coupon.code %></code>
+              <% end %>
+            </td>
+            <td><%= coupon.description %></td>
+            <td><%= coupon.discount_type.humanize %></td>
+            <td>
+              <% if coupon.discount_type == "free_shipping" %>
+                Free Shipping
+              <% elsif coupon.discount_type.include?("percent") %>
+                <%= coupon.discount_amount %>%
+              <% else %>
+                <%= idr coupon.discount_amount %>
+              <% end %>
+            </td>
+            <td>
+              <%= coupon.usage_count %>/<%= coupon.usage_limit || "∞" %>
+              <% if coupon.usage_limit_per_user.positive? %>
+                <br><small>(<%= coupon.usage_limit_per_user %>/user)</small>
+              <% end %>
+            </td>
+            <td>
+              <small class="badge"><%= coupon.state.humanize %></small>
+            </td>
+            <td>
+              <span>
+                <% if coupon.starts_at? && !coupon.expires_at? %>
+                  Dari <%= coupon.starts_at.to_date || "-" %>
+                <% elsif !coupon.starts_at? && coupon.expires_at? %>
+                  Sampai <%= coupon.expires_at&.to_date || "-" %>
+                <% elsif coupon.starts_at? && coupon.expires_at? %>
+                  <%= coupon.starts_at&.to_date || "-" %> s.d.
+                  <%= coupon.expires_at&.to_date || "-" %>
+                <% else %>
+                  Berlaku selamanya
+                <% end %>
+              </span>
+            </td>
+            <td>
+              <%= link_to "Edit", edit_admin_coupon_path(coupon) %>
+              <%= link_to "Hapus", admin_coupon_path(coupon), data: { turbo_method: :delete, turbo_confirm: "Hapus kupon ini?" }, class: "text-red" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -169,4 +169,84 @@ class CartTest < ActiveSupport::TestCase
     cart = carts(:guest_cart)
     assert_not cart.contains_physical_product?
   end
+
+  test "should return 0 discount_amount when no coupon" do
+    assert_equal 0, @cart.discount_amount
+  end
+
+  test "should return coupon discount when coupon applied" do
+    coupon = Coupon.create!(
+      code: "TEST10",
+      discount_type: "percent_cart",
+      discount_amount: 10,
+      state: "active"
+    )
+    @cart.coupon_code = coupon.code
+    @cart.stubs(:subtotal_price).returns(100_000)
+
+    assert_equal 10_000, @cart.discount_amount
+  end
+
+  test "total_price should subtract discount from subtotal" do
+    coupon = Coupon.create!(
+      code: "TEST10",
+      discount_type: "fixed_cart",
+      discount_amount: 5000,
+      state: "active"
+    )
+    @cart.coupon_code = coupon.code
+    @cart.stubs(:subtotal_price).returns(100_000)
+    coupon.stubs(:calculate_discount).with(@cart).returns(5000)
+
+    assert_equal 95_000, @cart.total_price
+  end
+
+  test "total_price should never go below zero" do
+    @cart.stubs(:subtotal_price).returns(5_000)
+    @cart.stubs(:discount_amount).returns(10_000)
+
+    assert_equal 0, @cart.total_price
+  end
+
+  test "apply_coupon! should return false for invalid code" do
+    assert_not @cart.apply_coupon!("INVALID_CODE")
+    assert_includes @cart.errors[:coupon_code].to_s, "is invalid"
+  end
+
+  test "apply_coupon! should return true and set coupon_code for valid coupon" do
+    coupon = Coupon.create!(
+      code: "VALID10",
+      discount_type: "percent_cart",
+      discount_amount: 10,
+      state: "active"
+    )
+
+    assert @cart.apply_coupon!(coupon.code)
+    assert_equal coupon.code, @cart.coupon_code
+  end
+
+  test "apply_coupon! should validate coupon against cart" do
+    coupon = Coupon.create!(
+      code: "TEST",
+      discount_type: "percent_cart",
+      discount_amount: 10,
+      state: "active",
+      minimum_amount: 1_000_000
+    )
+    @cart.stubs(:subtotal_price).returns(100_000)
+
+    assert_not @cart.apply_coupon!(coupon.code)
+    assert_includes @cart.errors[:coupon_code].to_s, "is invalid"
+  end
+
+  test "remove_coupon! should clear coupon_code" do
+    @cart.coupon_code = "TEST"
+    assert @cart.remove_coupon!
+    assert_nil @cart.coupon_code
+  end
+
+  test "should calculate subtotal_price correctly" do
+    expected = @cart.line_items.sum(&:price)
+    assert_equal expected, @cart.subtotal_price
+  end
 end

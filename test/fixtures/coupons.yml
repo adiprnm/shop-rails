@@ -1,0 +1,74 @@
+active_fixed_cart:
+  code: TESTFIXED
+  description: Test coupon for fixed cart discount
+  discount_type: fixed_cart
+  discount_amount: 5000
+  starts_at: '2026-01-08 00:31:17'
+  expires_at: '2026-03-08 00:31:17'
+  minimum_amount: 0
+  maximum_amount: 
+  usage_limit: 
+  usage_count: 0
+  usage_limit_per_user: 0
+  exclude_sale_items: false
+  state: active
+
+active_percent_cart:
+  code: TESTPERCENT
+  description: Test coupon for percent cart discount
+  discount_type: percent_cart
+  discount_amount: 10
+  starts_at: '2026-01-08 00:31:17'
+  expires_at: '2026-03-08 00:31:17'
+  minimum_amount: 0
+  maximum_amount: 
+  usage_limit: 
+  usage_count: 0
+  usage_limit_per_user: 0
+  exclude_sale_items: false
+  state: active
+
+active_free_shipping:
+  code: FREESHIP
+  description: Free shipping coupon
+  discount_type: free_shipping
+  discount_amount: 
+  starts_at: '2026-01-08 00:31:17'
+  expires_at: '2026-03-08 00:31:17'
+  minimum_amount: 0
+  maximum_amount: 
+  usage_limit: 
+  usage_count: 0
+  usage_limit_per_user: 0
+  exclude_sale_items: false
+  state: active
+
+expired_coupon:
+  code: EXPIRED
+  description: Expired coupon
+  discount_type: percent_cart
+  discount_amount: 10
+  starts_at: '2025-12-08 00:31:17'
+  expires_at: '2026-01-07 00:31:17'
+  minimum_amount: 0
+  maximum_amount: 
+  usage_limit: 
+  usage_count: 0
+  usage_limit_per_user: 0
+  exclude_sale_items: false
+  state: expired
+
+inactive_coupon:
+  code: INACTIVE
+  description: Inactive coupon
+  discount_type: percent_cart
+  discount_amount: 10
+  starts_at: 
+  expires_at: 
+  minimum_amount: 0
+  maximum_amount: 
+  usage_limit: 
+  usage_count: 0
+  usage_limit_per_user: 0
+  exclude_sale_items: false
+  state: inactive

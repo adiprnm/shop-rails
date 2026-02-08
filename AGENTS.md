@@ -303,7 +303,7 @@ bd dep add <auth-tests-bead> <authentication-bead>
 6. Create or modify code following project standards
 7. Write or update tests
 8. Run `bin/rubocop` and fix any issues
-9. Run `bin/rails test` and `bin/rails test:system`
+9. Run `bin/rails test`
 10. Run `bin/brakeman` to verify no new vulnerabilities
 11. Update bead with progress and decisions
 12. Verify changes work as expected

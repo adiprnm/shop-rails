@@ -1,0 +1,166 @@
+<div class="coupon-show">
+  <div class="page-header">
+    <h1>Coupon Details: <code><%= @coupon.code %></code></h1>
+    <div class="actions">
+      <%= link_to "Edit", edit_admin_coupon_path(@coupon), class: "btn btn-primary" %>
+      <%= link_to "Back to Coupons", admin_coupons_path, class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <div class="coupon-details">
+    <div class="detail-section">
+      <h2>Basic Information</h2>
+      <dl>
+        <dt>Code</dt>
+        <dd><code><%= @coupon.code %></code></dd>
+
+        <dt>Description</dt>
+        <dd><%= @coupon.description || "N/A" %></dd>
+
+        <dt>Status</dt>
+        <dd>
+          <span class="badge badge-<%= @coupon.state %>">
+            <%= @coupon.state.humanize %>
+          </span>
+        </dd>
+
+        <dt>Created</dt>
+        <dd><%= @coupon.created_at.strftime("%B %d, %Y at %H:%M") %></dd>
+      </dl>
+    </div>
+
+    <div class="detail-section">
+      <h2>Discount Configuration</h2>
+      <dl>
+        <dt>Discount Type</dt>
+        <dd><%= @coupon.discount_type.humanize %></dd>
+
+        <dt>Discount Amount</dt>
+        <dd>
+          <% if @coupon.discount_type == "free_shipping" %>
+            Free Shipping
+          <% elsif @coupon.discount_type.include?("percent") %>
+            <%= @coupon.discount_amount %>%
+          <% else %>
+            <%= number_to_currency(@coupon.discount_amount / 100.0) %>
+          <% end %>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="detail-section">
+      <h2>Usage Statistics</h2>
+      <dl>
+        <dt>Total Usage</dt>
+        <dd>
+          <%= @coupon.usage_count %> / <%= @coupon.usage_limit || "Unlimited" %>
+        </dd>
+
+        <dt>Usage Limit Per User</dt>
+        <dd>
+          <%= @coupon.usage_limit_per_user.zero? ? "Unlimited" : @coupon.usage_limit_per_user %>
+        </dd>
+
+        <dt>Minimum Spend</dt>
+        <dd>
+          <%= number_to_currency(@coupon.minimum_amount / 100.0) %>
+        </dd>
+
+        <dt>Maximum Spend</dt>
+        <dd>
+          <%= @coupon.maximum_amount ? number_to_currency(@coupon.maximum_amount / 100.0) : "No limit" %>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="detail-section">
+      <h2>Date Restrictions</h2>
+      <dl>
+        <dt>Valid From</dt>
+        <dd><%= @coupon.starts_at&.strftime("%B %d, %Y at %H:%M") || "No start date" %></dd>
+
+        <dt>Valid Until</dt>
+        <dd><%= @coupon.expires_at&.strftime("%B %d, %Y at %H:%M") || "No expiry" %></dd>
+
+        <dt>Currently Valid</dt>
+        <dd>
+          <%= @coupon.valid_now? ? "✓ Yes" : "✗ No" %>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="detail-section">
+      <h2>Product Restrictions</h2>
+      <dl>
+        <dt>Include Products</dt>
+        <dd>
+          <% if @coupon.included_products.any? %>
+            <%= @coupon.included_products.map(&:name).to_sentence %>
+          <% else %>
+            All products
+          <% end %>
+        </dd>
+
+        <dt>Exclude Products</dt>
+        <dd>
+          <% if @coupon.excluded_products.any? %>
+            <%= @coupon.excluded_products.map(&:name).to_sentence %>
+          <% else %>
+            None
+          <% end %>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="detail-section">
+      <h2>Category Restrictions</h2>
+      <dl>
+        <dt>Include Categories</dt>
+        <dd>
+          <% if @coupon.included_categories.any? %>
+            <%= @coupon.included_categories.map(&:name).to_sentence %>
+          <% else %>
+            All categories
+          <% end %>
+        </dd>
+
+        <dt>Exclude Categories</dt>
+        <dd>
+          <% if @coupon.excluded_categories.any? %>
+            <%= @coupon.excluded_categories.map(&:name).to_sentence %>
+          <% else %>
+            None
+          <% end %>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="detail-section">
+      <h2>Usage History</h2>
+      <% if @coupon_usages.any? %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Discount Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @coupon_usages.each do |usage| %>
+              <tr>
+                <td><%= link_to usage.order.order_id, admin_order_path(usage.order) %></td>
+                 <td><%= usage.order.customer_email_address %></td>
+                 <td><%= number_to_currency(usage.discount_amount / 100.0) %></td>
+                 <td><%= usage.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p>No usage history yet.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

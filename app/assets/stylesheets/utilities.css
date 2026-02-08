@@ -330,4 +330,6 @@ a:has(> article.product-card), a:has(> article.product-card-compact-list) {
 }
 .text-base { font-size: 1rem; }
 .font-base { font-weight: 400; }
-.font-sans { font-family: "Figtree" }
+.font-mono { font-family: monospace; }
+.font-bold { font-weight: 800; }
+.text-nowrap { white-space: nowrap; }

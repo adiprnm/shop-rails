@@ -12,7 +12,7 @@
 <div class="text-center" data-controller="copy-text">
   <%= status_tag(@order) %>
 
-  <h1 class="mt-4" style="font-size: 2rem; font-weight: 800;"><%= idr @order.final_total_price %></h1>
+  <h1 class="mt-4" style="font-size:2rem; font-weight:800;"><%= idr @order.final_total_price %></h1>
   <button style="padding: 0.25rem 0.75rem; font-size: 0.85rem;" data-amount="<%= @order.total_price %>" data-action="copy-text#perform" class="mb-4">Salin</button>
 
   <dialog data-copy-text-target="modal">
@@ -88,6 +88,67 @@
   <% elsif @order.expired? %>
     <p>Oops! Pesanan kamu sudah kadaluarsa. Silahkan pesan lagi produk yang hendak kamu beli.</p>
   <% end %>
+
+  <hr class="mt-8">
+
+  <div class="max-w-md mx-auto mt-8 text-left">
+    <h2 class="text-xl font-bold mb-4 mt-8 text-center">Ringkasan Pesanan</h2>
+    <table>
+      <thead>
+        <tr>
+          <td>Nama</td>
+          <td>Harga</td>
+        </tr>
+      </thead>
+      <% @order.line_items.each do |item| %>
+        <tr>
+          <td>
+            <%= item.orderable_name %>
+            <% if item.product_variant_name? %>
+              <br><small class="text-gray"><%= item.product_variant_name %></small>
+            <% end %>
+          </td>
+          <td><%= idr item.orderable_price %></td>
+        </tr>
+      <% end %>
+    </table>
+
+     <div class="space-y-2">
+       <div class="flex justify-between mb-2">
+         <span>Subtotal</span>
+         <span><%= idr @order.subtotal_price %></span>
+       </div>
+       <% if @order.has_coupon? && !@order.applied_coupon.free_shipping? %>
+         <div class="flex justify-between text-red mb-2">
+           <span>Kupon (<%= @order.coupon_code %>)</span>
+           <span>- <%= idr @order.coupon_discount_amount %></span>
+         </div>
+       <% end %>
+       <% if @order.shipping_cost&.positive? || (@order.has_coupon? && @order.applied_coupon.free_shipping?) %>
+         <div class="flex justify-between mb-2">
+           <span>Ongkos Kirim</span>
+           <span class="text-right">
+             <%= idr @order.shipping_cost %>
+             <% if @order.has_coupon? && @order.applied_coupon.free_shipping? %>
+               <br>
+               <small class="text-gray">dari kupon <%= tag.code @order.coupon_code %></small>
+             <% end %>
+           </span>
+         </div>
+       <% end %>
+       <% if @order.unique_code.present? %>
+         <div class="flex justify-between mb-2">
+           <span>Kode Unik</span>
+           <span><%= idr @order.unique_code %></span>
+         </div>
+       <% end %>
+     </div>
+     <hr class="my-4">
+     <div class="flex justify-between font-bold text-lg">
+       <span>Total</span>
+       <span><%= idr @order.final_total_price %></span>
+     </div>
+   </div>
 
 </div>
 

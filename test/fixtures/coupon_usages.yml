@@ -1,0 +1,4 @@
+one:
+  coupon: active_fixed_cart
+  order: pending_order
+  discount_amount: 5000
