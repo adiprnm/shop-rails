@@ -52,7 +52,7 @@
           </tr>
         <% end %>
         <% if Current.cart.coupon_code %>
-          <tr>
+          <tr class="text-sm">
             <td>Kupon <%= tag.code Current.cart.coupon_code %></td>
             <td class="text-red" style="white-space: nowrap;">- <%= idr Current.cart.discount_amount %></td>
           </tr>

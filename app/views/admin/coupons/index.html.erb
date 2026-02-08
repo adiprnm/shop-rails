@@ -45,7 +45,7 @@
               <% elsif coupon.discount_type.include?("percent") %>
                 <%= coupon.discount_amount %>%
               <% else %>
-                <%= number_to_currency(coupon.discount_amount / 100.0) %>
+                <%= idr coupon.discount_amount %>
               <% end %>
             </td>
             <td>

@@ -55,6 +55,17 @@
         <td>Kode Unik</td>
         <td><%= idr @order.unique_code %></td>
       </tr>
+       <% if @order.shipping_cost&.positive? %>
+         <tr>
+           <td>Ongkos Kirim</td>
+           <td><%= idr @order.shipping_cost %></td>
+         </tr       <% end %>
+      <% if @order.has_coupon? %>
+        <tr>
+          <td class="text-red">Kupon (<%= @order.coupon_code %>)</td>
+          <td class="text-red" style="white-space: nowrap;">- <%= idr @order.coupon_discount_amount %></td>
+        </tr>
+      <% end %>
     </tbody>
   </table>
 
