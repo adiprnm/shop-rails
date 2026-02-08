@@ -11,8 +11,8 @@
        </div>
      <% end %>
 
-     <div class="form-section">
-       <h2>Basic Information</h2>
+     <details open>
+       <summary>Basic Information</summary>
 
        <div class="form-group">
          <%= f.label :code %>
@@ -31,10 +31,10 @@
          <%= f.select :state,
              options_for_select(Coupon.states.keys.map { |s| [s.humanize, s] }, coupon.state) %>
        </div>
-     </div>
+     </details>
 
-     <div class="form-section">
-       <h2>Discount Configuration</h2>
+     <details>
+       <summary>Discount Configuration</summary>
 
        <div class="form-group">
          <%= f.label :discount_type %>
@@ -65,10 +65,10 @@
            Amount in <%= Current.settings["currency"] || "IDR" %>. For percentage, enter value (e.g., 10 for 10%)
          </small>
        </div>
-     </div>
+     </details>
 
-     <div class="form-section">
-       <h2>Usage Restrictions</h2>
+     <details>
+       <summary>Usage Restrictions</summary>
 
        <div class="form-group">
          <%= f.label :minimum_amount %>
@@ -93,10 +93,10 @@
          <%= f.number_field :usage_limit_per_user, min: 0 %>
          <small class="form-text">Maximum times each customer can use this coupon (0 for unlimited)</small>
        </div>
-     </div>
+     </details>
 
-     <div class="form-section">
-       <h2>Date Restrictions</h2>
+     <details>
+       <summary>Date Restrictions</summary>
 
        <div class="form-group">
          <%= f.label :starts_at %>
@@ -109,70 +109,79 @@
          <%= f.datetime_field :expires_at %>
          <small class="form-text">When coupon expires (leave blank for never)</small>
        </div>
-     </div>
+     </details>
 
-     <div class="form-section">
-       <h2>Additional Options</h2>
+     <details>
+       <summary>Additional Options</summary>
 
        <div class="form-group checkbox">
          <%= f.check_box :exclude_sale_items %>
          <%= f.label :exclude_sale_items, "Exclude sale items from discount" %>
        </div>
-     </div>
+     </details>
 
-     <div class="form-section">
-       <h2>Product Restrictions</h2>
+     <details>
+       <summary>Product Restrictions</summary>
+
        <p class="form-text">Restrict which products this coupon applies to</p>
 
-       <div class="form-group">
+       <div class="form-group mb-4">
          <label>Include Products</label>
-         <%= f.select :included_product_ids,
-             options_from_collection_for_select(products, :id, :name,
-               coupon.included_product_ids),
-             multiple: true,
-             include_blank: true,
-             class: "form-control select2" %>
-         <small class="form-text">Coupon will only apply to these products (leave blank to apply to all)</small>
+         <article class="mb-1">
+           <%= f.collection_check_boxes :included_product_ids, products, :id, :name do |b| %>
+             <%= b.label class: "flex" do %>
+               <%= b.check_box class: "flex-noshrink", style: "margin-top: 2px" %>
+               <%= b.object.name %>
+             <% end %>
+           <% end %>
+         </article>
+         <small class="text-gray">Coupon will only apply to these products (leave blank to apply to all)</small>
        </div>
 
        <div class="form-group">
          <label>Exclude Products</label>
-         <%= f.select :excluded_product_ids,
-             options_from_collection_for_select(products, :id, :name,
-               coupon.excluded_product_ids),
-             multiple: true,
-             include_blank: true,
-             class: "form-control select2" %>
-         <small class="form-text">Coupon will NOT apply to these products</small>
+         <article class="mb-1">
+           <%= f.collection_check_boxes :excluded_product_ids, products, :id, :name do |b| %>
+             <%= b.label class: "flex" do %>
+               <%= b.check_box class: "flex-noshrink", style: "margin-top: 2px" %>
+               <%= b.object.name %>
+             <% end %>
+           <% end %>
+         </article>
+         <small class="text-gray">Coupon will NOT apply to these products</small>
        </div>
-     </div>
+     </details>
 
-     <div class="form-section">
-       <h2>Category Restrictions</h2>
+     <details>
+       <summary>Category Restrictions</summary>
        <p class="form-text">Restrict which categories this coupon applies to</p>
 
        <div class="form-group">
          <label>Include Categories</label>
-         <%= f.select :included_category_ids,
-             options_from_collection_for_select(categories, :id, :name,
-               coupon.included_category_ids),
-             multiple: true,
-             include_blank: true,
-             class: "form-control select2" %>
-         <small class="form-text">Coupon will only apply to products in these categories (leave blank to apply to all)</small>
+         <article class="mb-1">
+           <%= f.collection_check_boxes :included_category_ids, categories, :id, :name do |b| %>
+             <%= b.label class: "flex" do %>
+               <%= b.check_box class: "flex-noshrink", style: "margin-top: 2px" %>
+               <%= b.object.name %>
+             <% end %>
+           <% end %>
+         </article>
+         <small class="text-gray">Coupon will only apply to products in these categories (leave blank to apply to all)</small>
        </div>
 
        <div class="form-group">
          <label>Exclude Categories</label>
-         <%= f.select :excluded_category_ids,
-             options_from_collection_for_select(categories, :id, :name,
-               coupon.excluded_category_ids),
-             multiple: true,
-             include_blank: true,
-             class: "form-control select2" %>
-         <small class="form-text">Coupon will NOT apply to products in these categories</small>
+         <article class="mb-1">
+           <%= f.collection_check_boxes :excluded_category_ids, categories, :id, :name do |b| %>
+             <%= b.label class: "flex" do %>
+               <%= b.check_box class: "flex-noshrink", style: "margin-top: 2px" %>
+               <%= b.object.name %>
+             <% end %>
+           <% end %>
+         </article>
+         <small class="text-gray">Coupon will NOT apply to products in these categories</small>
        </div>
-     </div>
+     </details>
 
      <div class="form-actions">
        <%= f.submit "Save Coupon", class: "btn btn-primary" %>
