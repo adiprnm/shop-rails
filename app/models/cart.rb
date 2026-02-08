@@ -2,8 +2,6 @@ class Cart < ApplicationRecord
   has_many :line_items, class_name: "CartLineItem", dependent: :delete_all
   has_many :orders
 
-  attr_accessor :coupon_code
-
   def add_item(cartable, price = nil, product_variant = nil, quantity = 1)
     if cartable.is_a?(Product) && cartable.physical_product?
       unless product_variant
@@ -54,20 +52,18 @@ class Cart < ApplicationRecord
   end
 
   def apply_coupon!(code, customer_email: nil)
-    coupon = Coupon.find_by(code: code)
+    coupon = Coupon.find_by("LOWER(code) = ?", code.to_s.downcase.strip)
 
     unless coupon&.valid_for_cart?(self, customer_email: customer_email)
       errors.add(:coupon_code, "is invalid or cannot be applied")
       return false
     end
 
-    self.coupon_code = code
-    true
+    update coupon_code: code
   end
 
   def remove_coupon!
-    self.coupon_code = nil
-    true
+    update coupon_code: nil
   end
 
   def digital_items
