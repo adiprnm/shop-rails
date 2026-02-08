@@ -45,15 +45,21 @@
            <td><strong>Subtotal</strong></td>
            <td><%= idr Current.cart.subtotal_price %></td>
          </tr>
-         <% if Current.cart.coupon_code %>
-           <tr>
-             <td>
-               Kupon <%= tag.code Current.cart.coupon_code %>
-               <%= link_to "Hapus Kupon", remove_coupon_cart_path, data: { turbo_method: :post }, class: "text-red block mt-2 text-sm" %>
-             </td>
-             <td class="text-red" style="white-space: nowrap;">- <%= idr Current.cart.discount_amount %></td>
-           </tr>
-         <% end %>
+          <% if Current.cart.coupon_code %>
+            <tr>
+              <td>
+                Kupon <%= tag.code Current.cart.coupon_code %>
+                <%= link_to "Hapus Kupon", remove_coupon_cart_path, data: { turbo_method: :post }, class: "text-red block mt-2 text-sm" %>
+              </td>
+              <td class="text-red" style="white-space: nowrap;">
+                <% if Current.cart.coupon&.free_shipping? %>
+                  Diskon akan diterapkan saat checkout
+                <% else %>
+                  - <%= idr Current.cart.discount_amount %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
          <tr>
            <td><strong>Total</strong></td>
            <td><strong id="total-display"><%= idr Current.cart.total_price %></strong></td>
