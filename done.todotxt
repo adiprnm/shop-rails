@@ -7,9 +7,16 @@
 # Note: +note:optional notes/decisions
 
 x 2026-02-11 2026-02-11 Create enhanced 404 page with neobrutalist design and lottie animation +frontend @feature
-# Implemented with lottie-web CDN, object-based ghost animation, yellow/cream theme
+# Implemented with lottie-web CDN, object-based ghost animation
 # Features: staggered animations, dark mode support, responsive design
+# Colors match Pico CSS default theme (#fff bg, #014063 accent)
 
 x 2026-02-11 2026-02-11 Create enhanced 500 page with neobrutalist design and lottie animation +frontend @feature
-# Implemented with lottie-web CDN, object-based gear animation, orange/peach theme
+# Implemented with lottie-web CDN, object-based gear animation
 # Features: staggered animations, dark mode support, responsive design
+# Colors match Pico CSS default theme (#fff bg, red accent for 500)
+
+x 2026-02-11 2026-02-11 Update error pages color scheme to match homepage +frontend @bug
+# Changed from yellow/orange to Pico CSS default colors
+# Light mode: #fff background, #000 borders, #333 text
+# Dark mode: #333c4e background, #5c677d borders, #fff text
