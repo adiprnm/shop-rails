@@ -25,5 +25,10 @@ x 2026-02-11 2026-02-11 Update Order::Notification service +telegram +notificati
 # Added telegram_enabled? helper method for conditional execution
 
 x 2026-02-11 2026-02-11 Update admin settings form for Telegram config +telegram +admin @task
+
+x 2026-02-11 2026-02-11 Add payment evidence link to manual payment Telegram notifications +telegram @task
+# Added manual_payment_with_evidence? check
+# Generated full URL for payment evidence using site_storage_host
+# Link only shown for manual payments with attached evidence
 # Added Telegram Notifikasi section with form fields
 # Followed existing form patterns with details/summary structure
