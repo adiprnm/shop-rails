@@ -148,22 +148,21 @@ Examples:
 
 ---
 
-## Task (Beads-Based Execution)
+## Task (Implementation Plan Execution)
 
-Instead of printing an implementation plan directly, perform the work using **Beads**
-(https://github.com/steveyegge/beads).
+Instead of printing an implementation plan directly, perform the work using the project's task tracking system (todo.txt).
 
 ### Instructions
 
-- Decompose the work into **clear, atomic beads**
-- Each bead must:
+- Decompose the work into **clear, atomic tasks**
+- Each task must:
   - Represent one concrete implementation concern
   - Be small enough to be implemented independently
   - Have a clear completion definition
 
-### Required Bead Categories
+### Required Task Categories
 
-Create beads that collectively cover:
+Create tasks that collectively cover:
 
 1. **Database & Schema**
    - Tables, columns, constraints, indexes, migrations
@@ -208,9 +207,9 @@ Create beads that collectively cover:
 
 ### Output Rules
 
-- Do **NOT** include prose explanations outside beads
+- Do **NOT** include prose explanations outside task definitions
 - Do **NOT** summarize or conclude
 - Do **NOT** write code
-- Each bead should be written in **Beads markdown format**
-- Beads should be suitable for direct tracking and execution
+- Each task should be written in **todo.txt format**
+- Tasks should be suitable for direct tracking and execution in `todo.todotxt`
 
