@@ -1,6 +1,7 @@
 # Active Tasks
-# Format: (A) Task description +project @context
+# Format: (A) Task description +project @context +note:Catatan
 # Priority: A (highest), B, C, D, E (lowest)
 # Project: +projectname
 # Context: @context
 # Creation Date: yyyy-mm-dd
+# Note: +note:optional notes/decisions
