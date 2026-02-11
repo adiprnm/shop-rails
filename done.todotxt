@@ -5,3 +5,11 @@
 # Context: @context
 # Completion Date: yyyy-mm-dd
 # Note: +note:optional notes/decisions
+
+x 2026-02-11 2026-02-11 Create enhanced 404 page with neobrutalist design and lottie animation +frontend @feature
+# Implemented with lottie-web CDN, object-based ghost animation, yellow/cream theme
+# Features: staggered animations, dark mode support, responsive design
+
+x 2026-02-11 2026-02-11 Create enhanced 500 page with neobrutalist design and lottie animation +frontend @feature
+# Implemented with lottie-web CDN, object-based gear animation, orange/peach theme
+# Features: staggered animations, dark mode support, responsive design
