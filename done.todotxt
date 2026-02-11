@@ -38,3 +38,21 @@ x 2026-02-11 2026-02-11 Add payment evidence link to manual payment Telegram not
 # Added manual_payment_with_evidence? check
 # Generated full URL for payment evidence using site_storage_host
 # Link only shown for manual payments with attached evidence
+
+x 2026-02-11 2026-02-11 Write unit tests for TelegramClient +telegram +testing @task
+# Test send_message and send_photo methods
+# Test error handling for invalid token and network errors
+# Verify message formatting and caption support
+# Test Telegram API error response format
+
+x 2026-02-11 2026-02-11 Write unit tests for TelegramNotificationJob +telegram +testing @task
+# Test message formatting for paid/failed orders
+# Test conditional execution when disabled
+# Test manual payment with photo attachment
+# Test order not found and error handling
+
+x 2026-02-11 2026-02-11 Write integration tests for Telegram notifications +telegram +testing @task
+# Test Order callbacks trigger Telegram notifications
+# Test both Midtrans and manual payment flows
+# Test failed order notifications
+# Test telegram_enabled? helper method
