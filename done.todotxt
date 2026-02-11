@@ -1,9 +1,9 @@
 # Completed Tasks
-# Format: (A) Task description +project @context
+# Format: x <completion-date> <creation-date> Task description +project @context
 # Priority: A (highest), B, C, D, E (lowest)
 # Project: +projectname
 # Context: @context
-# Completion Date: yyyy-mm-dd
+# Note: Comments with notes/decisions
 
 x 2026-02-11 2026-02-11 Add Telegram settings to Setting model +telegram +configuration @task
 # Added telegram_bot_token, telegram_chat_id, telegram_enabled to KEYS
@@ -33,3 +33,8 @@ x 2026-02-11 2026-02-11 Send payment evidence as photo attachment in Telegram no
 # Implemented Tempfile-based download and upload of payment evidence
 # Added caption support for photo messages with Markdown formatting
 # Fallback to text message for Midtrans payments or manual without evidence
+
+x 2026-02-11 2026-02-11 Add payment evidence link to manual payment Telegram notifications +telegram @task
+# Added manual_payment_with_evidence? check
+# Generated full URL for payment evidence using site_storage_host
+# Link only shown for manual payments with attached evidence

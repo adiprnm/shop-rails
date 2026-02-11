@@ -1,28 +1,29 @@
 # Active Tasks
-# Format: (A) Task description +project @context
+# Format: (A) Task description +project @context +note:Catatan
 # Priority: A (highest), B, C, D, E (lowest)
 # Project: +projectname
 # Context: @context
 # Creation Date: yyyy-mm-dd
+# Note: +note:optional notes/decisions
 
-(C) Write unit tests for TelegramClient +telegram +testing @task
+(C) Write unit tests for TelegramClient +telegram +testing @task due:2026-02-15
 # Test successful message sending
 # Test error handling (invalid token, network errors)
 # Verify message formatting
 # Test send_photo method with multipart upload
 
-(C) Write unit tests for TelegramNotificationJob +telegram +testing @task
+(C) Write unit tests for TelegramNotificationJob +telegram +testing @task due:2026-02-15
 # Test message formatting for paid/failed orders
 # Test conditional execution when disabled
 # Test job retry behavior
 # Test manual payment with photo attachment
 
-(C) Write integration tests for Telegram notifications +telegram +testing @task
+(C) Write integration tests for Telegram notifications +telegram +testing @task due:2026-02-15
 # Test Order callbacks trigger Telegram notifications
 # Test both Midtrans and manual payment flows
 # Test failed order notifications
 
-(D) Run quality gates +telegram +validation @task
+(D) Run quality gates +telegram +validation @task due:2026-02-15
 # Run bin/rails test
 # Run bin/rubocop
 # Run bin/brakeman
