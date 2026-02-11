@@ -158,15 +158,16 @@
     (function() {
       var container = document.getElementById('lottie-404');
       if (typeof lottie !== 'undefined') {
+        var animationData = {"v":"5.7.4","fr":60,"ip":0,"op":180,"w":400,"h":400,"nm":"404","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"Ghost","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":1,"k":[{"i":{"x":[0.833],"y":[0.833]},"o":{"x":[0.167],"y":[0.167]},"t":0,"s":[0]},{"t":60,"s":[360]},{"t":120,"s":[720]},{"i":{"x":[0.833],"y":[0.833]},"o":{"x":[0.167],"y":[0.167]},"t":180,"s":[720]}],"ix":10},"p":{"a":1,"k":[{"i":{"x":0.833,"y":0.833},"o":{"x":0.167,"y":0.167},"t":0,"s":[200,200,0]},{"t":30,"s":[200,180,0]},{"t":60,"s":[200,200,0]},{"t":90,"s":[200,180,0]},{"t":120,"s":[200,200,0]},{"t":150,"s":[200,180,0]},{"t":180,"s":[200,200,0]}],"ix":2},"a":{"a":0,"k":[200,200,0],"ix":1},"s":{"a":0,"k":[100,100,100],"ix":6}},"ao":0,"shapes":[{"ty":"el","d":1,"p":{"a":0,"k":[200,200],"ix":3},"s":{"a":1,"k":[{"i":{"x":[0.833],"y":[0.833]},"o":{"x":[0.167],"y":[0.167]},"t":0,"s":[120,120]},{"t":30,"s":[110,130]},{"t":60,"s":[120,120]},{"t":90,"s":[110,130]},{"t":120,"s":[120,120]},{"t":150,"s":[110,130]},{"t":180,"s":[120,120]}],"ix":2},"nm":"Body","mn":"ADBE Vector Shape - Ellipse","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[1,1],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"ip":0,"op":900,"st":0,"bm":0},{"ddd":0,"ind":2,"ty":4,"nm":"Eyes","sr":1,"ks":{"o":{"a":0,"k":100,"ix":11},"r":{"a":1,"k":[{"i":{"x":[0.833],"y":[0.833]},"o":{"x":[0.167],"y":[0.167]},"t":0,"s":[0]},{"t":60,"s":[360]},{"t":120,"s":[720]},{"i":{"x":[0.833],"y":[0.833]},"o":{"x":[0.167],"y":[0.167]},"t":180,"s":[720]}],"ix":10},"p":{"a":1,"k":[{"i":{"x":0.833,"y":0.833},"o":{"x":0.167,"y":0.167},"t":0,"s":[200,200,0]},{"t":30,"s":[200,180,0]},{"t":60,"s":[200,200,0]},{"t":90,"s":[200,180,0]},{"t":120,"s":[200,200,0]},{"t":150,"s":[200,180,0]},{"t":180,"s":[200,200,0]}],"ix":2},"a":{"a":0,"k":[200,200,0],"ix":1},"s":{"a":0,"k":[100,100,100],"ix":6}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"p":{"a":0,"k":[170,180],"ix":3},"s":{"a":0,"k":[15,20],"ix":2},"nm":"Left Eye","mn":"ADBE Vector Shape - Ellipse","hd":false},{"ty":"el","d":1,"p":{"a":0,"k":[230,180],"ix":3},"s":{"a":0,"k":[15,20],"ix":2},"nm":"Right Eye","mn":"ADBE Vector Shape - Ellipse","hd":false}],"nm":"Eyes","np":2,"cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":900,"st":0,"bm":0}],"markers":[]};
         lottie.loadAnimation({
           container: container,
           renderer: 'svg',
           loop: true,
           autoplay: true,
-          path: 'https://lottie.host/68227576-9b05-4c86-a55e-3c6d38c1db8f/l1Tgq3zJ9h.json'
+          animationData: animationData
         });
       } else {
-        container.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+        container.innerHTML = '<svg viewBox="0 0 400 400" fill="none"><circle cx="200" cy="200" r="100" stroke="currentColor" stroke-width="4"/><circle cx="170" cy="180" r="8" fill="currentColor"/><circle cx="230" cy="180" r="8" fill="currentColor"/></svg>';
       }
     })();
   </script>
