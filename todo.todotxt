@@ -5,9 +5,10 @@
 # Context: @context
 # Creation Date: yyyy-mm-dd
 
-(A) Add payment evidence link to manual payment Telegram notifications +telegram @task
-# Include bukti pembayaran link in notification for manual payments
-# Check for payment evidence and generate full URL
+(A) Send payment evidence as photo attachment in Telegram notifications +telegram @task
+# Add send_photo method to TelegramClient for multipart file upload
+# Download payment evidence to temp file and send as photo with caption
+# Fallback to text message for non-manual payments
 
 (B) Update admin settings form for Telegram config +telegram +admin @task
 # Add input fields for telegram_bot_token, telegram_chat_id, telegram_enabled

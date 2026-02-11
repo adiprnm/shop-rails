@@ -22,8 +22,11 @@ class TelegramNotificationJob < ApplicationJob
   attr_reader :order
 
   def send_paid_notification
-    message = format_paid_message
-    TelegramClient.new.send_message(message, parse_mode: "Markdown")
+    if manual_payment_with_evidence?
+      send_paid_notification_with_photo
+    else
+      send_paid_notification_text
+    end
   end
 
   def send_failed_notification
@@ -31,11 +34,29 @@ class TelegramNotificationJob < ApplicationJob
     TelegramClient.new.send_message(message, parse_mode: "Markdown")
   end
 
+  def send_paid_notification_with_photo
+    evidence = order.latest_payment_evidence
+
+    Tempfile.create(["payment_evidence", File.extname(evidence.file.filename.to_s)]) do |tempfile|
+      tempfile.binmode
+      tempfile.write(evidence.file.download)
+      tempfile.rewind
+
+      caption = format_paid_message_as_caption
+      TelegramClient.new.send_photo(tempfile.path, caption: caption, parse_mode: "Markdown")
+    end
+  end
+
+  def send_paid_notification_text
+    message = format_paid_message
+    TelegramClient.new.send_message(message, parse_mode: "Markdown")
+  end
+
   def format_paid_message
     products = order.line_items.map { |li| li.orderable_name }.join(", ")
     payment_method = Current.settings["payment_provider"].humanize
 
-    message = <<~MESSAGE
+    <<~MESSAGE
       🔔 *New Order Paid*
 
       Order: \##{order.order_id}
@@ -45,10 +66,22 @@ class TelegramNotificationJob < ApplicationJob
       Payment: #{payment_method}
       Date: #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
     MESSAGE
+  end
 
-    message << "\n\nBukti Pembayaran: #{payment_evidence_url}" if manual_payment_with_evidence?
+  def format_paid_message_as_caption
+    products = order.line_items.map { |li| li.orderable_name }.join(", ")
+    payment_method = Current.settings["payment_provider"].humanize
 
-    message
+    <<~MESSAGE
+      🔔 *New Order Paid*
+
+      Order: \##{order.order_id}
+      Customer: #{order.customer_name}
+      Products: #{products}
+      Total: #{format_currency(order.total_price)}
+      Payment: #{payment_method}
+      Date: #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+    MESSAGE
   end
 
   def format_failed_message
@@ -71,12 +104,5 @@ class TelegramNotificationJob < ApplicationJob
 
   def manual_payment_with_evidence?
     Current.settings["payment_provider"] == "manual" && order.latest_payment_evidence&.file&.attached?
-  end
-
-  def payment_evidence_url
-    evidence = order.latest_payment_evidence
-    storage_host = Current.settings["site_storage_host"] || "https://example.com"
-    blob_path = Rails.application.routes.url_helpers.rails_blob_path(evidence.file, disposition: "inline", only_path: true)
-    "#{storage_host}#{blob_path}"
   end
 end
