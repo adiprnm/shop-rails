@@ -150,6 +150,30 @@
     </details>
 
     <details>
+      <summary>Telegram Notifikasi</summary>
+
+      <div class="form-group">
+        <%= f.label :telegram_enabled, "Aktifkan Notifikasi Telegram" %>
+        <%= f.select :telegram_enabled,
+          [ [ "Tidak Aktif", "false" ], [ "Aktif", "true" ] ],
+          { selected: Current.settings["telegram_enabled"].presence || "false" }
+        %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :telegram_bot_token, "Bot Token" %>
+        <%= f.text_field :telegram_bot_token, value: Current.settings["telegram_bot_token"].presence %>
+        <small class="text-gray">Dapatkan dari @BotFather di Telegram</small>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :telegram_chat_id, "Chat ID" %>
+        <%= f.text_field :telegram_chat_id, value: Current.settings["telegram_chat_id"].presence %>
+        <small class="text-gray">ID chat atau channel penerima notifikasi</small>
+      </div>
+    </details>
+
+    <details>
       <summary>Pengiriman</summary>
 
       <h3>Integrasi Raja Ongkir</h3>
