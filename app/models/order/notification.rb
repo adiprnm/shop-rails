@@ -13,6 +13,7 @@ class Order::Notification
   def notify
     notify_admin if Current.settings["payment_provider"] == "midtrans"
     notify_customer
+    notify_telegram_admin
   end
 
   def notify_created
@@ -21,6 +22,7 @@ class Order::Notification
 
   def notify_failed
     OrderMailer.with(order: order, products: line_items).order_failed.deliver_later
+    notify_telegram_failed
   end
 
   def notify_tracking_number
@@ -42,4 +44,24 @@ class Order::Notification
       OrderMailer.with(order: order, products: digital_products).digital_product_accesses.deliver_later
     end
   end
+
+  def notify_telegram_admin
+    return unless telegram_enabled?
+
+    TelegramNotificationJob.perform_later(order.id, :paid)
+  end
+
+  def notify_telegram_failed
+    return unless telegram_enabled?
+
+    TelegramNotificationJob.perform_later(order.id, :failed)
+  end
+
+  private
+    def telegram_enabled?
+      Current.settings["telegram_enabled"] &&
+        Current.settings["telegram_enabled"] == "true" &&
+        Current.settings["telegram_bot_token"].present? &&
+        Current.settings["telegram_chat_id"].present?
+    end
 end

@@ -4,3 +4,26 @@
 # Project: +projectname
 # Context: @context
 # Creation Date: yyyy-mm-dd
+
+(B) Update admin settings form for Telegram config +telegram +admin @task
+# Add input fields for telegram_bot_token, telegram_chat_id, telegram_enabled
+# Follow existing form patterns
+
+(C) Write unit tests for TelegramClient +telegram +testing @task
+# Test successful message sending
+# Test error handling (invalid token, network errors)
+# Verify message formatting
+
+(C) Write unit tests for TelegramNotificationJob +telegram +testing @task
+# Test message formatting for paid/failed orders
+# Test conditional execution when disabled
+# Test job retry behavior
+
+(C) Write integration tests for Telegram notifications +telegram +testing @task
+# Test Order callbacks trigger Telegram notifications
+# Test both Midtrans and manual payment flows
+
+(D) Run quality gates +telegram +validation @task
+# Run bin/rails test
+# Run bin/rubocop
+# Run bin/brakeman

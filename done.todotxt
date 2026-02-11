@@ -4,3 +4,26 @@
 # Project: +projectname
 # Context: @context
 # Completion Date: yyyy-mm-dd
+
+x 2026-02-11 2026-02-11 Add Telegram settings to Setting model +telegram +configuration @task
+# Added telegram_bot_token, telegram_chat_id, telegram_enabled to KEYS
+
+x 2026-02-11 2026-02-11 Create TelegramClient class +telegram @task
+# Implemented send_message method with Markdown support
+# Added error handling and logging for failures
+# Followed existing ApplicationClient pattern
+
+x 2026-02-11 2026-02-11 Create TelegramNotificationJob +telegram +notifications @task
+# Created job for async message sending via Solid Queue
+# Implemented Markdown message formatting for paid/failed orders
+# Added error handling and logging
+# Followed existing job patterns
+
+x 2026-02-11 2026-02-11 Update Order::Notification service +telegram +notifications @task
+# Added notify_telegram_admin method to notify method
+# Added notify_telegram_failed method to notify_failed
+# Added telegram_enabled? helper method for conditional execution
+
+x 2026-02-11 2026-02-11 Update admin settings form for Telegram config +telegram +admin @task
+# Added Telegram Notifikasi section with form fields
+# Followed existing form patterns with details/summary structure
