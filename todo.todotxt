@@ -6,7 +6,8 @@
 # Creation Date: yyyy-mm-dd
 # Note: +note:optional notes/decisions
 
-(D) Run quality gates +telegram +validation @task due:2026-02-15
-# Run bin/rails test
+(D) Run quality gates +telegram +validation @task due:2026-02-15 +note:Requires Ruby 3.2+ for tests
+# Ruby syntax validation: PASS (all files checked)
+# Run bin/rails test (requires Ruby 3.2+)
 # Run bin/rubocop
 # Run bin/brakeman
