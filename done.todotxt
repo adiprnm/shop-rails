@@ -25,11 +25,11 @@ x 2026-02-11 2026-02-11 Update Order::Notification service +telegram +notificati
 # Added telegram_enabled? helper method for conditional execution
 
 x 2026-02-11 2026-02-11 Update admin settings form for Telegram config +telegram +admin @task
+# Added Telegram Notifikasi section with form fields
+# Followed existing form patterns with details/summary structure
 
 x 2026-02-11 2026-02-11 Send payment evidence as photo attachment in Telegram notifications +telegram @task
 # Added send_photo method to TelegramClient with multipart/form-data support
 # Implemented Tempfile-based download and upload of payment evidence
 # Added caption support for photo messages with Markdown formatting
 # Fallback to text message for Midtrans payments or manual without evidence
-# Added Telegram Notifikasi section with form fields
-# Followed existing form patterns with details/summary structure
