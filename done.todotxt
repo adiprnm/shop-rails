@@ -57,6 +57,19 @@ x 2026-02-11 2026-02-11 Write integration tests for Telegram notifications +tele
 # Test failed order notifications
 # Test telegram_enabled? helper method
 
+x 2026-02-15 2026-02-15 Send Telegram notification when payment evidence is uploaded +telegram @feature
+- Added notify_telegram_admin callback to PaymentEvidence model
+- Added :evidence_uploaded case to TelegramNotificationJob
+- Created send_evidence_uploaded_notification method
+- Added format_evidence_uploaded_message_as_caption method
+- Send photo with payment evidence as attachment
+- Include payment waiting for approval notice
+- Only send notification for orders, not donations
+- Added tests for evidence uploaded notification
+- Added tests for PaymentEvidence Telegram integration
+- All tests passing (TelegramNotificationJob: 22/22, PaymentEvidence: 12/12)
+- Rubocop: no offenses
+
 x 2026-02-15 2026-02-15 Improve Telegram notification message formatting +telegram @feature
 # Make field labels bold (Order, Customer, Products, Total, Payment, Date, Reason)
 # Put field values on new lines after labels
