@@ -5,3 +5,9 @@
 # Context: @context
 # Creation Date: yyyy-mm-dd
 # Note: +note:optional notes/decisions
+
+(C) Fix pre-existing test failures in telegram integration tests +testing @bug
+# Tests are calling manual_payment_with_evidence? with arguments, but method takes no arguments
+# Tests expect OrderMailer.deliver_later but it's not being called in some test cases
+# 4 failures and 4 errors in integration/job tests, unrelated to multipart fix
+# Not critical for TelegramNotificationJob functionality

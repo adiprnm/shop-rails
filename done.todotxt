@@ -57,6 +57,11 @@ x 2026-02-11 2026-02-11 Write integration tests for Telegram notifications +tele
 # Test failed order notifications
 # Test telegram_enabled? helper method
 
+x 2026-02-15 2026-02-15 Fix TelegramClient multipart form enctype +telegram @bug
+# Fixed request.set_form(params, multipart: true) to request.set_form(params, 'multipart/form-data')
+# Added error handling to send_message method
+# All TelegramClient tests passing
+
 x 2026-02-11 2026-02-11 Run quality gates +telegram +validation @task
 # Ruby syntax validation: PASS (all files checked)
 # Full quality gates (test, rubocop, brakeman) require Ruby 3.2+ environment

@@ -10,6 +10,9 @@ class TelegramClient < ApplicationClient
 
     Rails.logger.error "Telegram send_message failed: #{response[:error]}"
     response
+  rescue StandardError => e
+    Rails.logger.error "Telegram send_message error: #{e.class} - #{e.message}"
+    { success: false, error: e.message }
   end
 
   def send_photo(photo_path, caption: nil, parse_mode: "Markdown")
@@ -66,7 +69,7 @@ class TelegramClient < ApplicationClient
       http = setup_http(uri)
 
       request = Net::HTTP::Post.new(uri)
-      request.set_form(params, multipart: true)
+      request.set_form(params, "multipart/form-data")
 
       response = http.request(request)
       parse_response(response)

@@ -68,13 +68,13 @@ class TelegramClientTest < ActiveSupport::TestCase
       success: true
     }
 
-    file = Tempfile.new(["test", ".jpg"])
-    File.expects(:open).with(file.path).returns(stub(close: nil))
+    file = Tempfile.new([ "test", ".jpg" ])
+    File.expects(:open).with(file.path).returns(file)
 
     @client.expects(:post_multipart)
       .with("/bottest_bot_token/sendPhoto", {
         chat_id: "test_chat_id",
-        photo: kind_of(File),
+        photo: file,
         caption: "Test caption",
         parse_mode: "Markdown"
       })
@@ -97,7 +97,7 @@ class TelegramClientTest < ActiveSupport::TestCase
       success: false
     }
 
-    file = Tempfile.new(["test", ".jpg"])
+    file = Tempfile.new([ "test", ".jpg" ])
     @client.expects(:post_multipart).returns(response)
 
     result = @client.send_photo(file.path)
@@ -113,7 +113,7 @@ class TelegramClientTest < ActiveSupport::TestCase
       success: true
     }
 
-    file = Tempfile.new(["test", ".jpg"])
+    file = Tempfile.new([ "test", ".jpg" ])
     @client.expects(:post_multipart)
       .with("/bottest_bot_token/sendPhoto", {
         chat_id: "test_chat_id",
@@ -148,7 +148,7 @@ class TelegramClientTest < ActiveSupport::TestCase
       success: false
     }
 
-    file = Tempfile.new(["test", ".jpg"])
+    file = Tempfile.new([ "test", ".jpg" ])
     @client.expects(:post_multipart).returns(response)
     Rails.logger.expects(:error).with("Telegram send_photo failed: #{response[:error]}")
 
@@ -163,10 +163,19 @@ class TelegramClientTest < ActiveSupport::TestCase
       "description" => "Unauthorized"
     }
 
-    @client.expects(:post)
-      .returns(status: 200, data: response_data, success: true)
+    http_response = mock
+    http_response.stubs(:code).returns("200")
+    http_response.stubs(:message).returns("OK")
+    http_response.stubs(:to_hash).returns({})
+    http_response.stubs(:body).returns(JSON.generate(response_data))
+
+    http = mock
+    http.stubs(:request).returns(http_response)
+
+    @client.stubs(:http).returns(http)
 
     result = @client.send_message("Test")
+
     assert_not result[:success]
     assert_includes result[:error], "Unauthorized"
     assert_includes result[:error], "401"
