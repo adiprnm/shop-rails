@@ -94,7 +94,7 @@ Rails.application.routes.draw do
 
   resources :shipping_costs, only: %w[ index ]
 
-  get ":slug", to: "pages#show"
-
   mount MissionControl::Jobs::Engine, at: "/jobs"
+
+  get ":slug", to: "pages#show"
 end
