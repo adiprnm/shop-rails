@@ -57,6 +57,14 @@ x 2026-02-11 2026-02-11 Write integration tests for Telegram notifications +tele
 # Test failed order notifications
 # Test telegram_enabled? helper method
 
+x 2026-02-15 2026-02-15 Add telegram_configured? guard to prevent errors when Telegram is not configured +telegram @bugfix
+- Added telegram_configured? private method
+- Returns early if Telegram settings are not configured
+- Checks telegram_enabled, bot_token, and chat_id presence
+- Prevents errors when triggering notifications without configuration
+- All TelegramNotificationJob tests passing (33/33)
+- Rubocop: no offenses
+
 x 2026-02-15 2026-02-15 Use Global ID with single payable parameter in TelegramNotificationJob +telegram @refactor
 - Updated TelegramNotificationJob to accept single payable parameter
 - Removed find_payable method (GlobalID handles deserialization)
