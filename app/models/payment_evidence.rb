@@ -13,12 +13,7 @@ class PaymentEvidence < ApplicationRecord
   end
 
   def notify_telegram_admin
-    case payable_type
-    when "Order"
-      TelegramNotificationJob.perform_later(payable.id, :evidence_uploaded)
-    when "Donation"
-      DonationNotificationJob.perform_later(payable.id, :evidence_uploaded)
-    end
+    TelegramNotificationJob.perform_later(payable_type, payable.id, :evidence_uploaded)
   end
 
   def update_payable

@@ -84,15 +84,15 @@ class PaymentEvidenceTest < ActiveSupport::TestCase
 
   test "should send Telegram notification when payment evidence is uploaded for order" do
     TelegramNotificationJob.expects(:perform_later)
-      .with(@paid_order.id, :evidence_uploaded)
+      .with("Order", @paid_order.id, :evidence_uploaded)
 
     file = File.open(Rails.root.join("test/fixtures/files/test.pdf"))
     @paid_order.payment_evidences.create(file: file)
   end
 
   test "should send Telegram notification when payment evidence is uploaded for donation" do
-    DonationNotificationJob.expects(:perform_later)
-      .with(@paid_donation.id, :evidence_uploaded)
+    TelegramNotificationJob.expects(:perform_later)
+      .with("Donation", @paid_donation.id, :evidence_uploaded)
 
     file = File.open(Rails.root.join("test/fixtures/files/test.pdf"))
     @paid_donation.payment_evidences.create(file: file)

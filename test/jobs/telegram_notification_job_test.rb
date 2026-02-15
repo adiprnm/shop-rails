@@ -4,6 +4,7 @@ require "mocha/minitest"
 class TelegramNotificationJobTest < ActiveJob::TestCase
   setup do
     @order = orders(:paid_order)
+    @donation = donations(:named_donation)
     Current.settings = {
       "payment_provider" => "midtrans",
       "telegram_enabled" => "true",
@@ -15,29 +16,47 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
 
   test "job is queued in default queue" do
     assert_enqueued_with(job: TelegramNotificationJob) do
-      TelegramNotificationJob.perform_later(@order.id, :paid)
+      TelegramNotificationJob.perform_later("Order", @order.id, :paid)
     end
   end
 
-  test "sends paid notification" do
+  test "sends paid notification for order" do
     TelegramClient.any_instance.expects(:send_message)
       .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now(@order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", @order.id, :paid)
   end
 
-  test "sends failed notification" do
+  test "sends paid notification for donation" do
+    TelegramClient.any_instance.expects(:send_message)
+      .with(kind_of(String), parse_mode: "Markdown")
+      .returns(success: true)
+
+    TelegramNotificationJob.perform_now("Donation", @donation.id, :paid)
+  end
+
+  test "sends failed notification for order" do
     @order.update(state: "failed")
 
     TelegramClient.any_instance.expects(:send_message)
       .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now(@order.id, :failed)
+    TelegramNotificationJob.perform_now("Order", @order.id, :failed)
   end
 
-  test "sends paid notification with photo for manual payment with evidence" do
+  test "sends failed notification for donation" do
+    @donation.update(state: "failed")
+
+    TelegramClient.any_instance.expects(:send_message)
+      .with(kind_of(String), parse_mode: "Markdown")
+      .returns(success: true)
+
+    TelegramNotificationJob.perform_now("Donation", @donation.id, :failed)
+  end
+
+  test "sends paid notification with photo for manual order payment with evidence" do
     order = orders(:pending_order)
     order.update(state: "paid")
     Current.settings["payment_provider"] = "manual"
@@ -51,10 +70,27 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), caption: kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now(order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", order.id, :paid)
   end
 
-  test "sends text message for manual payment without evidence" do
+  test "sends paid notification with photo for manual donation payment with evidence" do
+    donation = donations(:named_donation)
+    donation.update(state: "paid")
+    Current.settings["payment_provider"] = "manual"
+
+    evidence = donation.payment_evidences.create(
+      file: File.open(Rails.root.join("test/fixtures/files/test.pdf")),
+      checked: true
+    )
+
+    TelegramClient.any_instance.expects(:send_photo)
+      .with(kind_of(String), caption: kind_of(String), parse_mode: "Markdown")
+      .returns(success: true)
+
+    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
+  end
+
+  test "sends text message for manual order payment without evidence" do
     order = orders(:paid_order)
     Current.settings["payment_provider"] = "manual"
 
@@ -62,10 +98,21 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now(order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", order.id, :paid)
   end
 
-  test "formats paid message correctly" do
+  test "sends text message for manual donation payment without evidence" do
+    donation = donations(:named_donation)
+    Current.settings["payment_provider"] = "manual"
+
+    TelegramClient.any_instance.expects(:send_message)
+      .with(kind_of(String), parse_mode: "Markdown")
+      .returns(success: true)
+
+    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
+  end
+
+  test "formats order paid message correctly" do
     order = orders(:paid_order)
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
@@ -82,10 +129,30 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now(order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", order.id, :paid)
   end
 
-  test "formats failed message correctly" do
+  test "formats donation paid message correctly" do
+    donation = donations(:named_donation)
+
+    TelegramClient.any_instance.expects(:send_message) do |message, options|
+      assert_includes message, "🔔 *New Donation Paid*"
+      assert_includes message, "*Donation*"
+      assert_includes message, "##{donation.donation_id}"
+      assert_includes message, "*Donor*"
+      assert_includes message, donation.name
+      assert_includes message, "*Amount*"
+      assert_includes message, "*Message*"
+      assert_includes message, "*Payment*"
+      assert_includes message, "Midtrans"
+      assert options[:parse_mode] == "Markdown"
+      { success: true }
+    end
+
+    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
+  end
+
+  test "formats order failed message correctly" do
     order = orders(:expired_order)
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
@@ -100,10 +167,30 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now(order.id, :failed)
+    TelegramNotificationJob.perform_now("Order", order.id, :failed)
   end
 
-  test "handles failed payment reason correctly" do
+  test "formats donation failed message correctly" do
+    donation = donations(:named_donation)
+    donation.update(state: "expired")
+
+    TelegramClient.any_instance.expects(:send_message) do |message, options|
+      assert_includes message, "⚠️ *Donation Failed*"
+      assert_includes message, "*Donation*"
+      assert_includes message, "##{donation.donation_id}"
+      assert_includes message, "*Donor*"
+      assert_includes message, donation.name
+      assert_includes message, "*Amount*"
+      assert_includes message, "*Reason*"
+      assert_includes message, "Payment Expired"
+      assert options[:parse_mode] == "Markdown"
+      { success: true }
+    end
+
+    TelegramNotificationJob.perform_now("Donation", donation.id, :failed)
+  end
+
+  test "handles failed order payment reason correctly" do
     order = orders(:pending_order)
     order.update(state: "failed")
 
@@ -113,7 +200,20 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now(order.id, :failed)
+    TelegramNotificationJob.perform_now("Order", order.id, :failed)
+  end
+
+  test "handles failed donation payment reason correctly" do
+    donation = donations(:named_donation)
+    donation.update(state: "failed")
+
+    TelegramClient.any_instance.expects(:send_message) do |message, options|
+      assert_includes message, "*Reason*"
+      assert_includes message, "Payment Failed"
+      { success: true }
+    end
+
+    TelegramNotificationJob.perform_now("Donation", donation.id, :failed)
   end
 
   test "formats currency correctly" do
@@ -121,14 +221,14 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
     order.update(total_price: 150000)
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
-      assert_includes message, "Total: Rp 150.000"
+      assert_includes message, "Rp 150.000"
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now(order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", order.id, :paid)
   end
 
-  test "includes product names in message" do
+  test "includes order product names in message" do
     order = orders(:paid_order)
     products = order.line_items.map(&:orderable_name).join(", ")
 
@@ -137,7 +237,18 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now(order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", order.id, :paid)
+  end
+
+  test "includes donation message in notification" do
+    donation = donations(:named_donation)
+
+    TelegramClient.any_instance.expects(:send_message) do |message, options|
+      assert_includes message, donation.message
+      { success: true }
+    end
+
+    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
   end
 
   test "includes timestamp in message" do
@@ -149,10 +260,10 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now(order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", order.id, :paid)
   end
 
-  test "includes manual payment approval notice" do
+  test "includes manual payment approval notice for order" do
     order = orders(:paid_order)
     Current.settings["payment_provider"] = "manual"
 
@@ -162,10 +273,23 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now(order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", order.id, :paid)
   end
 
-  test "does not include manual payment notice for midtrans" do
+  test "includes manual payment approval notice for donation" do
+    donation = donations(:named_donation)
+    Current.settings["payment_provider"] = "manual"
+
+    TelegramClient.any_instance.expects(:send_message) do |message, options|
+      assert_includes message, "⚠️ *Payment waiting for approval*"
+      assert_includes message, "Please review and approve this manual payment"
+      { success: true }
+    end
+
+    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
+  end
+
+  test "does not include manual payment notice for order midtrans" do
     order = orders(:paid_order)
     Current.settings["payment_provider"] = "midtrans"
 
@@ -174,10 +298,22 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now(order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", order.id, :paid)
   end
 
-  test "sends evidence uploaded notification" do
+  test "does not include manual payment notice for donation midtrans" do
+    donation = donations(:named_donation)
+    Current.settings["payment_provider"] = "midtrans"
+
+    TelegramClient.any_instance.expects(:send_message) do |message, options|
+      refute_includes message, "Payment waiting for approval"
+      { success: true }
+    end
+
+    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
+  end
+
+  test "sends order evidence uploaded notification" do
     order = orders(:paid_order)
     order.payment_evidences.create(
       file: File.open(Rails.root.join("test/fixtures/files/test.pdf")),
@@ -188,10 +324,24 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), caption: kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now(order.id, :evidence_uploaded)
+    TelegramNotificationJob.perform_now("Order", order.id, :evidence_uploaded)
   end
 
-  test "evidence uploaded notification has correct format" do
+  test "sends donation evidence uploaded notification" do
+    donation = donations(:named_donation)
+    donation.payment_evidences.create(
+      file: File.open(Rails.root.join("test/fixtures/files/test.pdf")),
+      checked: true
+    )
+
+    TelegramClient.any_instance.expects(:send_photo)
+      .with(kind_of(String), caption: kind_of(String), parse_mode: "Markdown")
+      .returns(success: true)
+
+    TelegramNotificationJob.perform_now("Donation", donation.id, :evidence_uploaded)
+  end
+
+  test "order evidence uploaded notification has correct format" do
     order = orders(:paid_order)
     order.payment_evidences.create(
       file: File.open(Rails.root.join("test/fixtures/files/test.pdf")),
@@ -212,33 +362,72 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now(order.id, :evidence_uploaded)
+    TelegramNotificationJob.perform_now("Order", order.id, :evidence_uploaded)
   end
 
-  test "does not send evidence uploaded notification without evidence" do
+  test "donation evidence uploaded notification has correct format" do
+    donation = donations(:named_donation)
+    donation.payment_evidences.create(
+      file: File.open(Rails.root.join("test/fixtures/files/test.pdf")),
+      checked: true
+    )
+
+    TelegramClient.any_instance.expects(:send_photo) do |file_path, options|
+      assert_includes options[:caption], "📎 *Payment Evidence Uploaded*"
+      assert_includes options[:caption], "*Donation*"
+      assert_includes options[:caption], "##{donation.donation_id}"
+      assert_includes options[:caption], "*Donor*"
+      assert_includes options[:caption], donation.name
+      assert_includes options[:caption], "*Amount*"
+      assert_includes options[:caption], "*Message*"
+      assert_includes options[:caption], "*Date*"
+      assert_includes options[:caption], "⚠️ *Payment waiting for approval*"
+      assert options[:parse_mode] == "Markdown"
+      { success: true }
+    end
+
+    TelegramNotificationJob.perform_now("Donation", donation.id, :evidence_uploaded)
+  end
+
+  test "does not send order evidence uploaded notification without evidence" do
     order = orders(:paid_order)
 
     TelegramClient.any_instance.expects(:send_photo).never
     TelegramClient.any_instance.expects(:send_message).never
 
-    TelegramNotificationJob.perform_now(order.id, :evidence_uploaded)
+    TelegramNotificationJob.perform_now("Order", order.id, :evidence_uploaded)
   end
 
+  test "does not send donation evidence uploaded notification without evidence" do
+    donation = donations(:named_donation)
 
+    TelegramClient.any_instance.expects(:send_photo).never
+    TelegramClient.any_instance.expects(:send_message).never
+
+    TelegramNotificationJob.perform_now("Donation", donation.id, :evidence_uploaded)
+  end
 
   test "handles order not found error" do
     order_id = 999999
 
     TelegramClient.any_instance.expects(:send_message).never
 
-    TelegramNotificationJob.perform_now(order_id, :paid)
+    TelegramNotificationJob.perform_now("Order", order_id, :paid)
+  end
+
+  test "handles donation not found error" do
+    donation_id = 999999
+
+    TelegramClient.any_instance.expects(:send_message).never
+
+    TelegramNotificationJob.perform_now("Donation", donation_id, :paid)
   end
 
   test "handles telegram client errors gracefully" do
     TelegramClient.any_instance.expects(:send_message)
       .returns(success: false, error: "Telegram API Error")
 
-    TelegramNotificationJob.perform_now(@order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", @order.id, :paid)
   end
 
   test "handles network errors with retry" do
@@ -246,11 +435,11 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .raises(Errno::ECONNREFUSED.new("Connection refused"))
 
     assert_raises(Errno::ECONNREFUSED) do
-      TelegramNotificationJob.perform_now(@order.id, :paid)
+      TelegramNotificationJob.perform_now("Order", @order.id, :paid)
     end
   end
 
-  test "creates temp file for payment evidence" do
+  test "creates temp file for order payment evidence" do
     order = orders(:pending_order)
     order.update(state: "paid")
     Current.settings["payment_provider"] = "manual"
@@ -264,19 +453,19 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
 
     TelegramClient.any_instance.expects(:send_photo).returns(success: true)
 
-    TelegramNotificationJob.perform_now(order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", order.id, :paid)
   end
 
-  test "does not send notification when order not found" do
+  test "does not send notification when payable not found" do
     Rails.logger.expects(:error).with(kind_of(String))
 
-    TelegramNotificationJob.perform_now(999999, :paid)
+    TelegramNotificationJob.perform_now("Order", 999999, :paid)
   end
 
   test "logs errors for failed telegram requests" do
     TelegramClient.any_instance.expects(:send_message)
       .returns(success: false, error: "API Error")
 
-    TelegramNotificationJob.perform_now(@order.id, :paid)
+    TelegramNotificationJob.perform_now("Order", @order.id, :paid)
   end
 end

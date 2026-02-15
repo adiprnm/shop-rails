@@ -1,8 +1,8 @@
 class TelegramNotificationJob < ApplicationJob
   queue_as :default
 
-  def perform(order_id, notification_type)
-    @order = Order.find(order_id)
+  def perform(payable_type, payable_id, notification_type)
+    @payable = find_payable(payable_type, payable_id)
 
     case notification_type
     when :paid
@@ -13,7 +13,7 @@ class TelegramNotificationJob < ApplicationJob
       send_evidence_uploaded_notification
     end
   rescue ActiveRecord::RecordNotFound => e
-    Rails.logger.error "TelegramNotificationJob: Order not found - #{e.message}"
+    Rails.logger.error "TelegramNotificationJob: #{payable_type} not found - #{e.message}"
   rescue StandardError => e
     Rails.logger.error "TelegramNotificationJob: #{e.class} - #{e.message}"
     raise
@@ -21,7 +21,15 @@ class TelegramNotificationJob < ApplicationJob
 
   private
 
-  attr_reader :order
+  attr_reader :payable
+
+  def find_payable(type, id)
+    type.constantize.find(id)
+  end
+
+  def donation?
+    payable.is_a?(Donation)
+  end
 
   def send_paid_notification
     if manual_payment_with_evidence?
@@ -37,7 +45,7 @@ class TelegramNotificationJob < ApplicationJob
   end
 
   def send_evidence_uploaded_notification
-    evidence = order.latest_payment_evidence
+    evidence = payable.latest_payment_evidence
     return unless evidence&.file&.attached?
 
     Tempfile.create([ "payment_evidence", File.extname(evidence.file.filename.to_s) ]) do |tempfile|
@@ -51,7 +59,7 @@ class TelegramNotificationJob < ApplicationJob
   end
 
   def send_paid_notification_with_photo
-    evidence = order.latest_payment_evidence
+    evidence = payable.latest_payment_evidence
 
     Tempfile.create([ "payment_evidence", File.extname(evidence.file.filename.to_s) ]) do |tempfile|
       tempfile.binmode
@@ -69,48 +77,104 @@ class TelegramNotificationJob < ApplicationJob
   end
 
   def format_paid_message
-    products = order.line_items.map { |li| li.orderable_name }.join(", ")
     payment_method = Current.settings["payment_provider"].humanize
+
+    if donation?
+      format_donation_paid_message(payment_method)
+    else
+      format_order_paid_message(payment_method)
+    end
+  end
+
+  def format_order_paid_message(payment_method)
+    products = payable.line_items.map { |li| li.orderable_name }.join(", ")
 
     <<~MESSAGE
       🔔 *New Order Paid*
 
       *Order*
-      \##{order.order_id}
+
+      \##{payable.order_id}
 
       *Customer*
-      #{order.customer_name}
+
+      #{payable.customer_name}
 
       *Products*
+
       #{products}
 
       *Total*
-      #{format_currency(order.total_price)}
+
+      #{format_currency(payable.total_price)}
 
       *Payment*
+
       #{payment_method}
 
       *Date*
-      #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+
+      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+
+      #{manual_payment_notice}
+    MESSAGE
+  end
+
+  def format_donation_paid_message(payment_method)
+    <<~MESSAGE
+      🔔 *New Donation Paid*
+
+      *Donation*
+
+      \##{payable.donation_id}
+
+      *Donor*
+
+      #{payable.name}
+
+      *Amount*
+
+      #{format_currency(payable.amount)}
+
+      *Message*
+
+      #{payable.message}
+
+      *Payment*
+
+      #{payment_method}
+
+      *Date*
+
+      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
 
       #{manual_payment_notice}
     MESSAGE
   end
 
   def format_paid_message_as_caption
-    products = order.line_items.map { |li| li.orderable_name }.join(", ")
     payment_method = Current.settings["payment_provider"].humanize
+
+    if donation?
+      format_donation_paid_message_as_caption(payment_method)
+    else
+      format_order_paid_message_as_caption(payment_method)
+    end
+  end
+
+  def format_order_paid_message_as_caption(payment_method)
+    products = payable.line_items.map { |li| li.orderable_name }.join(", ")
 
     <<~MESSAGE
       🔔 *New Order Paid*
 
       *Order*
 
-      \##{order.order_id}
+      \##{payable.order_id}
 
       *Customer*
 
-      #{order.customer_name}
+      #{payable.customer_name}
 
       *Products*
 
@@ -118,7 +182,7 @@ class TelegramNotificationJob < ApplicationJob
 
       *Total*
 
-      #{format_currency(order.total_price)}
+      #{format_currency(payable.total_price)}
 
       *Payment*
 
@@ -126,25 +190,65 @@ class TelegramNotificationJob < ApplicationJob
 
       *Date*
 
-      #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+
+      #{manual_payment_notice}
+    MESSAGE
+  end
+
+  def format_donation_paid_message_as_caption(payment_method)
+    <<~MESSAGE
+      🔔 *New Donation Paid*
+
+      *Donation*
+
+      \##{payable.donation_id}
+
+      *Donor*
+
+      #{payable.name}
+
+      *Amount*
+
+      #{format_currency(payable.amount)}
+
+      *Message*
+
+      #{payable.message}
+
+      *Payment*
+
+      #{payment_method}
+
+      *Date*
+
+      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
 
       #{manual_payment_notice}
     MESSAGE
   end
 
   def format_evidence_uploaded_message_as_caption
-    products = order.line_items.map { |li| li.orderable_name }.join(", ")
+    if donation?
+      format_donation_evidence_uploaded_message_as_caption
+    else
+      format_order_evidence_uploaded_message_as_caption
+    end
+  end
+
+  def format_order_evidence_uploaded_message_as_caption
+    products = payable.line_items.map { |li| li.orderable_name }.join(", ")
 
     <<~MESSAGE
       📎 *Payment Evidence Uploaded*
 
       *Order*
 
-      \##{order.order_id}
+      \##{payable.order_id}
 
       *Customer*
 
-      #{order.customer_name}
+      #{payable.customer_name}
 
       *Products*
 
@@ -152,11 +256,41 @@ class TelegramNotificationJob < ApplicationJob
 
       *Total*
 
-      #{format_currency(order.total_price)}
+      #{format_currency(payable.total_price)}
 
       *Date*
 
-      #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+
+      ⚠️ *Payment waiting for approval*
+
+      Please review and approve this manual payment.
+    MESSAGE
+  end
+
+  def format_donation_evidence_uploaded_message_as_caption
+    <<~MESSAGE
+      📎 *Payment Evidence Uploaded*
+
+      *Donation*
+
+      \##{payable.donation_id}
+
+      *Donor*
+
+      #{payable.name}
+
+      *Amount*
+
+      #{format_currency(payable.amount)}
+
+      *Message*
+
+      #{payable.message}
+
+      *Date*
+
+      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
 
       ⚠️ *Payment waiting for approval*
 
@@ -165,25 +299,66 @@ class TelegramNotificationJob < ApplicationJob
   end
 
   def format_failed_message
-    reason = order.state == "expired" ? "Payment Expired" : "Payment Failed"
+    if donation?
+      format_donation_failed_message
+    else
+      format_order_failed_message
+    end
+  end
+
+  def format_order_failed_message
+    reason = payable.state == "expired" ? "Payment Expired" : "Payment Failed"
 
     <<~MESSAGE
       ⚠️ *Order Failed*
 
       *Order*
-      \##{order.order_id}
+
+      \##{payable.order_id}
 
       *Customer*
-      #{order.customer_name}
+
+      #{payable.customer_name}
 
       *Total*
-      #{format_currency(order.total_price)}
+
+      #{format_currency(payable.total_price)}
 
       *Reason*
+
       #{reason}
 
       *Date*
-      #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+
+      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+    MESSAGE
+  end
+
+  def format_donation_failed_message
+    reason = payable.state == "expired" ? "Payment Expired" : "Payment Failed"
+
+    <<~MESSAGE
+      ⚠️ *Donation Failed*
+
+      *Donation*
+
+      \##{payable.donation_id}
+
+      *Donor*
+
+      #{payable.name}
+
+      *Amount*
+
+      #{format_currency(payable.amount)}
+
+      *Reason*
+
+      #{reason}
+
+      *Date*
+
+      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
     MESSAGE
   end
 
@@ -192,7 +367,7 @@ class TelegramNotificationJob < ApplicationJob
   end
 
   def manual_payment_with_evidence?
-    Current.settings["payment_provider"] == "manual" && order.latest_payment_evidence&.file&.attached?
+    Current.settings["payment_provider"] == "manual" && payable.latest_payment_evidence&.file&.attached?
   end
 
   def manual_payment_notice
