@@ -73,10 +73,10 @@ class TelegramClientTest < ActiveSupport::TestCase
 
     @client.expects(:post_multipart)
       .with("/bottest_bot_token/sendPhoto", {
-        chat_id: "test_chat_id",
-        photo: file,
-        caption: "Test caption",
-        parse_mode: "Markdown"
+        "chat_id" => "test_chat_id",
+        "photo" => file,
+        "caption" => "Test caption",
+        "parse_mode" => "Markdown"
       })
       .returns(response)
 
@@ -114,12 +114,13 @@ class TelegramClientTest < ActiveSupport::TestCase
     }
 
     file = Tempfile.new([ "test", ".jpg" ])
+    File.expects(:open).with(file.path).returns(file)
     @client.expects(:post_multipart)
       .with("/bottest_bot_token/sendPhoto", {
-        chat_id: "test_chat_id",
-        photo: kind_of(File),
-        caption: nil,
-        parse_mode: "Markdown"
+        "chat_id" => "test_chat_id",
+        "photo" => file,
+        "caption" => nil,
+        "parse_mode" => "Markdown"
       })
       .returns(response)
 

@@ -16,11 +16,13 @@ class TelegramClient < ApplicationClient
   end
 
   def send_photo(photo_path, caption: nil, parse_mode: "Markdown")
+    file = File.open(photo_path)
+
     response = post_multipart("/bot#{bot_token}/sendPhoto", {
-      chat_id: chat_id,
-      photo: File.open(photo_path),
-      caption: caption,
-      parse_mode: parse_mode
+      "chat_id" => chat_id,
+      "photo" => file,
+      "caption" => caption,
+      "parse_mode" => parse_mode
     })
 
     return response if response[:success]
@@ -30,6 +32,8 @@ class TelegramClient < ApplicationClient
   rescue StandardError => e
     Rails.logger.error "Telegram send_photo error: #{e.class} - #{e.message}"
     { success: false, error: e.message }
+  ensure
+    file&.close
   end
 
   class Error < StandardError; end

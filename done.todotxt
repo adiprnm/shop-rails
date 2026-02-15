@@ -57,6 +57,13 @@ x 2026-02-11 2026-02-11 Write integration tests for Telegram notifications +tele
 # Test failed order notifications
 # Test telegram_enabled? helper method
 
+x 2026-02-15 2026-02-15 Fix symbol keys causing gsub error in TelegramClient send_photo +telegram @bug
+# Net::HTTP::Post.set_form with multipart doesn't handle symbol keys
+# Changed hash keys from symbols to strings in send_photo params
+# Added proper file cleanup with ensure block
+# All TelegramClient tests passing (12/12)
+# Rubocop: no offenses
+
 x 2026-02-15 2026-02-15 Fix TelegramClient multipart form enctype +telegram @bug
 # Fixed request.set_form(params, multipart: true) to request.set_form(params, 'multipart/form-data')
 # Added error handling to send_message method
