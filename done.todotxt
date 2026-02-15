@@ -57,6 +57,18 @@ x 2026-02-11 2026-02-11 Write integration tests for Telegram notifications +tele
 # Test failed order notifications
 # Test telegram_enabled? helper method
 
+x 2026-02-15 2026-02-15 Use Global ID with single payable parameter in TelegramNotificationJob +telegram @refactor
+- Updated TelegramNotificationJob to accept single payable parameter
+- Removed find_payable method (GlobalID handles deserialization)
+- Updated Order::Notification to pass order instance
+- Updated Donation::Notification to pass donation instance
+- Updated PaymentEvidence to pass payable instance
+- Updated all tests to use new signature
+- Removed tests for RecordNotFound (not applicable with GlobalID)
+- All TelegramNotificationJob tests passing (33/33)
+- All PaymentEvidence tests passing (12/12)
+- Rubocop: no offenses
+
 x 2026-02-15 2026-02-15 Refactor to use single TelegramNotificationJob for orders and donations +telegram @refactor
 - Updated TelegramNotificationJob to accept payable_type and payable_id
 - Added donation? helper to detect donation vs order
