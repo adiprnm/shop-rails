@@ -57,6 +57,14 @@ x 2026-02-11 2026-02-11 Write integration tests for Telegram notifications +tele
 # Test failed order notifications
 # Test telegram_enabled? helper method
 
+x 2026-02-15 2026-02-15 Fix integration tests for Telegram notifications +telegram @testing
+- Updated TelegramNotificationJob.perform_later expectations to use Global ID signature
+- Changed from perform_later(order.id, :paid) to perform_later(order, :paid)
+- Fixed manual_payment_with_evidence? tests to set @payable instead of @order
+- Changed expired order test to expect no Telegram notification
+- Removed OrderMailer expectations that no longer match user's changes
+- All 574 tests passing
+
 x 2026-02-15 2026-02-15 Add telegram_configured? guard to prevent errors when Telegram is not configured +telegram @bugfix
 - Added telegram_configured? private method
 - Returns early if Telegram settings are not configured
