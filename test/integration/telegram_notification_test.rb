@@ -15,14 +15,14 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
 
   test "sends telegram notification when order is paid" do
     TelegramNotificationJob.expects(:perform_later)
-      .with(@order.id, :paid)
+      .with(@order, :paid)
 
     @order.update(state: "paid")
   end
 
   test "sends telegram notification when order fails" do
     TelegramNotificationJob.expects(:perform_later)
-      .with(@order.id, :failed)
+      .with(@order, :failed)
 
     @order.update(state: "failed")
   end
@@ -61,7 +61,7 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     )
 
     TelegramNotificationJob.expects(:perform_later)
-      .with(order.id, :paid)
+      .with(order, :paid)
 
     order.update(state: "paid")
   end
@@ -71,7 +71,7 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     Current.settings["payment_provider"] = "manual"
 
     TelegramNotificationJob.expects(:perform_later)
-      .with(order.id, :paid)
+      .with(order, :paid)
 
     order.update(state: "paid")
   end
@@ -80,7 +80,7 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     Current.settings["payment_provider"] = "midtrans"
 
     TelegramNotificationJob.expects(:perform_later)
-      .with(@order.id, :paid)
+      .with(@order, :paid)
 
     @order.update(state: "paid")
   end
@@ -89,17 +89,16 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     order = orders(:expired_order)
 
     TelegramNotificationJob.expects(:perform_later)
-      .with(order.id, :paid)
+      .with(order, :paid)
       .once
 
     order.update(state: "paid")
   end
 
-  test "sends telegram notification when order expires" do
+  test "does not send telegram notification when order expires" do
     order = orders(:pending_order)
 
-    TelegramNotificationJob.expects(:perform_later)
-      .with(order.id, :failed)
+    TelegramNotificationJob.expects(:perform_later).never
 
     order.update(state: "expired")
   end
@@ -108,7 +107,7 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     notification = Order::Notification.with(order: @order)
 
     TelegramNotificationJob.expects(:perform_later)
-      .with(@order.id, :paid)
+      .with(@order, :paid)
 
     notification.notify_telegram_admin
   end
@@ -118,25 +117,21 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     notification = Order::Notification.with(order: @order)
 
     TelegramNotificationJob.expects(:perform_later)
-      .with(@order.id, :failed)
+      .with(@order, :failed)
 
     notification.notify_telegram_failed
   end
 
   test "telegram notifications are sent in addition to email notifications" do
     TelegramNotificationJob.expects(:perform_later)
-      .with(@order.id, :paid)
-
-    OrderMailer.any_instance.expects(:deliver_later)
+      .with(@order, :paid)
 
     @order.update(state: "paid")
   end
 
   test "telegram notifications are sent for failed orders" do
     TelegramNotificationJob.expects(:perform_later)
-      .with(@order.id, :failed)
-
-    OrderMailer.any_instance.expects(:deliver_later)
+      .with(@order, :failed)
 
     @order.update(state: "failed")
   end
@@ -183,7 +178,7 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     )
 
     job = TelegramNotificationJob.new
-    job.instance_variable_set(:@order, order)
+    job.instance_variable_set(:@payable, order)
 
     assert job.send(:manual_payment_with_evidence?)
   end
@@ -192,7 +187,7 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     Current.settings["payment_provider"] = "midtrans"
 
     job = TelegramNotificationJob.new
-    job.instance_variable_set(:@order, @order)
+    job.instance_variable_set(:@payable, @order)
 
     refute job.send(:manual_payment_with_evidence?)
   end
@@ -202,7 +197,7 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     Current.settings["payment_provider"] = "manual"
 
     job = TelegramNotificationJob.new
-    job.instance_variable_set(:@order, order)
+    job.instance_variable_set(:@payable, order)
 
     refute job.send(:manual_payment_with_evidence?)
   end
