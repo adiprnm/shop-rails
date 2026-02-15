@@ -4,6 +4,8 @@ class TelegramNotificationJob < ApplicationJob
   def perform(payable, notification_type)
     @payable = payable
 
+    return unless telegram_configured?
+
     case notification_type
     when :paid
       send_paid_notification
@@ -22,6 +24,12 @@ class TelegramNotificationJob < ApplicationJob
   private
 
   attr_reader :payable
+
+  def telegram_configured?
+    Current.settings["telegram_enabled"] == "true" &&
+      Current.settings["telegram_bot_token"].present? &&
+      Current.settings["telegram_chat_id"].present?
+  end
 
   def donation?
     payable.is_a?(Donation)
