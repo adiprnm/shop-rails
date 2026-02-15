@@ -57,6 +57,20 @@ x 2026-02-11 2026-02-11 Write integration tests for Telegram notifications +tele
 # Test failed order notifications
 # Test telegram_enabled? helper method
 
+x 2026-02-15 2026-02-15 Add Telegram notifications for donations +telegram @feature
+- Created DonationNotificationJob similar to TelegramNotificationJob
+- Added notify_telegram_admin and notify_telegram_failed to Donation::Notification
+- Updated Donation model to send Telegram notifications on state changes
+- Updated PaymentEvidence to send DonationNotificationJob for donations
+- All donation notification features match order notifications:
+  - Paid notifications with photo for manual payments
+  - Failed notifications
+  - Evidence uploaded notifications
+  - Manual payment approval notice
+- Added tests for DonationNotificationJob (19/19 passing)
+- Updated PaymentEvidence tests for donation notifications
+- Rubocop: no offenses
+
 x 2026-02-15 2026-02-15 Send Telegram notification when payment evidence is uploaded +telegram @feature
 - Added notify_telegram_admin callback to PaymentEvidence model
 - Added :evidence_uploaded case to TelegramNotificationJob
@@ -64,7 +78,6 @@ x 2026-02-15 2026-02-15 Send Telegram notification when payment evidence is uplo
 - Added format_evidence_uploaded_message_as_caption method
 - Send photo with payment evidence as attachment
 - Include payment waiting for approval notice
-- Only send notification for orders, not donations
 - Added tests for evidence uploaded notification
 - Added tests for PaymentEvidence Telegram integration
 - All tests passing (TelegramNotificationJob: 22/22, PaymentEvidence: 12/12)
