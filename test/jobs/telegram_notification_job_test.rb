@@ -177,6 +177,55 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
     TelegramNotificationJob.perform_now(order.id, :paid)
   end
 
+  test "sends evidence uploaded notification" do
+    order = orders(:paid_order)
+    order.payment_evidences.create(
+      file: File.open(Rails.root.join("test/fixtures/files/test.pdf")),
+      checked: true
+    )
+
+    TelegramClient.any_instance.expects(:send_photo)
+      .with(kind_of(String), caption: kind_of(String), parse_mode: "Markdown")
+      .returns(success: true)
+
+    TelegramNotificationJob.perform_now(order.id, :evidence_uploaded)
+  end
+
+  test "evidence uploaded notification has correct format" do
+    order = orders(:paid_order)
+    order.payment_evidences.create(
+      file: File.open(Rails.root.join("test/fixtures/files/test.pdf")),
+      checked: true
+    )
+
+    TelegramClient.any_instance.expects(:send_photo) do |file_path, options|
+      assert_includes options[:caption], "📎 *Payment Evidence Uploaded*"
+      assert_includes options[:caption], "*Order*"
+      assert_includes options[:caption], "##{order.order_id}"
+      assert_includes options[:caption], "*Customer*"
+      assert_includes options[:caption], order.customer_name
+      assert_includes options[:caption], "*Products*"
+      assert_includes options[:caption], "*Total*"
+      assert_includes options[:caption], "*Date*"
+      assert_includes options[:caption], "⚠️ *Payment waiting for approval*"
+      assert options[:parse_mode] == "Markdown"
+      { success: true }
+    end
+
+    TelegramNotificationJob.perform_now(order.id, :evidence_uploaded)
+  end
+
+  test "does not send evidence uploaded notification without evidence" do
+    order = orders(:paid_order)
+
+    TelegramClient.any_instance.expects(:send_photo).never
+    TelegramClient.any_instance.expects(:send_message).never
+
+    TelegramNotificationJob.perform_now(order.id, :evidence_uploaded)
+  end
+
+
+
   test "handles order not found error" do
     order_id = 999999
 

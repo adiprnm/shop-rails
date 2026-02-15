@@ -9,6 +9,8 @@ class TelegramNotificationJob < ApplicationJob
       send_paid_notification
     when :failed
       send_failed_notification
+    when :evidence_uploaded
+      send_evidence_uploaded_notification
     end
   rescue ActiveRecord::RecordNotFound => e
     Rails.logger.error "TelegramNotificationJob: Order not found - #{e.message}"
@@ -32,6 +34,20 @@ class TelegramNotificationJob < ApplicationJob
   def send_failed_notification
     message = format_failed_message
     TelegramClient.new.send_message(message, parse_mode: "Markdown")
+  end
+
+  def send_evidence_uploaded_notification
+    evidence = order.latest_payment_evidence
+    return unless evidence&.file&.attached?
+
+    Tempfile.create([ "payment_evidence", File.extname(evidence.file.filename.to_s) ]) do |tempfile|
+      tempfile.binmode
+      tempfile.write(evidence.file.download)
+      tempfile.rewind
+
+      caption = format_evidence_uploaded_message_as_caption
+      TelegramClient.new.send_photo(tempfile.path, caption: caption, parse_mode: "Markdown")
+    end
   end
 
   def send_paid_notification_with_photo
@@ -60,28 +76,23 @@ class TelegramNotificationJob < ApplicationJob
       🔔 *New Order Paid*
 
       *Order*
-
       \##{order.order_id}
 
       *Customer*
-
       #{order.customer_name}
 
       *Products*
-
       #{products}
 
       *Total*
-
       #{format_currency(order.total_price)}
 
       *Payment*
-
       #{payment_method}
 
       *Date*
-
       #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+
       #{manual_payment_notice}
     MESSAGE
   end
@@ -116,7 +127,40 @@ class TelegramNotificationJob < ApplicationJob
       *Date*
 
       #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+
       #{manual_payment_notice}
+    MESSAGE
+  end
+
+  def format_evidence_uploaded_message_as_caption
+    products = order.line_items.map { |li| li.orderable_name }.join(", ")
+
+    <<~MESSAGE
+      📎 *Payment Evidence Uploaded*
+
+      *Order*
+
+      \##{order.order_id}
+
+      *Customer*
+
+      #{order.customer_name}
+
+      *Products*
+
+      #{products}
+
+      *Total*
+
+      #{format_currency(order.total_price)}
+
+      *Date*
+
+      #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+
+      ⚠️ *Payment waiting for approval*
+
+      Please review and approve this manual payment.
     MESSAGE
   end
 
@@ -127,23 +171,18 @@ class TelegramNotificationJob < ApplicationJob
       ⚠️ *Order Failed*
 
       *Order*
-
       \##{order.order_id}
 
       *Customer*
-
       #{order.customer_name}
 
       *Total*
-
       #{format_currency(order.total_price)}
 
       *Reason*
-
       #{reason}
 
       *Date*
-
       #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
     MESSAGE
   end

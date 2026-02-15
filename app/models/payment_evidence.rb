@@ -4,11 +4,18 @@ class PaymentEvidence < ApplicationRecord
   has_one_attached :file
 
   after_create :notify_admin
+  after_create :notify_telegram_admin
   after_create :update_payable, unless: -> { payable.pending? }
 
   def notify_admin
     klass = payable_type.constantize
     klass::Notification.new(payable).notify_admin
+  end
+
+  def notify_telegram_admin
+    return unless payable_type == "Order"
+
+    TelegramNotificationJob.perform_later(payable.id, :evidence_uploaded)
   end
 
   def update_payable
