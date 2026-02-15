@@ -16,7 +16,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
 
   test "job is queued in default queue" do
     assert_enqueued_with(job: TelegramNotificationJob) do
-      TelegramNotificationJob.perform_later("Order", @order.id, :paid)
+      TelegramNotificationJob.perform_later(@order, :paid)
     end
   end
 
@@ -25,7 +25,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now("Order", @order.id, :paid)
+    TelegramNotificationJob.perform_now(@order, :paid)
   end
 
   test "sends paid notification for donation" do
@@ -33,7 +33,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now("Donation", @donation.id, :paid)
+    TelegramNotificationJob.perform_now(@donation, :paid)
   end
 
   test "sends failed notification for order" do
@@ -43,7 +43,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now("Order", @order.id, :failed)
+    TelegramNotificationJob.perform_now(@order, :failed)
   end
 
   test "sends failed notification for donation" do
@@ -53,7 +53,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now("Donation", @donation.id, :failed)
+    TelegramNotificationJob.perform_now(@donation, :failed)
   end
 
   test "sends paid notification with photo for manual order payment with evidence" do
@@ -70,7 +70,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), caption: kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now("Order", order.id, :paid)
+    TelegramNotificationJob.perform_now(order, :paid)
   end
 
   test "sends paid notification with photo for manual donation payment with evidence" do
@@ -87,7 +87,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), caption: kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
+    TelegramNotificationJob.perform_now(donation, :paid)
   end
 
   test "sends text message for manual order payment without evidence" do
@@ -98,7 +98,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now("Order", order.id, :paid)
+    TelegramNotificationJob.perform_now(order, :paid)
   end
 
   test "sends text message for manual donation payment without evidence" do
@@ -109,7 +109,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
+    TelegramNotificationJob.perform_now(donation, :paid)
   end
 
   test "formats order paid message correctly" do
@@ -129,7 +129,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Order", order.id, :paid)
+    TelegramNotificationJob.perform_now(order, :paid)
   end
 
   test "formats donation paid message correctly" do
@@ -149,7 +149,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
+    TelegramNotificationJob.perform_now(donation, :paid)
   end
 
   test "formats order failed message correctly" do
@@ -167,7 +167,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Order", order.id, :failed)
+    TelegramNotificationJob.perform_now(order, :failed)
   end
 
   test "formats donation failed message correctly" do
@@ -187,7 +187,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Donation", donation.id, :failed)
+    TelegramNotificationJob.perform_now(donation, :failed)
   end
 
   test "handles failed order payment reason correctly" do
@@ -200,7 +200,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Order", order.id, :failed)
+    TelegramNotificationJob.perform_now(order, :failed)
   end
 
   test "handles failed donation payment reason correctly" do
@@ -213,7 +213,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Donation", donation.id, :failed)
+    TelegramNotificationJob.perform_now(donation, :failed)
   end
 
   test "formats currency correctly" do
@@ -225,7 +225,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Order", order.id, :paid)
+    TelegramNotificationJob.perform_now(order, :paid)
   end
 
   test "includes order product names in message" do
@@ -237,7 +237,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Order", order.id, :paid)
+    TelegramNotificationJob.perform_now(order, :paid)
   end
 
   test "includes donation message in notification" do
@@ -248,7 +248,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
+    TelegramNotificationJob.perform_now(donation, :paid)
   end
 
   test "includes timestamp in message" do
@@ -260,7 +260,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Order", order.id, :paid)
+    TelegramNotificationJob.perform_now(order, :paid)
   end
 
   test "includes manual payment approval notice for order" do
@@ -273,7 +273,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Order", order.id, :paid)
+    TelegramNotificationJob.perform_now(order, :paid)
   end
 
   test "includes manual payment approval notice for donation" do
@@ -286,7 +286,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
+    TelegramNotificationJob.perform_now(donation, :paid)
   end
 
   test "does not include manual payment notice for order midtrans" do
@@ -298,7 +298,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Order", order.id, :paid)
+    TelegramNotificationJob.perform_now(order, :paid)
   end
 
   test "does not include manual payment notice for donation midtrans" do
@@ -310,7 +310,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Donation", donation.id, :paid)
+    TelegramNotificationJob.perform_now(donation, :paid)
   end
 
   test "sends order evidence uploaded notification" do
@@ -324,7 +324,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), caption: kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now("Order", order.id, :evidence_uploaded)
+    TelegramNotificationJob.perform_now(order, :evidence_uploaded)
   end
 
   test "sends donation evidence uploaded notification" do
@@ -338,7 +338,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .with(kind_of(String), caption: kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
-    TelegramNotificationJob.perform_now("Donation", donation.id, :evidence_uploaded)
+    TelegramNotificationJob.perform_now(donation, :evidence_uploaded)
   end
 
   test "order evidence uploaded notification has correct format" do
@@ -362,7 +362,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Order", order.id, :evidence_uploaded)
+    TelegramNotificationJob.perform_now(order, :evidence_uploaded)
   end
 
   test "donation evidence uploaded notification has correct format" do
@@ -386,7 +386,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       { success: true }
     end
 
-    TelegramNotificationJob.perform_now("Donation", donation.id, :evidence_uploaded)
+    TelegramNotificationJob.perform_now(donation, :evidence_uploaded)
   end
 
   test "does not send order evidence uploaded notification without evidence" do
@@ -395,7 +395,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
     TelegramClient.any_instance.expects(:send_photo).never
     TelegramClient.any_instance.expects(:send_message).never
 
-    TelegramNotificationJob.perform_now("Order", order.id, :evidence_uploaded)
+    TelegramNotificationJob.perform_now(order, :evidence_uploaded)
   end
 
   test "does not send donation evidence uploaded notification without evidence" do
@@ -404,30 +404,14 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
     TelegramClient.any_instance.expects(:send_photo).never
     TelegramClient.any_instance.expects(:send_message).never
 
-    TelegramNotificationJob.perform_now("Donation", donation.id, :evidence_uploaded)
-  end
-
-  test "handles order not found error" do
-    order_id = 999999
-
-    TelegramClient.any_instance.expects(:send_message).never
-
-    TelegramNotificationJob.perform_now("Order", order_id, :paid)
-  end
-
-  test "handles donation not found error" do
-    donation_id = 999999
-
-    TelegramClient.any_instance.expects(:send_message).never
-
-    TelegramNotificationJob.perform_now("Donation", donation_id, :paid)
+    TelegramNotificationJob.perform_now(donation, :evidence_uploaded)
   end
 
   test "handles telegram client errors gracefully" do
     TelegramClient.any_instance.expects(:send_message)
       .returns(success: false, error: "Telegram API Error")
 
-    TelegramNotificationJob.perform_now("Order", @order.id, :paid)
+    TelegramNotificationJob.perform_now(@order, :paid)
   end
 
   test "handles network errors with retry" do
@@ -435,7 +419,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       .raises(Errno::ECONNREFUSED.new("Connection refused"))
 
     assert_raises(Errno::ECONNREFUSED) do
-      TelegramNotificationJob.perform_now("Order", @order.id, :paid)
+      TelegramNotificationJob.perform_now(@order, :paid)
     end
   end
 
@@ -453,19 +437,13 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
 
     TelegramClient.any_instance.expects(:send_photo).returns(success: true)
 
-    TelegramNotificationJob.perform_now("Order", order.id, :paid)
-  end
-
-  test "does not send notification when payable not found" do
-    Rails.logger.expects(:error).with(kind_of(String))
-
-    TelegramNotificationJob.perform_now("Order", 999999, :paid)
+    TelegramNotificationJob.perform_now(order, :paid)
   end
 
   test "logs errors for failed telegram requests" do
     TelegramClient.any_instance.expects(:send_message)
       .returns(success: false, error: "API Error")
 
-    TelegramNotificationJob.perform_now("Order", @order.id, :paid)
+    TelegramNotificationJob.perform_now(@order, :paid)
   end
 end

@@ -48,13 +48,13 @@ class Order::Notification
   def notify_telegram_admin
     return unless telegram_enabled?
 
-    TelegramNotificationJob.perform_later("Order", order.id, :paid)
+    TelegramNotificationJob.perform_later(order, :paid)
   end
 
   def notify_telegram_failed
     return unless telegram_enabled?
 
-    TelegramNotificationJob.perform_later("Order", order.id, :failed)
+    TelegramNotificationJob.perform_later(order, :failed)
   end
 
   private

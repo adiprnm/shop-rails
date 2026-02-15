@@ -1,8 +1,8 @@
 class TelegramNotificationJob < ApplicationJob
   queue_as :default
 
-  def perform(payable_type, payable_id, notification_type)
-    @payable = find_payable(payable_type, payable_id)
+  def perform(payable, notification_type)
+    @payable = payable
 
     case notification_type
     when :paid
@@ -13,7 +13,7 @@ class TelegramNotificationJob < ApplicationJob
       send_evidence_uploaded_notification
     end
   rescue ActiveRecord::RecordNotFound => e
-    Rails.logger.error "TelegramNotificationJob: #{payable_type} not found - #{e.message}"
+    Rails.logger.error "TelegramNotificationJob: Payable not found - #{e.message}"
   rescue StandardError => e
     Rails.logger.error "TelegramNotificationJob: #{e.class} - #{e.message}"
     raise
@@ -22,10 +22,6 @@ class TelegramNotificationJob < ApplicationJob
   private
 
   attr_reader :payable
-
-  def find_payable(type, id)
-    type.constantize.find(id)
-  end
 
   def donation?
     payable.is_a?(Donation)

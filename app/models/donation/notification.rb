@@ -29,13 +29,13 @@ class Donation::Notification
   def notify_telegram_admin
     return unless telegram_enabled?
 
-    TelegramNotificationJob.perform_later("Donation", donation.id, :paid)
+    TelegramNotificationJob.perform_later(donation, :paid)
   end
 
   def notify_telegram_failed
     return unless telegram_enabled?
 
-    TelegramNotificationJob.perform_later("Donation", donation.id, :failed)
+    TelegramNotificationJob.perform_later(donation, :failed)
   end
 
   private
