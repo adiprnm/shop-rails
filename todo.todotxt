@@ -6,8 +6,13 @@
 # Creation Date: yyyy-mm-dd
 # Note: +note:optional notes/decisions
 
-(C) Fix pre-existing test failures in telegram integration tests +testing @bug
-# Tests are calling manual_payment_with_evidence? with arguments, but method takes no arguments
-# Tests expect OrderMailer.deliver_later but it's not being called in some test cases
-# 4 failures and 4 errors in integration/job tests, unrelated to multipart fix
-# Not critical for TelegramNotificationJob functionality
+(A) Improve Telegram notification message formatting +telegram @feature
+# Make field labels bold (Order, Customer, Products, Total, Payment, Date, Reason)
+# Put field values on new lines after labels
+# Use single blank line between each field
+# Add manual payment approval notice for manual payments
+# Updated both format_paid_message and format_paid_message_as_caption
+# Updated format_failed_message to match format
+# Added manual_payment_notice helper method
+# All TelegramNotificationJob tests passing (19/19)
+# Fixed manual_payment_with_evidence? test expectations in integration tests

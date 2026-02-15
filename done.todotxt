@@ -57,10 +57,22 @@ x 2026-02-11 2026-02-11 Write integration tests for Telegram notifications +tele
 # Test failed order notifications
 # Test telegram_enabled? helper method
 
+x 2026-02-15 2026-02-15 Improve Telegram notification message formatting +telegram @feature
+# Make field labels bold (Order, Customer, Products, Total, Payment, Date, Reason)
+# Put field values on new lines after labels
+# Use single blank line between each field
+# Add manual payment approval notice for manual payments
+# Updated both format_paid_message and format_paid_message_as_caption
+# Updated format_failed_message to match format
+# Added manual_payment_notice helper method
+# All TelegramNotificationJob tests passing (19/19)
+# Fixed manual_payment_with_evidence? test expectations in integration tests
+# Rubocop: no offenses
+
 x 2026-02-15 2026-02-15 Fix symbol keys causing gsub error in TelegramClient send_photo +telegram @bug
 # Net::HTTP::Post.set_form with multipart doesn't handle symbol keys
 # Changed hash keys from symbols to strings in send_photo params
-# Added proper file cleanup with ensure block
+# Added proper file cleanup with ensure block to close opened files
 # All TelegramClient tests passing (12/12)
 # Rubocop: no offenses
 
@@ -72,3 +84,4 @@ x 2026-02-15 2026-02-15 Fix TelegramClient multipart form enctype +telegram @bug
 x 2026-02-11 2026-02-11 Run quality gates +telegram +validation @task
 # Ruby syntax validation: PASS (all files checked)
 # Full quality gates (test, rubocop, brakeman) require Ruby 3.2+ environment
+

@@ -37,7 +37,7 @@ class TelegramNotificationJob < ApplicationJob
   def send_paid_notification_with_photo
     evidence = order.latest_payment_evidence
 
-    Tempfile.create(["payment_evidence", File.extname(evidence.file.filename.to_s)]) do |tempfile|
+    Tempfile.create([ "payment_evidence", File.extname(evidence.file.filename.to_s) ]) do |tempfile|
       tempfile.binmode
       tempfile.write(evidence.file.download)
       tempfile.rewind
@@ -59,12 +59,30 @@ class TelegramNotificationJob < ApplicationJob
     <<~MESSAGE
       🔔 *New Order Paid*
 
-      Order: \##{order.order_id}
-      Customer: #{order.customer_name}
-      Products: #{products}
-      Total: #{format_currency(order.total_price)}
-      Payment: #{payment_method}
-      Date: #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      *Order*
+
+      \##{order.order_id}
+
+      *Customer*
+
+      #{order.customer_name}
+
+      *Products*
+
+      #{products}
+
+      *Total*
+
+      #{format_currency(order.total_price)}
+
+      *Payment*
+
+      #{payment_method}
+
+      *Date*
+
+      #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{manual_payment_notice}
     MESSAGE
   end
 
@@ -75,12 +93,30 @@ class TelegramNotificationJob < ApplicationJob
     <<~MESSAGE
       🔔 *New Order Paid*
 
-      Order: \##{order.order_id}
-      Customer: #{order.customer_name}
-      Products: #{products}
-      Total: #{format_currency(order.total_price)}
-      Payment: #{payment_method}
-      Date: #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      *Order*
+
+      \##{order.order_id}
+
+      *Customer*
+
+      #{order.customer_name}
+
+      *Products*
+
+      #{products}
+
+      *Total*
+
+      #{format_currency(order.total_price)}
+
+      *Payment*
+
+      #{payment_method}
+
+      *Date*
+
+      #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{manual_payment_notice}
     MESSAGE
   end
 
@@ -90,11 +126,25 @@ class TelegramNotificationJob < ApplicationJob
     <<~MESSAGE
       ⚠️ *Order Failed*
 
-      Order: \##{order.order_id}
-      Customer: #{order.customer_name}
-      Total: #{format_currency(order.total_price)}
-      Reason: #{reason}
-      Date: #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      *Order*
+
+      \##{order.order_id}
+
+      *Customer*
+
+      #{order.customer_name}
+
+      *Total*
+
+      #{format_currency(order.total_price)}
+
+      *Reason*
+
+      #{reason}
+
+      *Date*
+
+      #{order.state_updated_at.strftime("%Y-%m-%d %H:%M")}
     MESSAGE
   end
 
@@ -104,5 +154,16 @@ class TelegramNotificationJob < ApplicationJob
 
   def manual_payment_with_evidence?
     Current.settings["payment_provider"] == "manual" && order.latest_payment_evidence&.file&.attached?
+  end
+
+  def manual_payment_notice
+    return "" unless Current.settings["payment_provider"] == "manual"
+
+    <<~NOTICE
+
+      ⚠️ *Payment waiting for approval*
+
+      Please review and approve this manual payment.
+    NOTICE
   end
 end

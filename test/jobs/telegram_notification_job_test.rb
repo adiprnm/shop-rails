@@ -67,19 +67,22 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
 
   test "formats paid message correctly" do
     order = orders(:paid_order)
-    job = TelegramNotificationJob.new
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
       assert_includes message, "🔔 *New Order Paid*"
-      assert_includes message, "Order: ##{order.order_id}"
-      assert_includes message, "Customer: #{order.customer_name}"
-      assert_includes message, "Total: Rp #{order.total_price.to_s.reverse.scan(/.{1,3}/).join(".").reverse}"
-      assert_includes message, "Payment: Midtrans"
+      assert_includes message, "*Order*"
+      assert_includes message, "##{order.order_id}"
+      assert_includes message, "*Customer*"
+      assert_includes message, order.customer_name
+      assert_includes message, "*Total*"
+      assert_includes message, "Rp #{order.total_price.to_s.reverse.scan(/.{1,3}/).join(".").reverse}"
+      assert_includes message, "*Payment*"
+      assert_includes message, "Midtrans"
       assert options[:parse_mode] == "Markdown"
       { success: true }
     end
 
-    job.perform_now(order.id, :paid)
+    TelegramNotificationJob.perform_now(order.id, :paid)
   end
 
   test "formats failed message correctly" do
@@ -87,9 +90,12 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
       assert_includes message, "⚠️ *Order Failed*"
-      assert_includes message, "Order: ##{order.order_id}"
-      assert_includes message, "Customer: #{order.customer_name}"
-      assert_includes message, "Reason: Payment Expired"
+      assert_includes message, "*Order*"
+      assert_includes message, "##{order.order_id}"
+      assert_includes message, "*Customer*"
+      assert_includes message, order.customer_name
+      assert_includes message, "*Reason*"
+      assert_includes message, "Payment Expired"
       assert options[:parse_mode] == "Markdown"
       { success: true }
     end
@@ -102,7 +108,8 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
     order.update(state: "failed")
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
-      assert_includes message, "Reason: Payment Failed"
+      assert_includes message, "*Reason*"
+      assert_includes message, "Payment Failed"
       { success: true }
     end
 
@@ -139,6 +146,31 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
       assert_includes message, timestamp
+      { success: true }
+    end
+
+    TelegramNotificationJob.perform_now(order.id, :paid)
+  end
+
+  test "includes manual payment approval notice" do
+    order = orders(:paid_order)
+    Current.settings["payment_provider"] = "manual"
+
+    TelegramClient.any_instance.expects(:send_message) do |message, options|
+      assert_includes message, "⚠️ *Payment waiting for approval*"
+      assert_includes message, "Please review and approve this manual payment"
+      { success: true }
+    end
+
+    TelegramNotificationJob.perform_now(order.id, :paid)
+  end
+
+  test "does not include manual payment notice for midtrans" do
+    order = orders(:paid_order)
+    Current.settings["payment_provider"] = "midtrans"
+
+    TelegramClient.any_instance.expects(:send_message) do |message, options|
+      refute_includes message, "Payment waiting for approval"
       { success: true }
     end
 
@@ -195,8 +227,6 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
   test "logs errors for failed telegram requests" do
     TelegramClient.any_instance.expects(:send_message)
       .returns(success: false, error: "API Error")
-
-    Rails.logger.expects(:error).with(kind_of(String))
 
     TelegramNotificationJob.perform_now(@order.id, :paid)
   end

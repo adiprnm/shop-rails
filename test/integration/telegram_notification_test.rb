@@ -183,18 +183,18 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     )
 
     job = TelegramNotificationJob.new
-    order.instance_variable_set(:@order_id, order.id)
+    job.instance_variable_set(:@order, order)
 
-    assert job.send(:manual_payment_with_evidence?, order)
+    assert job.send(:manual_payment_with_evidence?)
   end
 
   test "manual_payment_with_evidence? returns false for midtrans payment" do
     Current.settings["payment_provider"] = "midtrans"
 
     job = TelegramNotificationJob.new
-    @order.instance_variable_set(:@order_id, @order.id)
+    job.instance_variable_set(:@order, @order)
 
-    refute job.send(:manual_payment_with_evidence?, @order)
+    refute job.send(:manual_payment_with_evidence?)
   end
 
   test "manual_payment_with_evidence? returns false for manual payment without evidence" do
@@ -202,8 +202,8 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     Current.settings["payment_provider"] = "manual"
 
     job = TelegramNotificationJob.new
-    order.instance_variable_set(:@order_id, order.id)
+    job.instance_variable_set(:@order, order)
 
-    refute job.send(:manual_payment_with_evidence?, order)
+    refute job.send(:manual_payment_with_evidence?)
   end
 end
