@@ -46,17 +46,19 @@ class Donation < ApplicationRecord
       Notification.with(donation: self).notify_created
     end
 
-    def send_donate_successful_notification
-      notification = Notification.with(donation: self)
+  def send_donate_successful_notification
+    notification = Notification.with(donation: self)
 
-      if Current.settings["payment_provider"] == "midtrans"
-        notification.notify_admin
-      end
-
-      if email_address?
-        notification.notify_donor
-      end
+    if Current.settings["payment_provider"] == "midtrans"
+      notification.notify_admin
     end
+
+    if email_address?
+      notification.notify_donor
+    end
+
+    notification.notify_telegram_admin
+  end
 
     def send_donate_failed_notification
       Notification.with(donation: self).notify_failed if email_address?

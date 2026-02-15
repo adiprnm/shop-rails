@@ -90,8 +90,9 @@ class PaymentEvidenceTest < ActiveSupport::TestCase
     @paid_order.payment_evidences.create(file: file)
   end
 
-  test "should not send Telegram notification for donations" do
-    TelegramNotificationJob.expects(:perform_later).never
+  test "should send Telegram notification when payment evidence is uploaded for donation" do
+    DonationNotificationJob.expects(:perform_later)
+      .with(@paid_donation.id, :evidence_uploaded)
 
     file = File.open(Rails.root.join("test/fixtures/files/test.pdf"))
     @paid_donation.payment_evidences.create(file: file)

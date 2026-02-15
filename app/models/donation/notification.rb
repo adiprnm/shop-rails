@@ -19,9 +19,30 @@ class Donation::Notification
 
   def notify_failed
     DonationMailer.with(donation: donation).donate_failed.deliver_later
+    notify_telegram_failed
   end
 
   def notify_created
     DonationMailer.with(donation: donation).donation_created.deliver_later
   end
+
+  def notify_telegram_admin
+    return unless telegram_enabled?
+
+    DonationNotificationJob.perform_later(donation.id, :paid)
+  end
+
+  def notify_telegram_failed
+    return unless telegram_enabled?
+
+    DonationNotificationJob.perform_later(donation.id, :failed)
+  end
+
+  private
+    def telegram_enabled?
+      Current.settings["telegram_enabled"] &&
+        Current.settings["telegram_enabled"] == "true" &&
+        Current.settings["telegram_bot_token"].present? &&
+        Current.settings["telegram_chat_id"].present?
+    end
 end
