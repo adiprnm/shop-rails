@@ -171,6 +171,12 @@
         <%= f.text_field :telegram_chat_id, value: Current.settings["telegram_chat_id"].presence %>
         <small class="text-gray">ID chat atau channel penerima notifikasi</small>
       </div>
+
+      <div class="form-group">
+        <%= f.label :telegram_webhook_secret_token, "Webhook Secret Token" %>
+        <%= f.text_field :telegram_webhook_secret_token, value: Current.settings["telegram_webhook_secret_token"].presence %>
+        <small class="text-gray">Token yang akan digunakan untuk mengamankan webhook</small>
+      </div>
     </details>
 
     <details>
