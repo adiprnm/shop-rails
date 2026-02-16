@@ -268,6 +268,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
     )
 
     remove_inline_buttons_from_cache(chat_id, message_id)
+    TelegramClient.new.send_message("✅ Payment rejected successfully!", parse_mode: "Markdown")
   end
 
   def remove_inline_buttons_from_cache(chat_id, message_id)
