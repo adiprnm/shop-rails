@@ -162,7 +162,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
     message_id = message[:message_id]
     caption = message[:caption]
 
-    status_text = status == "approved" ? "✅ *Payment Approved*" : "❌ *Payment Rejected*"
+    status_text = status == "approved" ? "✅ *PAYMENT APPROVED*" : "❌ *PAYMENT REJECTED*"
     new_caption = [ status_text, "", caption ].join("\n")
 
     TelegramClient.new.edit_message_caption(
