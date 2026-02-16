@@ -95,10 +95,12 @@ class Integrations::TelegramWebhooksController < ApplicationController
   def handle_message(update)
     text = update[:text]
     user_id = update[:from][:id]
-    Rails.logger.info "Telegram message received: #{text}"
+    Rails.logger.info "Telegram message received: #{text}, user_id: #{user_id.inspect}"
 
     rejection_key = "pending_rejection:#{user_id}"
+    Rails.logger.info "Cache key: #{rejection_key.inspect}"
     pending = Rails.cache.read(rejection_key)
+    Rails.logger.info "Pending from cache: #{pending.inspect}"
 
     if pending && text.present?
       process_rejection_with_reason(pending, text)
@@ -204,14 +206,20 @@ class Integrations::TelegramWebhooksController < ApplicationController
     message_id = message[:message_id]
     caption = message[:caption]
 
-    Rails.cache.write(
-      "pending_rejection:#{user_id}",
-      { payable_type:, payable_id:, chat_id:, message_id:, caption: },
+    rejection_key = "pending_rejection:#{user_id}"
+    cache_data = { payable_type:, payable_id:, chat_id:, message_id:, caption: }
+
+    Rails.logger.info "Writing to cache - key: #{rejection_key.inspect}, data: #{cache_data.inspect}"
+    write_result = Rails.cache.write(
+      rejection_key,
+      cache_data,
       expires_in: 5.minutes
     )
+    Rails.logger.info "Cache write result: #{write_result.inspect}"
 
     TelegramClient.new.answer_callback_query(callback_query_id)
     TelegramClient.new.send_message_with_reply("Please enter rejection reason:")
+    Rails.logger.info "request_rejection_reason completed"
   end
 
   def reject_payment_with_reason(payable_type, payable_id, callback_query_id)
