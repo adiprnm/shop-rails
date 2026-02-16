@@ -38,6 +38,7 @@ class Setting < ApplicationRecord
     telegram_bot_token
     telegram_chat_id
     telegram_enabled
+    telegram_webhook_secret_token
   ].freeze
   ATTACHABLE_KEYS = %i[ site_favicon og_image payment_qris ].freeze
 

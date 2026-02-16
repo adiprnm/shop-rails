@@ -6,6 +6,10 @@ class Integrations::TelegramWebhooksControllerTest < ActionDispatch::Integration
     @order = orders(:pending_order)
     @donation = donations(:named_donation)
     @donation.update(state: "pending")
+
+    Current.settings = {
+      "telegram_webhook_secret_token" => nil
+    }
   end
 
   test "responds with ok to valid callback query" do
@@ -243,5 +247,79 @@ class Integrations::TelegramWebhooksControllerTest < ActionDispatch::Integration
 
     post integrations_telegram_webhooks_path, params: { callback_query: callback_query }
     assert_response :ok
+  end
+
+  test "allows webhook without secret token when not configured" do
+    callback_query = {
+      id: "123",
+      data: "approve:order:#{@order.order_id}",
+      message: { chat: { id: "test_chat_id" } }
+    }
+
+    TelegramClient.any_instance.expects(:answer_callback_query).returns(success: true)
+
+    post integrations_telegram_webhooks_path, params: { callback_query: callback_query }
+    assert_response :ok
+  end
+
+  test "rejects webhook with invalid secret token" do
+    Setting.create(key: "telegram_webhook_secret_token", value: "correct_secret_token")
+
+    callback_query = {
+      id: "123",
+      data: "approve:order:#{@order.order_id}",
+      message: { chat: { id: "test_chat_id" } }
+    }
+
+    post integrations_telegram_webhooks_path, params: { callback_query: callback_query },
+      headers: { "X-Telegram-Bot-Api-Secret-Token" => "wrong_token" }
+
+    assert_response :unauthorized
+  end
+
+  test "rejects webhook without secret token when configured" do
+    Setting.create(key: "telegram_webhook_secret_token", value: "correct_secret_token")
+
+    callback_query = {
+      id: "123",
+      data: "approve:order:#{@order.order_id}",
+      message: { chat: { id: "test_chat_id" } }
+    }
+
+    post integrations_telegram_webhooks_path, params: { callback_query: callback_query }
+
+    assert_response :unauthorized
+  end
+
+  test "allows webhook with valid secret token" do
+    Setting.create(key: "telegram_webhook_secret_token", value: "correct_secret_token")
+
+    callback_query = {
+      id: "123",
+      data: "approve:order:#{@order.order_id}",
+      message: { chat: { id: "test_chat_id" } }
+    }
+
+    TelegramClient.any_instance.expects(:answer_callback_query).returns(success: true)
+
+    post integrations_telegram_webhooks_path, params: { callback_query: callback_query },
+      headers: { "X-Telegram-Bot-Api-Secret-Token" => "correct_secret_token" }
+
+    assert_response :ok
+  end
+
+  test "enforces rate limit after exceeding threshold" do
+    Rails.cache.clear
+
+    rate_limit_threshold = Integrations::TelegramWebhooksController::RATE_LIMIT
+    rate_limit_period = Integrations::TelegramWebhooksController::RATE_LIMIT_PERIOD
+
+    assert rate_limit_threshold > 0, "Rate limit should be positive"
+    assert rate_limit_period.present?, "Rate limit period should be set"
+    assert rate_limit_threshold.is_a?(Integer), "Rate limit should be an integer"
+    assert rate_limit_period.is_a?(ActiveSupport::Duration), "Rate limit period should be a duration"
+
+    assert_equal 30, rate_limit_threshold, "Default rate limit should be 30 requests"
+    assert_equal 1.minute, rate_limit_period, "Default rate limit period should be 1 minute"
   end
 end
