@@ -35,6 +35,10 @@ class Setting < ApplicationRecord
     default_origin_district_id
     available_couriers
     included_shipping_services
+    telegram_bot_token
+    telegram_chat_id
+    telegram_enabled
+    telegram_webhook_secret_token
   ].freeze
   ATTACHABLE_KEYS = %i[ site_favicon og_image payment_qris ].freeze
 

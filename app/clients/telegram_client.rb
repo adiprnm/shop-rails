@@ -1,0 +1,216 @@
+class TelegramClient < ApplicationClient
+  def send_message(text, parse_mode: "Markdown", reply_markup: nil)
+    params = {
+      chat_id: chat_id,
+      text: text,
+      parse_mode: parse_mode
+    }
+    params[:reply_markup] = reply_markup if reply_markup
+
+    response = post("/bot#{bot_token}/sendMessage", params)
+
+    return response if response[:success]
+
+    Rails.logger.error "Telegram send_message failed: #{response[:error]}"
+    response
+  rescue StandardError => e
+    Rails.logger.error "Telegram send_message error: #{e.class} - #{e.message}"
+    { success: false, error: e.message }
+  end
+
+  def send_photo(photo_path, caption: nil, parse_mode: "Markdown", reply_markup: nil)
+    file = File.open(photo_path)
+
+    params = {
+      "chat_id" => chat_id,
+      "photo" => file,
+      "caption" => caption,
+      "parse_mode" => parse_mode
+    }
+    params["reply_markup"] = reply_markup if reply_markup
+
+    response = post_multipart("/bot#{bot_token}/sendPhoto", params)
+
+    return response if response[:success]
+
+    Rails.logger.error "Telegram send_photo failed: #{response[:error]}"
+    response
+  rescue StandardError => e
+    Rails.logger.error "Telegram send_photo error: #{e.class} - #{e.message}"
+    { success: false, error: e.message }
+  ensure
+    file&.close
+  end
+
+  def answer_callback_query(callback_query_id, text: nil, show_alert: false)
+    response = post("/bot#{bot_token}/answerCallbackQuery", {
+      callback_query_id: callback_query_id,
+      text: text,
+      show_alert: show_alert
+    })
+
+    return response if response[:success]
+
+    Rails.logger.error "Telegram answer_callback_query failed: #{response[:error]}"
+    response
+  rescue StandardError => e
+    Rails.logger.error "Telegram answer_callback_query error: #{e.class} - #{e.message}"
+    { success: false, error: e.message }
+  end
+
+  def edit_message_reply_markup(chat_id:, message_id:, reply_markup: nil)
+    params = {
+      chat_id: chat_id,
+      message_id: message_id
+    }
+    params[:reply_markup] = reply_markup if reply_markup
+
+    response = post("/bot#{bot_token}/editMessageReplyMarkup", params)
+
+    return response if response[:success]
+
+    Rails.logger.error "Telegram edit_message_reply_markup failed: #{response[:error]}"
+    response
+  rescue StandardError => e
+    Rails.logger.error "Telegram edit_message_reply_markup error: #{e.class} - #{e.message}"
+    { success: false, error: e.message }
+  end
+
+  def edit_message_caption(chat_id:, message_id:, caption:)
+    params = {
+      chat_id: chat_id,
+      message_id: message_id,
+      caption: caption,
+      parse_mode: "Markdown"
+    }
+
+    response = post("/bot#{bot_token}/editMessageCaption", params)
+
+    return response if response[:success]
+
+    Rails.logger.error "Telegram edit_message_caption failed: #{response[:error]}"
+    response
+  rescue StandardError => e
+    Rails.logger.error "Telegram edit_message_caption error: #{e.class} - #{e.message}"
+    { success: false, error: e.message }
+  end
+
+  def send_message_with_reply(text, parse_mode: "Markdown", reply_markup: nil)
+    params = {
+      chat_id: chat_id,
+      text: text,
+      parse_mode: parse_mode
+    }
+    params[:reply_markup] = reply_markup if reply_markup
+
+    response = post("/bot#{bot_token}/sendMessage", params)
+
+    return response if response[:success]
+
+    Rails.logger.error "Telegram send_message failed: #{response[:error]}"
+    response
+  rescue StandardError => e
+    Rails.logger.error "Telegram send_message error: #{e.class} - #{e.message}"
+    { success: false, error: e.message }
+  end
+
+  class Error < StandardError; end
+
+  private
+    def base_url
+      "https://api.telegram.org"
+    end
+
+    def bot_token
+      Current.settings["telegram_bot_token"]
+    end
+
+    def chat_id
+      Current.settings["telegram_chat_id"]
+    end
+
+    def error?(response)
+      response.dig(:data, "ok") == false
+    end
+
+    def perform_request(request)
+      response = super
+
+      if error?(response)
+        error_description = response.dig(:data, "description")
+        error_code = response.dig(:data, "error_code")
+        response[:error] = "Telegram API Error (#{error_code}): #{error_description}" if error_description
+        response[:success] = false
+      end
+
+      response
+    end
+
+    def post_multipart(url, params)
+      uri = URI.parse("#{base_url}#{url}")
+      http = setup_http(uri)
+
+      request = Net::HTTP::Post.new(uri)
+      request.set_form(params, "multipart/form-data")
+
+      response = http.request(request)
+      parse_response(response)
+    end
+
+    def parse_response(response)
+      result = {
+        status: response.code.to_i,
+        message: response.message,
+        headers: response.to_hash,
+        data: nil,
+        error: nil
+      }
+
+      case response.code.to_i
+      when 200..299
+        begin
+          result[:data] = JSON.parse(response.body).with_indifferent_access
+        rescue JSON::ParserError => e
+          result[:error] = "Failed to parse JSON response: #{e.message}"
+        end
+      when 401
+        result[:error] = "Unauthorized - Check your credentials"
+      when 403
+        result[:error] = "Forbidden - You don't have permission to access this resource"
+      when 404
+        result[:error] = "Not Found - The requested resource doesn't exist"
+      when 429
+        result[:error] = "Too Many Requests - Rate limit exceeded"
+      when 500..599
+        result[:error] = "Server Error - Status #{response.code}: #{response.message}"
+      else
+        result[:error] = "Unexpected Status #{response.code}: #{response.message}"
+      end
+
+      result[:success] = result[:error].nil?
+      result
+    rescue StandardError => e
+      {
+        success: false,
+        status: nil,
+        message: "Request Failed",
+        headers: {},
+        data: nil,
+        error: "#{e.class}: #{e.message}"
+      }
+    end
+
+    def setup_http(uri)
+      http = Net::HTTP.new(uri.host, uri.port)
+      if uri.scheme == "https"
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      end
+
+      if Rails.env.development?
+        http.set_debug_output($stdout)
+      end
+
+      http
+    end
+end

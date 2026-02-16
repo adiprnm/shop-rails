@@ -4,6 +4,12 @@ class PaymentEvidenceTest < ActiveSupport::TestCase
   setup do
     @paid_order = orders(:paid_order)
     @paid_donation = donations(:named_donation)
+    Current.settings = {
+      "payment_provider" => "manual",
+      "telegram_enabled" => "true",
+      "telegram_bot_token" => "test_token",
+      "telegram_chat_id" => "test_chat_id"
+    }
   end
 
   test "should be valid with valid attributes" do
@@ -74,5 +80,21 @@ class PaymentEvidenceTest < ActiveSupport::TestCase
     evidence = pending_order.payment_evidences.create(file: file)
 
     assert_equal "pending", pending_order.reload.state
+  end
+
+  test "should send Telegram notification when payment evidence is uploaded for order" do
+    TelegramNotificationJob.expects(:perform_later)
+      .with(@paid_order, :evidence_uploaded)
+
+    file = File.open(Rails.root.join("test/fixtures/files/test.pdf"))
+    @paid_order.payment_evidences.create(file: file)
+  end
+
+  test "should send Telegram notification when payment evidence is uploaded for donation" do
+    TelegramNotificationJob.expects(:perform_later)
+      .with(@paid_donation, :evidence_uploaded)
+
+    file = File.open(Rails.root.join("test/fixtures/files/test.pdf"))
+    @paid_donation.payment_evidences.create(file: file)
   end
 end

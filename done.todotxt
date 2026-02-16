@@ -1,8 +1,161 @@
 # Completed Tasks
-# Format: (A) Task description +project @context +note:Catatan
+# Format: x <completion-date> <creation-date> Task description +project @context
 # Priority: A (highest), B, C, D, E (lowest)
 # Project: +projectname
 # Context: @context
+# Note: Comments with notes/decisions
+
+x 2026-02-11 2026-02-11 Add Telegram settings to Setting model +telegram +configuration @task
+# Added telegram_bot_token, telegram_chat_id, telegram_enabled to KEYS
+
+x 2026-02-11 2026-02-11 Create TelegramClient class +telegram @task
+# Implemented send_message method with Markdown support
+# Added error handling and logging for failures
+# Followed existing ApplicationClient pattern
+
+x 2026-02-11 2026-02-11 Create TelegramNotificationJob +telegram +notifications @task
+# Created job for async message sending via Solid Queue
+# Implemented Markdown message formatting for paid/failed orders
+# Added error handling and logging
+# Followed existing job patterns
+
+x 2026-02-11 2026-02-11 Update Order::Notification service +telegram +notifications @task
+# Added notify_telegram_admin method to notify method
+# Added notify_telegram_failed method to notify_failed
+# Added telegram_enabled? helper method for conditional execution
+
+x 2026-02-11 2026-02-11 Update admin settings form for Telegram config +telegram +admin @task
+# Added Telegram Notifikasi section with form fields
+# Followed existing form patterns with details/summary structure
+
+x 2026-02-11 2026-02-11 Send payment evidence as photo attachment in Telegram notifications +telegram @task
+# Added send_photo method to TelegramClient with multipart/form-data support
+# Implemented Tempfile-based download and upload of payment evidence
+# Added caption support for photo messages with Markdown formatting
+# Fallback to text message for Midtrans payments or manual without evidence
+
+x 2026-02-11 2026-02-11 Add payment evidence link to manual payment Telegram notifications +telegram @task
+# Added manual_payment_with_evidence? check
+# Generated full URL for payment evidence using site_storage_host
+# Link only shown for manual payments with attached evidence
+
+x 2026-02-11 2026-02-11 Write unit tests for TelegramClient +telegram +testing @task
+# Test send_message and send_photo methods
+# Test error handling for invalid token and network errors
+# Verify message formatting and caption support
+# Test Telegram API error response format
+
+x 2026-02-11 2026-02-11 Write unit tests for TelegramNotificationJob +telegram +testing @task
+# Test message formatting for paid/failed orders
+# Test conditional execution when disabled
+# Test manual payment with photo attachment
+# Test order not found and error handling
+
+x 2026-02-11 2026-02-11 Write integration tests for Telegram notifications +telegram +testing @task
+# Test Order callbacks trigger Telegram notifications
+# Test both Midtrans and manual payment flows
+# Test failed order notifications
+# Test telegram_enabled? helper method
+
+x 2026-02-15 2026-02-15 Fix integration tests for Telegram notifications +telegram @testing
+- Updated TelegramNotificationJob.perform_later expectations to use Global ID signature
+- Changed from perform_later(order.id, :paid) to perform_later(order, :paid)
+- Fixed manual_payment_with_evidence? tests to set @payable instead of @order
+- Changed expired order test to expect no Telegram notification
+- Removed OrderMailer expectations that no longer match user's changes
+- All 574 tests passing
+
+x 2026-02-15 2026-02-15 Add telegram_configured? guard to prevent errors when Telegram is not configured +telegram @bugfix
+- Added telegram_configured? private method
+- Returns early if Telegram settings are not configured
+- Checks telegram_enabled, bot_token, and chat_id presence
+- Prevents errors when triggering notifications without configuration
+- All TelegramNotificationJob tests passing (33/33)
+- Rubocop: no offenses
+
+x 2026-02-15 2026-02-15 Use Global ID with single payable parameter in TelegramNotificationJob +telegram @refactor
+- Updated TelegramNotificationJob to accept single payable parameter
+- Removed find_payable method (GlobalID handles deserialization)
+- Updated Order::Notification to pass order instance
+- Updated Donation::Notification to pass donation instance
+- Updated PaymentEvidence to pass payable instance
+- Updated all tests to use new signature
+- Removed tests for RecordNotFound (not applicable with GlobalID)
+- All TelegramNotificationJob tests passing (33/33)
+- All PaymentEvidence tests passing (12/12)
+- Rubocop: no offenses
+
+x 2026-02-15 2026-02-15 Refactor to use single TelegramNotificationJob for orders and donations +telegram @refactor
+- Updated TelegramNotificationJob to accept payable_type and payable_id
+- Added donation? helper to detect donation vs order
+- Created separate format methods for orders and donations:
+  - format_order_paid_message/format_donation_paid_message
+  - format_order_paid_message_as_caption/format_donation_paid_message_as_caption
+  - format_order_evidence_uploaded_message_as_caption/format_donation_evidence_uploaded_message_as_caption
+  - format_order_failed_message/format_donation_failed_message
+- Deleted DonationNotificationJob (no longer needed)
+- Updated Order::Notification to pass payable_type and id
+- Updated Donation::Notification to use TelegramNotificationJob
+- Updated PaymentEvidence to pass payable_type and id
+- Added comprehensive tests for both orders and donations
+- All TelegramNotificationJob tests passing (36/36)
+- All PaymentEvidence tests passing (12/12)
+- Rubocop: no offenses
+
+x 2026-02-15 2026-02-15 Add Telegram notifications for donations +telegram @feature
+- Created DonationNotificationJob similar to TelegramNotificationJob
+- Added notify_telegram_admin and notify_telegram_failed to Donation::Notification
+- Updated Donation model to send Telegram notifications on state changes
+- Updated PaymentEvidence to send DonationNotificationJob for donations
+- All donation notification features match order notifications:
+  - Paid notifications with photo for manual payments
+  - Failed notifications
+  - Evidence uploaded notifications
+  - Manual payment approval notice
+- Added tests for DonationNotificationJob (19/19 passing)
+- Updated PaymentEvidence tests for donation notifications
+- Rubocop: no offenses
+
+x 2026-02-15 2026-02-15 Send Telegram notification when payment evidence is uploaded +telegram @feature
+- Added notify_telegram_admin callback to PaymentEvidence model
+- Added :evidence_uploaded case to TelegramNotificationJob
+- Created send_evidence_uploaded_notification method
+- Added format_evidence_uploaded_message_as_caption method
+- Send photo with payment evidence as attachment
+- Include payment waiting for approval notice
+- Added tests for evidence uploaded notification
+- Added tests for PaymentEvidence Telegram integration
+- All tests passing (TelegramNotificationJob: 22/22, PaymentEvidence: 12/12)
+- Rubocop: no offenses
+
+x 2026-02-15 2026-02-15 Improve Telegram notification message formatting +telegram @feature
+# Make field labels bold (Order, Customer, Products, Total, Payment, Date, Reason)
+# Put field values on new lines after labels
+# Use single blank line between each field
+# Add manual payment approval notice for manual payments
+# Updated both format_paid_message and format_paid_message_as_caption
+# Updated format_failed_message to match format
+# Added manual_payment_notice helper method
+# All TelegramNotificationJob tests passing (19/19)
+# Fixed manual_payment_with_evidence? test expectations in integration tests
+# Rubocop: no offenses
+
+x 2026-02-15 2026-02-15 Fix symbol keys causing gsub error in TelegramClient send_photo +telegram @bug
+# Net::HTTP::Post.set_form with multipart doesn't handle symbol keys
+# Changed hash keys from symbols to strings in send_photo params
+# Added proper file cleanup with ensure block to close opened files
+# All TelegramClient tests passing (12/12)
+# Rubocop: no offenses
+
+x 2026-02-15 2026-02-15 Fix TelegramClient multipart form enctype +telegram @bug
+# Fixed request.set_form(params, multipart: true) to request.set_form(params, 'multipart/form-data')
+# Added error handling to send_message method
+# All TelegramClient tests passing
+
+x 2026-02-11 2026-02-11 Run quality gates +telegram +validation @task
+# Ruby syntax validation: PASS (all files checked)
+# Full quality gates (test, rubocop, brakeman) require Ruby 3.2+ environment
+
 # Completion Date: yyyy-mm-dd
 # Note: +note:optional notes/decisions
 
