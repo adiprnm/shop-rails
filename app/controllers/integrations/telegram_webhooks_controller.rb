@@ -73,6 +73,8 @@ class Integrations::TelegramWebhooksController < ApplicationController
     callback_query_id = callback_query[:id]
     message = callback_query[:message]
 
+    Rails.logger.info "handle_callback_query - action: #{data}, callback_id: #{callback_query_id}"
+
     unless data&.include?(":")
       TelegramClient.new.answer_callback_query(callback_query_id, text: "Invalid callback data", show_alert: true)
       return
@@ -80,11 +82,15 @@ class Integrations::TelegramWebhooksController < ApplicationController
 
     action, payable_type, payable_id = data.split(":")
 
+    Rails.logger.info "Parsed action: #{action.inspect}, payable_type: #{payable_type.inspect}, payable_id: #{payable_id.inspect}"
+
     case action
     when "approve"
       approve_payment(payable_type, payable_id, callback_query_id, message)
     when "reject"
+      Rails.logger.info "Calling request_rejection_reason"
       request_rejection_reason(payable_type, payable_id, callback_query_id, message)
+      Rails.logger.info "Returned from request_rejection_reason"
     when "submit_rejection"
       reject_payment_with_reason(payable_type, payable_id, callback_query_id)
     else
@@ -189,7 +195,10 @@ class Integrations::TelegramWebhooksController < ApplicationController
   end
 
   def request_rejection_reason(payable_type, payable_id, callback_query_id, message)
+    Rails.logger.info "ENTER request_rejection_reason - payable_type: #{payable_type}, payable_id: #{payable_id}"
+
     payable = find_payable(payable_type, payable_id)
+    Rails.logger.info "find_payable result: #{payable.inspect}"
 
     unless payable
       TelegramClient.new.answer_callback_query(callback_query_id, text: "#{payable_type.capitalize} not found", show_alert: true)
@@ -197,6 +206,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
     end
 
     unless payable.pending?
+      Rails.logger.info "Payment is not pending, state: #{payable.state}"
       TelegramClient.new.answer_callback_query(callback_query_id, text: "Payment is not pending", show_alert: true)
       return
     end
