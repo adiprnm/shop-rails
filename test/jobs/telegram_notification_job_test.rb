@@ -253,7 +253,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
 
   test "includes timestamp in message" do
     order = orders(:paid_order)
-    timestamp = order.state_updated_at.strftime("%Y-%m-%d %H:%M")
+    timestamp = I18n.l order.state_updated_at, locale: :id, format: :long
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
       assert_includes message, timestamp

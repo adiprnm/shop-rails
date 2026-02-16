@@ -6,13 +6,15 @@ class TelegramNotificationJob < ApplicationJob
 
     return unless telegram_configured?
 
-    case notification_type
-    when :paid
-      send_paid_notification
-    when :failed
-      send_failed_notification
-    when :evidence_uploaded
-      send_evidence_uploaded_notification
+    Time.use_zone "Asia/Jakarta" do
+      case notification_type
+      when :paid
+        send_paid_notification
+      when :failed
+        send_failed_notification
+      when :evidence_uploaded
+        send_evidence_uploaded_notification
+      end
     end
   rescue ActiveRecord::RecordNotFound => e
     Rails.logger.error "TelegramNotificationJob: Payable not found - #{e.message}"
@@ -115,7 +117,7 @@ class TelegramNotificationJob < ApplicationJob
       #{payment_method}
 
       *Date*
-      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{I18n.l payable.state_updated_at, locale: :id, format: :long}
 
       #{manual_payment_notice}
     MESSAGE
@@ -141,7 +143,7 @@ class TelegramNotificationJob < ApplicationJob
       #{payment_method}
 
       *Date*
-      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{I18n.l payable.state_updated_at, locale: :id, format: :long}
 
       #{manual_payment_notice}
     MESSAGE
@@ -179,7 +181,7 @@ class TelegramNotificationJob < ApplicationJob
       #{payment_method}
 
       *Date*
-      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{I18n.l payable.state_updated_at, locale: :id, format: :long}
 
       #{manual_payment_notice}
     MESSAGE
@@ -205,7 +207,7 @@ class TelegramNotificationJob < ApplicationJob
       #{payment_method}
 
       *Date*
-      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{I18n.l payable.state_updated_at, locale: :id, format: :long}
 
       #{manual_payment_notice}
     MESSAGE
@@ -238,7 +240,7 @@ class TelegramNotificationJob < ApplicationJob
       #{format_currency(payable.total_price)}
 
       *Date*
-      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{I18n.l payable.state_updated_at, locale: :id, format: :long}
 
       ⚠️ *Payment waiting for approval*
 
@@ -251,24 +253,19 @@ class TelegramNotificationJob < ApplicationJob
       📎 *Payment Evidence Uploaded*
 
       *Donation*
-
       \##{payable.donation_id}
 
       *Donor*
-
       #{payable.name}
 
       *Amount*
-
       #{format_currency(payable.amount)}
 
       *Message*
-
       #{payable.message}
 
       *Date*
-
-      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{I18n.l payable.state_updated_at, locale: :id, format: :long}
 
       ⚠️ *Payment waiting for approval*
 
@@ -291,24 +288,19 @@ class TelegramNotificationJob < ApplicationJob
       ⚠️ *Order Failed*
 
       *Order*
-
       \##{payable.order_id}
 
       *Customer*
-
       #{payable.customer_name}
 
       *Total*
-
       #{format_currency(payable.total_price)}
 
       *Reason*
-
       #{reason}
 
       *Date*
-
-      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{I18n.l payable.state_updated_at, locale: :id, format: :long}
     MESSAGE
   end
 
@@ -319,24 +311,19 @@ class TelegramNotificationJob < ApplicationJob
       ⚠️ *Donation Failed*
 
       *Donation*
-
       \##{payable.donation_id}
 
       *Donor*
-
       #{payable.name}
 
       *Amount*
-
       #{format_currency(payable.amount)}
 
       *Reason*
-
       #{reason}
 
       *Date*
-
-      #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
+      #{I18n.l payable.state_updated_at, locale: :id, format: :long}
     MESSAGE
   end
 

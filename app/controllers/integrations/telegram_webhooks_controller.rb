@@ -1,8 +1,7 @@
 class Integrations::TelegramWebhooksController < ApplicationController
   skip_before_action :verify_authenticity_token
-  skip_before_action :set_settings
   skip_before_action :set_current_cart
-  before_action :set_webhook_settings
+
   before_action :verify_webhook_secret
   before_action :enforce_https
   before_action :check_rate_limit
@@ -72,6 +71,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
   def handle_callback_query(callback_query)
     data = callback_query[:data]
     callback_query_id = callback_query[:id]
+    message = callback_query[:message]
 
     unless data&.include?(":")
       TelegramClient.new.answer_callback_query(callback_query_id, text: "Invalid callback data", show_alert: true)
@@ -82,9 +82,9 @@ class Integrations::TelegramWebhooksController < ApplicationController
 
     case action
     when "approve"
-      approve_payment(payable_type, payable_id, callback_query_id)
+      approve_payment(payable_type, payable_id, callback_query_id, message)
     when "reject"
-      reject_payment(payable_type, payable_id, callback_query_id)
+      reject_payment(payable_type, payable_id, callback_query_id, message)
     else
       TelegramClient.new.answer_callback_query(callback_query_id, text: "Unknown action", show_alert: true)
     end
@@ -94,7 +94,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
     Rails.logger.info "Telegram message received: #{update[:text]}"
   end
 
-  def approve_payment(payable_type, payable_id, callback_query_id)
+  def approve_payment(payable_type, payable_id, callback_query_id, message = nil)
     payable = find_payable(payable_type, payable_id)
 
     unless payable
@@ -110,9 +110,10 @@ class Integrations::TelegramWebhooksController < ApplicationController
     payable.update!(state: "paid")
     payable.mark_evidences_as_checked
     TelegramClient.new.answer_callback_query(callback_query_id, text: "Payment approved successfully!", show_alert: false)
+    remove_inline_buttons(message) if message
   end
 
-  def reject_payment(payable_type, payable_id, callback_query_id)
+  def reject_payment(payable_type, payable_id, callback_query_id, message = nil)
     payable = find_payable(payable_type, payable_id)
 
     unless payable
@@ -128,6 +129,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
     payable.update!(state: "failed")
     payable.mark_evidences_as_checked
     TelegramClient.new.answer_callback_query(callback_query_id, text: "Payment rejected", show_alert: false)
+    remove_inline_buttons(message) if message
   end
 
   def find_payable(payable_type, payable_id)
@@ -139,5 +141,17 @@ class Integrations::TelegramWebhooksController < ApplicationController
     else
       nil
     end
+  end
+
+  def remove_inline_buttons(message)
+    return unless message
+
+    chat_id = message[:chat][:id]
+    message_id = message[:message_id]
+
+    TelegramClient.new.edit_message_reply_markup(
+      chat_id: chat_id,
+      message_id: message_id
+    )
   end
 end
