@@ -200,15 +200,18 @@ class Integrations::TelegramWebhooksController < ApplicationController
     end
 
     user_id = message[:from][:id]
+    chat_id = message[:chat][:id]
+    message_id = message[:message_id]
+    caption = message[:caption]
 
     Rails.cache.write(
       "pending_rejection:#{user_id}",
-      { payable_type:, payable_id:, message: },
+      { payable_type:, payable_id:, chat_id:, message_id:, caption: },
       expires_in: 5.minutes
     )
 
     TelegramClient.new.answer_callback_query(callback_query_id)
-    TelegramClient.new.send_message_with_reply("Please enter the rejection reason:")
+    TelegramClient.new.send_message_with_reply("Please enter rejection reason:")
   end
 
   def reject_payment_with_reason(payable_type, payable_id, callback_query_id)
@@ -218,7 +221,9 @@ class Integrations::TelegramWebhooksController < ApplicationController
   def process_rejection_with_reason(pending, reason)
     payable_type = pending[:payable_type]
     payable_id = pending[:payable_id]
-    message = pending[:message]
+    chat_id = pending[:chat_id]
+    message_id = pending[:message_id]
+    caption = pending[:caption]
 
     payable = find_payable(payable_type, payable_id)
 
@@ -235,16 +240,6 @@ class Integrations::TelegramWebhooksController < ApplicationController
     payable.update!(state: "failed")
     payable.mark_evidences_as_checked
 
-    update_message_with_rejection_reason(message, reason)
-  end
-
-  def update_message_with_rejection_reason(message, reason)
-    return unless message
-
-    chat_id = message[:chat][:id]
-    message_id = message[:message_id]
-    caption = message[:caption]
-
     new_caption = [ "❌ *PAYMENT REJECTED*", "", "*Reason:* #{reason}", "", caption ].join("\n")
 
     TelegramClient.new.edit_message_caption(
@@ -253,6 +248,13 @@ class Integrations::TelegramWebhooksController < ApplicationController
       caption: new_caption
     )
 
-    remove_inline_buttons(message)
+    remove_inline_buttons_from_cache(chat_id, message_id)
+  end
+
+  def remove_inline_buttons_from_cache(chat_id, message_id)
+    TelegramClient.new.edit_message_reply_markup(
+      chat_id: chat_id,
+      message_id: message_id
+    )
   end
 end
