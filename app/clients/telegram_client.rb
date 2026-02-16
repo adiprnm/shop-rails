@@ -95,6 +95,25 @@ class TelegramClient < ApplicationClient
     { success: false, error: e.message }
   end
 
+  def send_message_with_reply(text, parse_mode: "Markdown", reply_markup: nil)
+    params = {
+      chat_id: chat_id,
+      text: text,
+      parse_mode: parse_mode
+    }
+    params[:reply_markup] = reply_markup if reply_markup
+
+    response = post("/bot#{bot_token}/sendMessage", params)
+
+    return response if response[:success]
+
+    Rails.logger.error "Telegram send_message failed: #{response[:error]}"
+    response
+  rescue StandardError => e
+    Rails.logger.error "Telegram send_message error: #{e.class} - #{e.message}"
+    { success: false, error: e.message }
+  end
+
   class Error < StandardError; end
 
   private

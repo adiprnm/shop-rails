@@ -84,14 +84,26 @@ class Integrations::TelegramWebhooksController < ApplicationController
     when "approve"
       approve_payment(payable_type, payable_id, callback_query_id, message)
     when "reject"
-      reject_payment(payable_type, payable_id, callback_query_id, message)
+      request_rejection_reason(payable_type, payable_id, callback_query_id, message)
+    when "submit_rejection"
+      reject_payment_with_reason(payable_type, payable_id, callback_query_id)
     else
       TelegramClient.new.answer_callback_query(callback_query_id, text: "Unknown action", show_alert: true)
     end
   end
 
   def handle_message(update)
-    Rails.logger.info "Telegram message received: #{update[:text]}"
+    text = update[:text]
+    user_id = update[:from][:id]
+    Rails.logger.info "Telegram message received: #{text}"
+
+    rejection_key = "pending_rejection:#{user_id}"
+    pending = Rails.cache.read(rejection_key)
+
+    if pending && text.present?
+      process_rejection_with_reason(pending, text)
+      Rails.cache.delete(rejection_key)
+    end
   end
 
   def approve_payment(payable_type, payable_id, callback_query_id, message = nil)
@@ -164,6 +176,76 @@ class Integrations::TelegramWebhooksController < ApplicationController
 
     status_text = status == "approved" ? "✅ *PAYMENT APPROVED*" : "❌ *PAYMENT REJECTED*"
     new_caption = [ status_text, "", caption ].join("\n")
+
+    TelegramClient.new.edit_message_caption(
+      chat_id: chat_id,
+      message_id: message_id,
+      caption: new_caption
+    )
+
+    remove_inline_buttons(message)
+  end
+
+  def request_rejection_reason(payable_type, payable_id, callback_query_id, message)
+    payable = find_payable(payable_type, payable_id)
+
+    unless payable
+      TelegramClient.new.answer_callback_query(callback_query_id, text: "#{payable_type.capitalize} not found", show_alert: true)
+      return
+    end
+
+    unless payable.pending?
+      TelegramClient.new.answer_callback_query(callback_query_id, text: "Payment is not pending", show_alert: true)
+      return
+    end
+
+    user_id = message[:from][:id]
+
+    Rails.cache.write(
+      "pending_rejection:#{user_id}",
+      { payable_type:, payable_id:, message: },
+      expires_in: 5.minutes
+    )
+
+    TelegramClient.new.answer_callback_query(callback_query_id)
+    TelegramClient.new.send_message_with_reply("Please enter the rejection reason:")
+  end
+
+  def reject_payment_with_reason(payable_type, payable_id, callback_query_id)
+    TelegramClient.new.answer_callback_query(callback_query_id, text: "Please enter the rejection reason in the chat", show_alert: true)
+  end
+
+  def process_rejection_with_reason(pending, reason)
+    payable_type = pending[:payable_type]
+    payable_id = pending[:payable_id]
+    message = pending[:message]
+
+    payable = find_payable(payable_type, payable_id)
+
+    unless payable
+      Rails.logger.warn "Payment not found during rejection: #{payable_type}:#{payable_id}"
+      return
+    end
+
+    unless payable.pending?
+      Rails.logger.warn "Payment is not pending during rejection: #{payable_type}:#{payable_id}"
+      return
+    end
+
+    payable.update!(state: "failed")
+    payable.mark_evidences_as_checked
+
+    update_message_with_rejection_reason(message, reason)
+  end
+
+  def update_message_with_rejection_reason(message, reason)
+    return unless message
+
+    chat_id = message[:chat][:id]
+    message_id = message[:message_id]
+    caption = message[:caption]
+
+    new_caption = [ "❌ *PAYMENT REJECTED*", "", "*Reason:* #{reason}", "", caption ].join("\n")
 
     TelegramClient.new.edit_message_caption(
       chat_id: chat_id,
