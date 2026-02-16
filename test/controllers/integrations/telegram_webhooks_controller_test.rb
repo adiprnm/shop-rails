@@ -58,34 +58,68 @@ class Integrations::TelegramWebhooksControllerTest < ActionDispatch::Integration
   end
 
   test "rejects order payment through callback" do
+    cache_data = { payable_type: "order", payable_id: @order.order_id, chat_id: "test_chat_id", message_id: 456, caption: "Test order" }
+
+    Rails.cache.stubs(:read).with("pending_rejection:789").returns(cache_data)
+    Rails.cache.stubs(:write).returns(true)
+    Rails.cache.stubs(:delete).returns(true)
+
     callback_query = {
       id: "123",
       data: "reject:order:#{@order.order_id}",
-      message: { chat: { id: "test_chat_id" } }
+      message: { chat: { id: "test_chat_id" }, message_id: 456, caption: "Test order" },
+      from: { id: 789 }
     }
 
-    TelegramClient.any_instance.expects(:answer_callback_query)
-      .with("123", text: "Payment rejected", show_alert: false)
-      .returns(success: true)
+    TelegramClient.any_instance.expects(:answer_callback_query).with("123").returns(success: true)
+    TelegramClient.any_instance.expects(:send_message_with_reply).with("Please enter rejection reason:").returns(success: true)
 
     post integrations_telegram_webhooks_path, params: { callback_query: callback_query }
+
+    rejection_message = {
+      text: "Insufficient payment",
+      from: { id: 789 }
+    }
+
+    TelegramClient.any_instance.expects(:edit_message_caption).returns(success: true)
+    TelegramClient.any_instance.expects(:edit_message_reply_markup).returns(success: true)
+    TelegramClient.any_instance.expects(:send_message).with("✅ Payment rejected successfully!", parse_mode: "Markdown").returns(success: true)
+
+    post integrations_telegram_webhooks_path, params: { message: rejection_message }
 
     @order.reload
     assert_equal "failed", @order.state
   end
 
   test "rejects donation payment through callback" do
+    cache_data = { payable_type: "donation", payable_id: @donation.donation_id, chat_id: "test_chat_id", message_id: 456, caption: "Test donation" }
+
+    Rails.cache.stubs(:read).with("pending_rejection:789").returns(cache_data)
+    Rails.cache.stubs(:write).returns(true)
+    Rails.cache.stubs(:delete).returns(true)
+
     callback_query = {
       id: "123",
       data: "reject:donation:#{@donation.donation_id}",
-      message: { chat: { id: "test_chat_id" } }
+      message: { chat: { id: "test_chat_id" }, message_id: 456, caption: "Test donation" },
+      from: { id: 789 }
     }
 
-    TelegramClient.any_instance.expects(:answer_callback_query)
-      .with("123", text: "Payment rejected", show_alert: false)
-      .returns(success: true)
+    TelegramClient.any_instance.expects(:answer_callback_query).with("123").returns(success: true)
+    TelegramClient.any_instance.expects(:send_message_with_reply).with("Please enter rejection reason:").returns(success: true)
 
     post integrations_telegram_webhooks_path, params: { callback_query: callback_query }
+
+    rejection_message = {
+      text: "Invalid donation amount",
+      from: { id: 789 }
+    }
+
+    TelegramClient.any_instance.expects(:edit_message_caption).returns(success: true)
+    TelegramClient.any_instance.expects(:edit_message_reply_markup).returns(success: true)
+    TelegramClient.any_instance.expects(:send_message).with("✅ Payment rejected successfully!", parse_mode: "Markdown").returns(success: true)
+
+    post integrations_telegram_webhooks_path, params: { message: rejection_message }
 
     @donation.reload
     assert_equal "failed", @donation.state
@@ -112,6 +146,12 @@ class Integrations::TelegramWebhooksControllerTest < ActionDispatch::Integration
   end
 
   test "marks evidences as checked after rejection" do
+    cache_data = { payable_type: "order", payable_id: @order.order_id, chat_id: "test_chat_id", message_id: 456, caption: "Test order" }
+
+    Rails.cache.stubs(:read).with("pending_rejection:789").returns(cache_data)
+    Rails.cache.stubs(:write).returns(true)
+    Rails.cache.stubs(:delete).returns(true)
+
     evidence = @order.payment_evidences.create(
       file: File.open(Rails.root.join("test/fixtures/files/test.pdf")),
       checked: false
@@ -120,12 +160,25 @@ class Integrations::TelegramWebhooksControllerTest < ActionDispatch::Integration
     callback_query = {
       id: "123",
       data: "reject:order:#{@order.order_id}",
-      message: { chat: { id: "test_chat_id" } }
+      message: { chat: { id: "test_chat_id" }, message_id: 456, caption: "Test order" },
+      from: { id: 789 }
     }
 
-    TelegramClient.any_instance.expects(:answer_callback_query).returns(success: true)
+    TelegramClient.any_instance.expects(:answer_callback_query).with("123").returns(success: true)
+    TelegramClient.any_instance.expects(:send_message_with_reply).with("Please enter rejection reason:").returns(success: true)
 
     post integrations_telegram_webhooks_path, params: { callback_query: callback_query }
+
+    rejection_message = {
+      text: "Test rejection reason",
+      from: { id: 789 }
+    }
+
+    TelegramClient.any_instance.expects(:edit_message_caption).returns(success: true)
+    TelegramClient.any_instance.expects(:edit_message_reply_markup).returns(success: true)
+    TelegramClient.any_instance.expects(:send_message).with("✅ Payment rejected successfully!", parse_mode: "Markdown").returns(success: true)
+
+    post integrations_telegram_webhooks_path, params: { message: rejection_message }
 
     evidence.reload
     assert evidence.checked
