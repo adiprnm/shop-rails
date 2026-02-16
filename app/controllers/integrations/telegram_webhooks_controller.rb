@@ -72,8 +72,9 @@ class Integrations::TelegramWebhooksController < ApplicationController
     data = callback_query[:data]
     callback_query_id = callback_query[:id]
     message = callback_query[:message]
+    from = callback_query[:from]
 
-    Rails.logger.info "handle_callback_query - action: #{data}, callback_id: #{callback_query_id}"
+    Rails.logger.info "handle_callback_query - action: #{data}, callback_id: #{callback_query_id}, from_user_id: #{from&.[](:id)}, message_from_user_id: #{message&.[](:from)&.[](:id)}"
 
     unless data&.include?(":")
       TelegramClient.new.answer_callback_query(callback_query_id, text: "Invalid callback data", show_alert: true)
@@ -88,8 +89,8 @@ class Integrations::TelegramWebhooksController < ApplicationController
     when "approve"
       approve_payment(payable_type, payable_id, callback_query_id, message)
     when "reject"
-      Rails.logger.info "Calling request_rejection_reason"
-      request_rejection_reason(payable_type, payable_id, callback_query_id, message)
+      Rails.logger.info "Calling request_rejection_reason with from_user_id: #{from[:id]}"
+      request_rejection_reason(payable_type, payable_id, callback_query_id, message, from)
       Rails.logger.info "Returned from request_rejection_reason"
     when "submit_rejection"
       reject_payment_with_reason(payable_type, payable_id, callback_query_id)
@@ -194,8 +195,8 @@ class Integrations::TelegramWebhooksController < ApplicationController
     remove_inline_buttons(message)
   end
 
-  def request_rejection_reason(payable_type, payable_id, callback_query_id, message)
-    Rails.logger.info "ENTER request_rejection_reason - payable_type: #{payable_type}, payable_id: #{payable_id}"
+  def request_rejection_reason(payable_type, payable_id, callback_query_id, message, from)
+    Rails.logger.info "ENTER request_rejection_reason - payable_type: #{payable_type}, payable_id: #{payable_id}, from_user_id: #{from[:id]}"
 
     payable = find_payable(payable_type, payable_id)
     Rails.logger.info "find_payable result: #{payable.inspect}"
@@ -211,7 +212,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
       return
     end
 
-    user_id = message[:from][:id]
+    user_id = from[:id]
     chat_id = message[:chat][:id]
     message_id = message[:message_id]
     caption = message[:caption]
