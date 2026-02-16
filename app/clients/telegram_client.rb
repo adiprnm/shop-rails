@@ -1,10 +1,13 @@
 class TelegramClient < ApplicationClient
-  def send_message(text, parse_mode: "Markdown")
-    response = post("/bot#{bot_token}/sendMessage", {
+  def send_message(text, parse_mode: "Markdown", reply_markup: nil)
+    params = {
       chat_id: chat_id,
       text: text,
       parse_mode: parse_mode
-    })
+    }
+    params[:reply_markup] = reply_markup if reply_markup
+
+    response = post("/bot#{bot_token}/sendMessage", params)
 
     return response if response[:success]
 
@@ -15,15 +18,18 @@ class TelegramClient < ApplicationClient
     { success: false, error: e.message }
   end
 
-  def send_photo(photo_path, caption: nil, parse_mode: "Markdown")
+  def send_photo(photo_path, caption: nil, parse_mode: "Markdown", reply_markup: nil)
     file = File.open(photo_path)
 
-    response = post_multipart("/bot#{bot_token}/sendPhoto", {
+    params = {
       "chat_id" => chat_id,
       "photo" => file,
       "caption" => caption,
       "parse_mode" => parse_mode
-    })
+    }
+    params["reply_markup"] = reply_markup if reply_markup
+
+    response = post_multipart("/bot#{bot_token}/sendPhoto", params)
 
     return response if response[:success]
 
@@ -34,6 +40,22 @@ class TelegramClient < ApplicationClient
     { success: false, error: e.message }
   ensure
     file&.close
+  end
+
+  def answer_callback_query(callback_query_id, text: nil, show_alert: false)
+    response = post("/bot#{bot_token}/answerCallbackQuery", {
+      callback_query_id: callback_query_id,
+      text: text,
+      show_alert: show_alert
+    })
+
+    return response if response[:success]
+
+    Rails.logger.error "Telegram answer_callback_query failed: #{response[:error]}"
+    response
+  rescue StandardError => e
+    Rails.logger.error "Telegram answer_callback_query error: #{e.class} - #{e.message}"
+    { success: false, error: e.message }
   end
 
   class Error < StandardError; end

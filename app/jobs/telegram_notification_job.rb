@@ -58,7 +58,8 @@ class TelegramNotificationJob < ApplicationJob
       tempfile.rewind
 
       caption = format_evidence_uploaded_message_as_caption
-      TelegramClient.new.send_photo(tempfile.path, caption: caption, parse_mode: "Markdown")
+      reply_markup = manual_payment_keyboard
+      TelegramClient.new.send_photo(tempfile.path, caption: caption, parse_mode: "Markdown", reply_markup: reply_markup)
     end
   end
 
@@ -71,13 +72,15 @@ class TelegramNotificationJob < ApplicationJob
       tempfile.rewind
 
       caption = format_paid_message_as_caption
-      TelegramClient.new.send_photo(tempfile.path, caption: caption, parse_mode: "Markdown")
+      reply_markup = manual_payment_keyboard
+      TelegramClient.new.send_photo(tempfile.path, caption: caption, parse_mode: "Markdown", reply_markup: reply_markup)
     end
   end
 
   def send_paid_notification_text
     message = format_paid_message
-    TelegramClient.new.send_message(message, parse_mode: "Markdown")
+    reply_markup = manual_payment_keyboard
+    TelegramClient.new.send_message(message, parse_mode: "Markdown", reply_markup: reply_markup)
   end
 
   def format_paid_message
@@ -91,33 +94,27 @@ class TelegramNotificationJob < ApplicationJob
   end
 
   def format_order_paid_message(payment_method)
-    products = payable.line_items.map { |li| li.orderable_name }.join(", ")
+    products = payable.line_items.map { |li| "- #{ li.orderable_name }" }.join("\n")
 
     <<~MESSAGE
       🔔 *New Order Paid*
 
       *Order*
-
       \##{payable.order_id}
 
       *Customer*
-
       #{payable.customer_name}
 
       *Products*
-
       #{products}
 
       *Total*
-
       #{format_currency(payable.total_price)}
 
       *Payment*
-
       #{payment_method}
 
       *Date*
-
       #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
 
       #{manual_payment_notice}
@@ -129,27 +126,21 @@ class TelegramNotificationJob < ApplicationJob
       🔔 *New Donation Paid*
 
       *Donation*
-
       \##{payable.donation_id}
 
       *Donor*
-
       #{payable.name}
 
       *Amount*
-
       #{format_currency(payable.amount)}
 
       *Message*
-
       #{payable.message}
 
       *Payment*
-
       #{payment_method}
 
       *Date*
-
       #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
 
       #{manual_payment_notice}
@@ -167,33 +158,27 @@ class TelegramNotificationJob < ApplicationJob
   end
 
   def format_order_paid_message_as_caption(payment_method)
-    products = payable.line_items.map { |li| li.orderable_name }.join(", ")
+    products = payable.line_items.map { |li| "- #{ li.orderable_name }" }.join("\n")
 
     <<~MESSAGE
       🔔 *New Order Paid*
 
       *Order*
-
       \##{payable.order_id}
 
       *Customer*
-
       #{payable.customer_name}
 
       *Products*
-
       #{products}
 
       *Total*
-
       #{format_currency(payable.total_price)}
 
       *Payment*
-
       #{payment_method}
 
       *Date*
-
       #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
 
       #{manual_payment_notice}
@@ -205,27 +190,21 @@ class TelegramNotificationJob < ApplicationJob
       🔔 *New Donation Paid*
 
       *Donation*
-
       \##{payable.donation_id}
 
       *Donor*
-
       #{payable.name}
 
       *Amount*
-
       #{format_currency(payable.amount)}
 
       *Message*
-
       #{payable.message}
 
       *Payment*
-
       #{payment_method}
 
       *Date*
-
       #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
 
       #{manual_payment_notice}
@@ -241,29 +220,24 @@ class TelegramNotificationJob < ApplicationJob
   end
 
   def format_order_evidence_uploaded_message_as_caption
-    products = payable.line_items.map { |li| li.orderable_name }.join(", ")
+    products = payable.line_items.map { |li| "- #{ li.orderable_name }" }.join("\n")
 
     <<~MESSAGE
       📎 *Payment Evidence Uploaded*
 
       *Order*
-
       \##{payable.order_id}
 
       *Customer*
-
       #{payable.customer_name}
 
       *Products*
-
       #{products}
 
       *Total*
-
       #{format_currency(payable.total_price)}
 
       *Date*
-
       #{payable.state_updated_at.strftime("%Y-%m-%d %H:%M")}
 
       ⚠️ *Payment waiting for approval*
@@ -372,6 +346,22 @@ class TelegramNotificationJob < ApplicationJob
 
   def manual_payment_with_evidence?
     Current.settings["payment_provider"] == "manual" && payable.latest_payment_evidence&.file&.attached?
+  end
+
+  def manual_payment_keyboard
+    return nil unless Current.settings["payment_provider"] == "manual"
+
+    payable_type = donation? ? "donation" : "order"
+    payable_id = donation? ? payable.donation_id : payable.order_id
+
+    {
+      inline_keyboard: [
+        [
+          { text: "✅ Approve", callback_data: "approve:#{payable_type}:#{payable_id}" },
+          { text: "❌ Reject", callback_data: "reject:#{payable_type}:#{payable_id}" }
+        ]
+      ]
+    }.to_json
   end
 
   def manual_payment_notice

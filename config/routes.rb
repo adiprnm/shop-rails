@@ -90,6 +90,10 @@ Rails.application.routes.draw do
     resource :midtrans, only: %w[] do
       post :payment
     end
+
+    resource :telegram_webhooks, only: %w[] do
+      post :create
+    end
   end
 
   resources :shipping_costs, only: %w[ index ]
