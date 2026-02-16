@@ -110,7 +110,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
     payable.update!(state: "paid")
     payable.mark_evidences_as_checked
     TelegramClient.new.answer_callback_query(callback_query_id, text: "Payment approved successfully!", show_alert: false)
-    remove_inline_buttons(message) if message
+    update_message_status(message, "approved") if message
   end
 
   def reject_payment(payable_type, payable_id, callback_query_id, message = nil)
@@ -129,7 +129,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
     payable.update!(state: "failed")
     payable.mark_evidences_as_checked
     TelegramClient.new.answer_callback_query(callback_query_id, text: "Payment rejected", show_alert: false)
-    remove_inline_buttons(message) if message
+    update_message_status(message, "rejected") if message
   end
 
   def find_payable(payable_type, payable_id)
@@ -153,5 +153,24 @@ class Integrations::TelegramWebhooksController < ApplicationController
       chat_id: chat_id,
       message_id: message_id
     )
+  end
+
+  def update_message_status(message, status)
+    return unless message
+
+    chat_id = message[:chat][:id]
+    message_id = message[:message_id]
+    caption = message[:caption]
+
+    status_text = status == "approved" ? "✅ *Payment Approved*" : "❌ *Payment Rejected*"
+    new_caption = [ status_text, "", caption ].join("\n")
+
+    TelegramClient.new.edit_message_caption(
+      chat_id: chat_id,
+      message_id: message_id,
+      caption: new_caption
+    )
+
+    remove_inline_buttons(message)
   end
 end

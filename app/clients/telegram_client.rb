@@ -76,6 +76,25 @@ class TelegramClient < ApplicationClient
     { success: false, error: e.message }
   end
 
+  def edit_message_caption(chat_id:, message_id:, caption:)
+    params = {
+      chat_id: chat_id,
+      message_id: message_id,
+      caption: caption,
+      parse_mode: "Markdown"
+    }
+
+    response = post("/bot#{bot_token}/editMessageCaption", params)
+
+    return response if response[:success]
+
+    Rails.logger.error "Telegram edit_message_caption failed: #{response[:error]}"
+    response
+  rescue StandardError => e
+    Rails.logger.error "Telegram edit_message_caption error: #{e.class} - #{e.message}"
+    { success: false, error: e.message }
+  end
+
   class Error < StandardError; end
 
   private

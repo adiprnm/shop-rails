@@ -13,7 +13,7 @@ class PaymentEvidence < ApplicationRecord
   end
 
   def notify_telegram_admin
-    TelegramNotificationJob.perform_later(payable, :evidence_uploaded)
+    TelegramNotificationJob.perform_now(payable, :evidence_uploaded)
   end
 
   def update_payable

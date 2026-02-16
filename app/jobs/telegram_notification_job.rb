@@ -111,7 +111,7 @@ class TelegramNotificationJob < ApplicationJob
       #{products}
 
       *Total*
-      #{format_currency(payable.total_price)}
+      #{format_currency(payable.total_price + payable.unique_code.to_i)}
 
       *Payment*
       #{payment_method}
@@ -175,7 +175,7 @@ class TelegramNotificationJob < ApplicationJob
       #{products}
 
       *Total*
-      #{format_currency(payable.total_price)}
+      #{format_currency(payable.total_price + payable.unique_code.to_i)}
 
       *Payment*
       #{payment_method}
@@ -237,7 +237,7 @@ class TelegramNotificationJob < ApplicationJob
       #{products}
 
       *Total*
-      #{format_currency(payable.total_price)}
+      #{format_currency(payable.total_price + payable.unique_code.to_i)}
 
       *Date*
       #{I18n.l payable.state_updated_at, locale: :id, format: :long}
@@ -288,18 +288,23 @@ class TelegramNotificationJob < ApplicationJob
       ⚠️ *Order Failed*
 
       *Order*
+
       \##{payable.order_id}
 
       *Customer*
+
       #{payable.customer_name}
 
       *Total*
-      #{format_currency(payable.total_price)}
+
+      #{format_currency(payable.total_price + payable.unique_code.to_i)}
 
       *Reason*
+
       #{reason}
 
       *Date*
+
       #{I18n.l payable.state_updated_at, locale: :id, format: :long}
     MESSAGE
   end
