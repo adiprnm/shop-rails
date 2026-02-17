@@ -9,7 +9,7 @@ class Admin::DonationsController < AdminController
   def edit; end
 
   def update
-    @donation.update(params.require(:donation).permit(:name, :amount, :message, :state, :remark))
+    @donation.update(donation_params)
 
     if @donation.saved_change_to_state?
       @donation.mark_evidences_as_checked
@@ -25,7 +25,12 @@ class Admin::DonationsController < AdminController
   end
 
   private
-    def set_donation
-      @donation = Donation.find(params[:id])
-    end
+
+  def set_donation
+    @donation = Donation.find(params[:id])
+  end
+
+  def donation_params
+    params.require(:donation).permit(:name, :amount, :message, :state, :remark)
+  end
 end

@@ -1,46 +1,39 @@
 class AddressesController < ApplicationController
   def cities
-    province_id = params[:province_id]
-
-    if province_id.blank?
-      render turbo_stream: turbo_stream.update("shipping_city_select", tag.option("Select City", value: ""))
-      return
+    if params[:province_id].blank?
+      render_address_select("shipping_city_select", "Select City")
+    else
+      cities = AddressService.ensure_cities(params[:province_id])
+      render turbo_stream: turbo_stream.update("shipping_city_select", partial: "addresses/cities_options", locals: { cities: cities })
     end
-
-    cities = AddressService.ensure_cities(province_id)
-
-    render turbo_stream: turbo_stream.update("shipping_city_select", partial: "addresses/cities_options", locals: { cities: cities })
   end
 
   def districts
-    city_id = params[:city_id]
-
-    if city_id.blank?
-      render turbo_stream: turbo_stream.update("shipping_district_select", tag.option("Select District", value: ""))
-      return
+    if params[:city_id].blank?
+      render_address_select("shipping_district_select", "Select District")
+    else
+      districts = AddressService.ensure_districts(params[:city_id])
+      render turbo_stream: turbo_stream.update("shipping_district_select", partial: "addresses/districts_options", locals: { districts: districts })
     end
-
-    districts = AddressService.ensure_districts(city_id)
-
-    render turbo_stream: turbo_stream.update("shipping_district_select", partial: "addresses/districts_options", locals: { districts: districts })
   end
 
   def subdistricts
-    district_id = params[:district_id]
-
-    if district_id.blank?
-      render turbo_stream: turbo_stream.update("shipping_subdistrict_select", tag.option("Select Subdistrict", value: ""))
-      return
+    if params[:district_id].blank?
+      render_address_select("shipping_subdistrict_select", "Select Subdistrict")
+    else
+      subdistricts = AddressService.ensure_subdistricts(params[:district_id])
+      render turbo_stream: turbo_stream.update("shipping_subdistrict_select", partial: "addresses/subdistricts_options", locals: { subdistricts: subdistricts })
     end
-
-    subdistricts = AddressService.ensure_subdistricts(district_id)
-
-    render turbo_stream: turbo_stream.update("shipping_subdistrict_select", partial: "addresses/subdistricts_options", locals: { subdistricts: subdistricts })
   end
 
   def provinces
     provinces = AddressService.ensure_provinces
-
     render turbo_stream: turbo_stream.update("provinces-options", partial: "addresses/provinces_options", locals: { provinces: provinces })
+  end
+
+  private
+
+  def render_address_select(target_id, placeholder)
+    render turbo_stream: turbo_stream.update(target_id, tag.option(placeholder, value: ""))
   end
 end

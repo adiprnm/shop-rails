@@ -8,32 +8,20 @@ class OrdersController < ApplicationController
   end
 
   def create
-    begin
-      ActiveRecord::Base.transaction do
-        @order = Transaction.new(Current.cart).create(checkout_params)
-        if @order.invalid?
-          redirect_to new_order_path, alert: @order.errors.full_messages.first
-          return
-        end
+    ActiveRecord::Base.transaction do
+      @order = Transaction.new(Current.cart).create(checkout_params)
 
-        if @order.total_price.zero?
-          @order.paid!
-          redirect_to cart_path
-        else
-          redirect_url = Transaction::Payment.for(@order).redirect_url
-          redirect_to redirect_url, allow_other_host: true
-        end
-      end
-    rescue StandardError => e
-      # capture exception to sentry
-      message = if Rails.env.production?
-        "Error terjadi ketika memproses pesanan kakak. Silahkan coba lagi nanti."
+      if @order.invalid?
+        redirect_to new_order_path, alert: @order.errors.full_messages.first
+      elsif @order.total_price.zero?
+        @order.paid!
+        redirect_to cart_path
       else
-        e.message
+        redirect_to_payment_gateway
       end
-
-      redirect_to new_order_path, alert: message
     end
+  rescue StandardError => e
+    redirect_to new_order_path, alert: error_message(e)
   end
 
   def show
@@ -42,20 +30,34 @@ class OrdersController < ApplicationController
   end
 
   private
-    def checkout_params
-      params.permit(
-        :customer_name,
-        :customer_email_address,
-        :customer_agree_to_terms,
-        :customer_agree_to_receive_newsletter,
-        :customer_phone,
-        :address_line,
-        :shipping_province_id,
-        :shipping_city_id,
-        :shipping_district_id,
-        :shipping_subdistrict_id,
-        :order_notes,
-        :shipping_cost_id
-      )
+
+  def redirect_to_payment_gateway
+    redirect_url = Transaction::Payment.for(@order).redirect_url
+    redirect_to redirect_url, allow_other_host: true
+  end
+
+  def error_message(error)
+    if Rails.env.production?
+      "Error terjadi ketika memproses pesanan kakak. Silahkan coba lagi nanti."
+    else
+      error.message
     end
+  end
+
+  def checkout_params
+    params.permit(
+      :customer_name,
+      :customer_email_address,
+      :customer_agree_to_terms,
+      :customer_agree_to_receive_newsletter,
+      :customer_phone,
+      :address_line,
+      :shipping_province_id,
+      :shipping_city_id,
+      :shipping_district_id,
+      :shipping_subdistrict_id,
+      :order_notes,
+      :shipping_cost_id
+    )
+  end
 end
