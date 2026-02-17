@@ -182,6 +182,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
     chat_id = message[:chat][:id]
     message_id = message[:message_id]
     caption = message[:caption]
+    caption = remove_payment_waiting_for_approval_text(caption)
 
     status_text = status == "approved" ? "✅ *PAYMENT APPROVED*" : "❌ *PAYMENT REJECTED*"
     new_caption = [ status_text, "", caption ].join("\n")
@@ -228,7 +229,6 @@ class Integrations::TelegramWebhooksController < ApplicationController
     )
     Rails.logger.info "Cache write result: #{write_result.inspect}"
 
-    TelegramClient.new.answer_callback_query(callback_query_id)
     TelegramClient.new.send_message_with_reply("Please enter rejection reason:")
     Rails.logger.info "request_rejection_reason completed"
   end
@@ -243,6 +243,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
     chat_id = pending[:chat_id]
     message_id = pending[:message_id]
     caption = pending[:caption]
+    caption = remove_payment_waiting_for_approval_text(caption)
 
     payable = find_payable(payable_type, payable_id)
 
@@ -256,7 +257,7 @@ class Integrations::TelegramWebhooksController < ApplicationController
       return
     end
 
-    payable.update!(state: "failed")
+    payable.update!(state: "failed", remark: reason)
     payable.mark_evidences_as_checked
 
     new_caption = [ "❌ *PAYMENT REJECTED*", "", "*Reason:* #{reason}", "", caption ].join("\n")
@@ -276,5 +277,18 @@ class Integrations::TelegramWebhooksController < ApplicationController
       chat_id: chat_id,
       message_id: message_id
     )
+  end
+
+  def remove_payment_waiting_for_approval_text(caption)
+    tokens = caption.split("\n")
+    index = tokens.find_index { |token| token.include?("Payment waiting for approval") }
+
+    if index
+      Rails.logger.info "Found index at #{index}"
+      tokens[0..(index - 1)].join("\n").strip
+    else
+      Rails.logger.info "Index not found"
+      caption
+    end
   end
 end

@@ -22,7 +22,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
 
   test "sends paid notification for order" do
     TelegramClient.any_instance.expects(:send_message)
-      .with(kind_of(String), parse_mode: "Markdown", reply_markup: nil)
+      .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
     TelegramNotificationJob.perform_now(@order, :paid)
@@ -30,7 +30,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
 
   test "sends paid notification for donation" do
     TelegramClient.any_instance.expects(:send_message)
-      .with(kind_of(String), parse_mode: "Markdown", reply_markup: nil)
+      .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
     TelegramNotificationJob.perform_now(@donation, :paid)
@@ -66,8 +66,8 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       checked: true
     )
 
-    TelegramClient.any_instance.expects(:send_photo)
-      .with(kind_of(String), caption: kind_of(String), parse_mode: "Markdown", reply_markup: kind_of(String))
+    TelegramClient.any_instance.expects(:send_message)
+      .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
     TelegramNotificationJob.perform_now(order, :paid)
@@ -83,8 +83,8 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       checked: true
     )
 
-    TelegramClient.any_instance.expects(:send_photo)
-      .with(kind_of(String), caption: kind_of(String), parse_mode: "Markdown", reply_markup: kind_of(String))
+    TelegramClient.any_instance.expects(:send_message)
+      .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
     TelegramNotificationJob.perform_now(donation, :paid)
@@ -95,7 +95,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
     Current.settings["payment_provider"] = "manual"
 
     TelegramClient.any_instance.expects(:send_message)
-      .with(kind_of(String), parse_mode: "Markdown", reply_markup: kind_of(String))
+      .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
     TelegramNotificationJob.perform_now(order, :paid)
@@ -106,7 +106,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
     Current.settings["payment_provider"] = "manual"
 
     TelegramClient.any_instance.expects(:send_message)
-      .with(kind_of(String), parse_mode: "Markdown", reply_markup: kind_of(String))
+      .with(kind_of(String), parse_mode: "Markdown")
       .returns(success: true)
 
     TelegramNotificationJob.perform_now(donation, :paid)
@@ -122,7 +122,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       assert_includes message, "*Customer*"
       assert_includes message, order.customer_name
       assert_includes message, "*Total*"
-      assert_includes message, "Rp #{order.total_price.to_s.reverse.scan(/.{1,3}/).join(".").reverse}"
+      assert_includes message, "Rp#{order.total_price.to_s.reverse.scan(/.{1,3}/).join(".").reverse}"
       assert_includes message, "*Payment*"
       assert_includes message, "Midtrans"
       assert options[:parse_mode] == "Markdown"
@@ -221,7 +221,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
     order.update(total_price: 150000)
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
-      assert_includes message, "Rp 150.000"
+      assert_includes message, "Rp150.000"
       { success: true }
     end
 
@@ -263,26 +263,26 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
     TelegramNotificationJob.perform_now(order, :paid)
   end
 
-  test "includes manual payment approval notice for order" do
+  test "does not include manual payment approval notice for order" do
     order = orders(:paid_order)
     Current.settings["payment_provider"] = "manual"
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
-      assert_includes message, "⚠️ *Payment waiting for approval*"
-      assert_includes message, "Please review and approve this manual payment"
+      refute_includes message, "Payment waiting for approval"
+      refute_includes message, "Please review and approve this manual payment"
       { success: true }
     end
 
     TelegramNotificationJob.perform_now(order, :paid)
   end
 
-  test "includes manual payment approval notice for donation" do
+  test "does not include manual payment approval notice for donation" do
     donation = donations(:named_donation)
     Current.settings["payment_provider"] = "manual"
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
-      assert_includes message, "⚠️ *Payment waiting for approval*"
-      assert_includes message, "Please review and approve this manual payment"
+      refute_includes message, "Payment waiting for approval"
+      refute_includes message, "Please review and approve this manual payment"
       { success: true }
     end
 
@@ -437,9 +437,7 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
       checked: true
     )
 
-    Tempfile.expects(:create).with(kind_of(Array)).yields(File.new(Dir.tmpdir + "/test", "w"))
-
-    TelegramClient.any_instance.expects(:send_photo).returns(success: true)
+    TelegramClient.any_instance.expects(:send_message).returns(success: true)
 
     TelegramNotificationJob.perform_now(order, :paid)
   end
@@ -451,36 +449,24 @@ class TelegramNotificationJobTest < ActiveJob::TestCase
     TelegramNotificationJob.perform_now(@order, :paid)
   end
 
-  test "includes inline keyboard for manual order payment" do
+  test "does not include inline keyboard for manual order payment" do
     order = orders(:paid_order)
     Current.settings["payment_provider"] = "manual"
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
-      reply_markup = JSON.parse(options[:reply_markup])
-      assert_equal 1, reply_markup["inline_keyboard"].length
-      assert_equal 2, reply_markup["inline_keyboard"][0].length
-      assert_equal "✅ Approve", reply_markup["inline_keyboard"][0][0]["text"]
-      assert_equal "approve:order:#{order.order_id}", reply_markup["inline_keyboard"][0][0]["callback_data"]
-      assert_equal "❌ Reject", reply_markup["inline_keyboard"][0][1]["text"]
-      assert_equal "reject:order:#{order.order_id}", reply_markup["inline_keyboard"][0][1]["callback_data"]
+      refute options[:reply_markup]
       { success: true }
     end
 
     TelegramNotificationJob.perform_now(order, :paid)
   end
 
-  test "includes inline keyboard for manual donation payment" do
+  test "does not include inline keyboard for manual donation payment" do
     donation = donations(:named_donation)
     Current.settings["payment_provider"] = "manual"
 
     TelegramClient.any_instance.expects(:send_message) do |message, options|
-      reply_markup = JSON.parse(options[:reply_markup])
-      assert_equal 1, reply_markup["inline_keyboard"].length
-      assert_equal 2, reply_markup["inline_keyboard"][0].length
-      assert_equal "✅ Approve", reply_markup["inline_keyboard"][0][0]["text"]
-      assert_equal "approve:donation:#{donation.donation_id}", reply_markup["inline_keyboard"][0][0]["callback_data"]
-      assert_equal "❌ Reject", reply_markup["inline_keyboard"][0][1]["text"]
-      assert_equal "reject:donation:#{donation.donation_id}", reply_markup["inline_keyboard"][0][1]["callback_data"]
+      refute options[:reply_markup]
       { success: true }
     end
 

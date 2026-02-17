@@ -46,15 +46,15 @@ class Order::Notification
   end
 
   def notify_telegram_admin
-    return unless telegram_enabled?
-
-    TelegramNotificationJob.perform_later(order, :paid)
+    if telegram_enabled? && Current.settings["payment_provider"] == "midtrans"
+      TelegramNotificationJob.perform_later(order, :paid)
+    end
   end
 
   def notify_telegram_failed
-    return unless telegram_enabled?
-
-    TelegramNotificationJob.perform_later(order, :failed)
+    if telegram_enabled? && Current.settings["payment_provider"] == "midtrans"
+      TelegramNotificationJob.perform_later(order, :failed)
+    end
   end
 
   private

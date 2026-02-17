@@ -38,11 +38,8 @@ class TelegramNotificationJob < ApplicationJob
   end
 
   def send_paid_notification
-    if manual_payment_with_evidence?
-      send_paid_notification_with_photo
-    else
-      send_paid_notification_text
-    end
+    message = format_paid_message
+    TelegramClient.new.send_message(message, parse_mode: "Markdown")
   end
 
   def send_failed_notification
@@ -59,30 +56,10 @@ class TelegramNotificationJob < ApplicationJob
       tempfile.write(evidence.file.download)
       tempfile.rewind
 
-      caption = format_evidence_uploaded_message_as_caption
+      caption = format_evidence_uploaded_message
       reply_markup = manual_payment_keyboard
       TelegramClient.new.send_photo(tempfile.path, caption: caption, parse_mode: "Markdown", reply_markup: reply_markup)
     end
-  end
-
-  def send_paid_notification_with_photo
-    evidence = payable.latest_payment_evidence
-
-    Tempfile.create([ "payment_evidence", File.extname(evidence.file.filename.to_s) ]) do |tempfile|
-      tempfile.binmode
-      tempfile.write(evidence.file.download)
-      tempfile.rewind
-
-      caption = format_paid_message_as_caption
-      reply_markup = manual_payment_keyboard
-      TelegramClient.new.send_photo(tempfile.path, caption: caption, parse_mode: "Markdown", reply_markup: reply_markup)
-    end
-  end
-
-  def send_paid_notification_text
-    message = format_paid_message
-    reply_markup = manual_payment_keyboard
-    TelegramClient.new.send_message(message, parse_mode: "Markdown", reply_markup: reply_markup)
   end
 
   def format_paid_message
@@ -118,8 +95,6 @@ class TelegramNotificationJob < ApplicationJob
 
       *Date*
       #{I18n.l payable.state_updated_at, locale: :id, format: :long}
-
-      #{manual_payment_notice}
     MESSAGE
   end
 
@@ -144,84 +119,18 @@ class TelegramNotificationJob < ApplicationJob
 
       *Date*
       #{I18n.l payable.state_updated_at, locale: :id, format: :long}
-
-      #{manual_payment_notice}
     MESSAGE
   end
 
-  def format_paid_message_as_caption
-    payment_method = Current.settings["payment_provider"].humanize
-
+  def format_evidence_uploaded_message
     if donation?
-      format_donation_paid_message_as_caption(payment_method)
+      format_donation_evidence_uploaded_message
     else
-      format_order_paid_message_as_caption(payment_method)
+      format_order_evidence_uploaded_message
     end
   end
 
-  def format_order_paid_message_as_caption(payment_method)
-    products = payable.line_items.map { |li| "- #{ li.orderable_name }" }.join("\n")
-
-    <<~MESSAGE
-      🔔 *New Order Paid*
-
-      *Order*
-      \##{payable.order_id}
-
-      *Customer*
-      #{payable.customer_name}
-
-      *Products*
-      #{products}
-
-      *Total*
-      #{format_currency(payable.total_price + payable.unique_code.to_i)}
-
-      *Payment*
-      #{payment_method}
-
-      *Date*
-      #{I18n.l payable.state_updated_at, locale: :id, format: :long}
-
-      #{manual_payment_notice}
-    MESSAGE
-  end
-
-  def format_donation_paid_message_as_caption(payment_method)
-    <<~MESSAGE
-      🔔 *New Donation Paid*
-
-      *Donation*
-      \##{payable.donation_id}
-
-      *Donor*
-      #{payable.name}
-
-      *Amount*
-      #{format_currency(payable.amount)}
-
-      *Message*
-      #{payable.message}
-
-      *Payment*
-      #{payment_method}
-
-      *Date*
-      #{I18n.l payable.state_updated_at, locale: :id, format: :long}
-
-      #{manual_payment_notice}
-    MESSAGE
-  end
-
-  def format_evidence_uploaded_message_as_caption
-    if donation?
-      format_donation_evidence_uploaded_message_as_caption
-    else
-      format_order_evidence_uploaded_message_as_caption
-    end
-  end
-
-  def format_order_evidence_uploaded_message_as_caption
+  def format_order_evidence_uploaded_message
     products = payable.line_items.map { |li| "- #{ li.orderable_name }" }.join("\n")
 
     <<~MESSAGE
@@ -242,13 +151,11 @@ class TelegramNotificationJob < ApplicationJob
       *Date*
       #{I18n.l payable.state_updated_at, locale: :id, format: :long}
 
-      ⚠️ *Payment waiting for approval*
-
-      Please review and approve this manual payment.
+      #{manual_payment_notice}
     MESSAGE
   end
 
-  def format_donation_evidence_uploaded_message_as_caption
+  def format_donation_evidence_uploaded_message
     <<~MESSAGE
       📎 *Payment Evidence Uploaded*
 
@@ -267,9 +174,7 @@ class TelegramNotificationJob < ApplicationJob
       *Date*
       #{I18n.l payable.state_updated_at, locale: :id, format: :long}
 
-      ⚠️ *Payment waiting for approval*
-
-      Please review and approve this manual payment.
+      #{manual_payment_notice}
     MESSAGE
   end
 
@@ -288,23 +193,18 @@ class TelegramNotificationJob < ApplicationJob
       ⚠️ *Order Failed*
 
       *Order*
-
       \##{payable.order_id}
 
       *Customer*
-
       #{payable.customer_name}
 
       *Total*
-
       #{format_currency(payable.total_price + payable.unique_code.to_i)}
 
       *Reason*
-
       #{reason}
 
       *Date*
-
       #{I18n.l payable.state_updated_at, locale: :id, format: :long}
     MESSAGE
   end
@@ -333,7 +233,7 @@ class TelegramNotificationJob < ApplicationJob
   end
 
   def format_currency(amount)
-    "Rp #{amount.to_s.reverse.scan(/.{1,3}/).join(".").reverse}"
+    "Rp#{amount.to_s.reverse.scan(/.{1,3}/).join(".").reverse}"
   end
 
   def manual_payment_with_evidence?
@@ -341,7 +241,7 @@ class TelegramNotificationJob < ApplicationJob
   end
 
   def manual_payment_keyboard
-    return nil unless Current.settings["payment_provider"] == "manual"
+    return unless Current.settings["payment_provider"] == "manual"
 
     payable_type = donation? ? "donation" : "order"
     payable_id = donation? ? payable.donation_id : payable.order_id
@@ -360,7 +260,6 @@ class TelegramNotificationJob < ApplicationJob
     return "" unless Current.settings["payment_provider"] == "manual"
 
     <<~NOTICE
-
       ⚠️ *Payment waiting for approval*
 
       Please review and approve this manual payment.

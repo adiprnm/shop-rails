@@ -51,7 +51,7 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
     @order.update(state: "paid")
   end
 
-  test "sends telegram notification for manual payment with evidence" do
+  test "does not send telegram notification for manual payment with evidence" do
     order = orders(:pending_order)
     Current.settings["payment_provider"] = "manual"
 
@@ -62,16 +62,18 @@ class TelegramNotificationIntegrationTest < ActionDispatch::IntegrationTest
 
     TelegramNotificationJob.expects(:perform_later)
       .with(order, :paid)
+      .never
 
     order.update(state: "paid")
   end
 
-  test "sends telegram notification for manual payment without evidence" do
+  test "does not send telegram notification for manual payment without evidence" do
     order = orders(:pending_order)
     Current.settings["payment_provider"] = "manual"
 
     TelegramNotificationJob.expects(:perform_later)
       .with(order, :paid)
+      .never
 
     order.update(state: "paid")
   end
