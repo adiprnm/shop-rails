@@ -5,13 +5,11 @@ Rails.application.routes.draw do
 
   mount MissionControl::Jobs::Engine, at: "/jobs"
 
-  resources :addresses, only: [] do
-    collection do
-      get :provinces
-      get :cities
-      get :districts
-      get :subdistricts
-    end
+  namespace :addresses do
+    resources :provinces, only: [ :index ]
+    resources :cities, only: [ :index ]
+    resources :districts, only: [ :index ]
+    resources :subdistricts, only: [ :index ]
   end
 
   resource :cart, only: [ :show ] do
