@@ -15,14 +15,8 @@ Rails.application.routes.draw do
   end
 
   resource :cart, only: [ :show ] do
-    resources :line_items, controller: "cart_line_items", only: [ :destroy ]
-  end
-
-  resource :cart_coupon, only: [], controller: "cart_coupons" do
-    collection do
-      post :apply
-      post :remove
-    end
+    resources :items, controller: "cart/items", only: [ :destroy ]
+    resource :coupon, controller: "cart/coupon", only: [ :create, :destroy ]
   end
 
   resources :categories, only: [ :show ]

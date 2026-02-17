@@ -1,4 +1,4 @@
-class CartLineItemsController < ApplicationController
+class Cart::ItemsController < ApplicationController
   def destroy
     Current.cart.line_items.find(params[:id]).destroy
 

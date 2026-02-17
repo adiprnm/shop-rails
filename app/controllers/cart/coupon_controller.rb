@@ -1,5 +1,5 @@
-class CartCouponsController < ApplicationController
-  def apply
+class Cart::CouponController < ApplicationController
+  def create
     coupon_code = params[:coupon_code]&.strip
 
     if Current.cart.apply_coupon!(coupon_code, customer_email: session[:customer_email])
@@ -9,7 +9,7 @@ class CartCouponsController < ApplicationController
     end
   end
 
-  def remove
+  def destroy
     Current.cart.remove_coupon!
     redirect_to cart_path, notice: "Coupon removed"
   end
