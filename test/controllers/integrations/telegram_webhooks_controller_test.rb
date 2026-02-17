@@ -71,7 +71,6 @@ class Integrations::TelegramWebhooksControllerTest < ActionDispatch::Integration
       from: { id: 789 }
     }
 
-    TelegramClient.any_instance.expects(:answer_callback_query).with("123").returns(success: true)
     TelegramClient.any_instance.expects(:send_message_with_reply).with("Please enter rejection reason:").returns(success: true)
 
     post integrations_telegram_webhooks_path, params: { callback_query: callback_query }
@@ -105,7 +104,6 @@ class Integrations::TelegramWebhooksControllerTest < ActionDispatch::Integration
       from: { id: 789 }
     }
 
-    TelegramClient.any_instance.expects(:answer_callback_query).with("123").returns(success: true)
     TelegramClient.any_instance.expects(:send_message_with_reply).with("Please enter rejection reason:").returns(success: true)
 
     post integrations_telegram_webhooks_path, params: { callback_query: callback_query }
@@ -164,7 +162,6 @@ class Integrations::TelegramWebhooksControllerTest < ActionDispatch::Integration
       from: { id: 789 }
     }
 
-    TelegramClient.any_instance.expects(:answer_callback_query).with("123").returns(success: true)
     TelegramClient.any_instance.expects(:send_message_with_reply).with("Please enter rejection reason:").returns(success: true)
 
     post integrations_telegram_webhooks_path, params: { callback_query: callback_query }
