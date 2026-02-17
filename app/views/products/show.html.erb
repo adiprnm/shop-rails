@@ -25,12 +25,13 @@
 
       <% unless @product.coming_soon? %>
         <% if @product.physical_product? %>
-          <%= form_with url: add_to_cart_product_path(@product.slug),
+          <%= form_with url: cart_items_path,
             method: :post,
             data: {
               controller: "busy-handler form-control",
               form_control_required_fields_value: ["product_variant_id", "quantity"]
             } do |f| %>
+            <%= f.hidden_field :product_id, value: @product.slug %>
             <div class="grouped">
               <div class="form-group">
                 <%= f.label :product_variant_id, "Pilih Variants" %>
@@ -62,12 +63,13 @@
             <button type="submit" data-action="busy-handler#handle" disabled data-form-control-target="submitButton" >+ Keranjangin</button>
           <% end %>
         <% elsif @product.minimum_price.present? %>
-          <%= form_with url: add_to_cart_product_path(@product.slug),
+          <%= form_with url: cart_items_path,
             method: :post,
             data: {
               controller: "busy-handler form-control",
               form_control_required_fields_value: ["price"]
             } do |f| %>
+            <%= f.hidden_field :product_id, value: @product.slug %>
             <%= f.number_field :price,
               required: true,
               min: @product.minimum_price,
@@ -78,7 +80,7 @@
             <button type="submit" data-action="busy-handler#handle" disabled data-form-control-target="submitButton" >+ Keranjangin</button>
           <% end %>
         <% else %>
-          <%= button_to "+ Keranjangin", add_to_cart_product_path(@product.slug), method: :post, form: { data: { controller: "busy-handler" }, class: "w-max inline-block" }, data: { action: "busy-handler#handle" } %>
+          <%= button_to "+ Keranjangin", cart_items_path(product_id: @product.slug), method: :post, form: { data: { controller: "busy-handler" }, class: "w-max inline-block" }, data: { action: "busy-handler#handle" } %>
         <% end %>
 
         <% if @product.digital_product? && @product.productable.sample.attached? %>

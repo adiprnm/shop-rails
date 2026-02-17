@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
   resource :cart, only: [ :show ] do
     scope module: :cart do
-      resources :items, only: [ :destroy ]
+      resources :items, only: [ :create, :destroy ]
       resource :coupon_redemption, only: [ :create, :destroy ]
     end
   end
@@ -25,11 +25,7 @@ Rails.application.routes.draw do
     resource :payment_evidence, only: [ :new, :create ], controller: "orders/payment_evidences"
   end
 
-  resources :products, only: [ :index, :show ] do
-    member do
-      post :add_to_cart
-    end
-  end
+  resources :products, only: [ :index, :show ]
 
   resources :shipping_costs, only: [ :index ]
 
