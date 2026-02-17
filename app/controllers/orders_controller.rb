@@ -33,7 +33,18 @@ class OrdersController < ApplicationController
 
   def redirect_to_payment_gateway
     redirect_url = Transaction::Payment.for(@order).redirect_url
-    redirect_to redirect_url, allow_other_host: true
+    redirect_to redirect_url, allow_other_host: trusted_hosts
+  end
+
+  def trusted_hosts
+    hosts = [ request.host ]
+
+    if Current.settings["payment_provider"] == "midtrans"
+      payment_api_host = Current.settings["payment_api_host"]
+      hosts << URI.parse(payment_api_host).host if payment_api_host.present?
+    end
+
+    hosts
   end
 
   def error_message(error)
