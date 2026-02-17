@@ -49,7 +49,7 @@
             <tr>
               <td>
                 Kupon <%= tag.code Current.cart.coupon_code %>
-                <%= link_to "Hapus", cart_coupon_path, data: { turbo_method: :delete }, class: "text-red block mt-2 text-xs underline" %>
+                <%= link_to "Hapus", cart_coupon_redemption_path, data: { turbo_method: :delete }, class: "text-red block mt-2 text-xs underline" %>
               </td>
               <% if Current.cart.coupon&.free_shipping? %>
                 <td>
@@ -71,7 +71,7 @@
 
     <div class="mt-8">
       <h2 class="text-base font-base mb-4">Gunakan Kupon</h2>
-      <%= form_with url: cart_coupon_path, local: true do |f| %>
+      <%= form_with url: cart_coupon_redemption_path, local: true do |f| %>
         <div class="flex gap-2">
           <%= f.text_field :coupon_code,
               placeholder: "Masukkan kode kupon",

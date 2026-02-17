@@ -1,4 +1,4 @@
-class Cart::CouponApplicationController < ApplicationController
+class Cart::CouponRedemptionController < ApplicationController
   def create
     coupon_code = params[:coupon_code]&.strip
 
