@@ -15,8 +15,10 @@ Rails.application.routes.draw do
   end
 
   resource :cart, only: [ :show ] do
-    resources :items, controller: "cart/items", only: [ :destroy ]
-    resource :coupon_redemption, controller: "cart/coupon_redemption", only: [ :create, :destroy ]
+    scope module: :cart do
+      resources :items, only: [ :destroy ]
+      resource :coupon_redemption, only: [ :create, :destroy ]
+    end
   end
 
   resources :categories, only: [ :show ]
