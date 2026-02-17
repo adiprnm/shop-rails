@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_07_175053) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_17_111922) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -126,6 +126,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_07_175053) do
     t.index ["code"], name: "index_coupons_on_code", unique: true
     t.index ["expires_at"], name: "index_coupons_on_expires_at"
     t.index ["state"], name: "index_coupons_on_state"
+  end
+
+  create_table "database_backups", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "digital_products", force: :cascade do |t|
