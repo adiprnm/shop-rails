@@ -37,22 +37,22 @@ class Admin::ProductVariantsController < AdminController
   end
 
   def bulk_activate
-    @variants = @product.productable.product_variants.where(id: params[:variant_ids])
-
-    @variants.update_all(is_active: true)
-
-    redirect_to admin_product_variants_path(@product), notice: "#{@variants.count} variant(s) activated"
+    bulk_update_activation(true)
   end
 
   def bulk_deactivate
-    @variants = @product.productable.product_variants.where(id: params[:variant_ids])
-
-    @variants.update_all(is_active: false)
-
-    redirect_to admin_product_variants_path(@product), notice: "#{@variants.count} variant(s) deactivated"
+    bulk_update_activation(false)
   end
 
   private
+
+  def bulk_update_activation(active_state)
+    @variants = @product.productable.product_variants.where(id: params[:variant_ids])
+    @variants.update_all(is_active: active_state)
+
+    action = active_state ? "activated" : "deactivated"
+    redirect_to admin_product_variants_path(@product), notice: "#{@variants.count} variant(s) #{action}"
+  end
 
   def set_product
     @product = Product.find(params[:product_id])

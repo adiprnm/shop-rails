@@ -37,17 +37,21 @@ class Product < ApplicationRecord
 
   def self.create_with_productable(product_params, productable_params)
     productable_type = product_params.delete(:productable_type)
-
-    productable = case productable_type
-    when "DigitalProduct"
-      DigitalProduct.new(**productable_params)
-    when "PhysicalProduct"
-      PhysicalProduct.new(**productable_params)
-    end
+    productable = create_productable(productable_type, productable_params)
 
     product = Product.new(productable: productable, **product_params.to_h)
     product.save!
     product
+  end
+
+  def self.cart_recommendations(cart, limit: 4)
+    return none unless cart.line_items.present?
+
+    product_ids = cart.line_items.pluck(:cartable_id)
+    recommended_products = find_recommendations(product_ids)
+    recommended_products_ids = sample_recommendations(recommended_products, limit, product_ids)
+
+    where(id: recommended_products_ids).limit(limit)
   end
 
   def sale_price?
@@ -64,6 +68,7 @@ class Product < ApplicationRecord
 
   def coming_soon?
     return false if physical_product?
+
     productable.resource_path.blank?
   end
 
@@ -101,23 +106,30 @@ class Product < ApplicationRecord
       .includes(:recommended_product)
   end
 
-  def self.cart_recommendations(cart, limit: 4)
-    return none unless cart.line_items.present?
+  private
 
-    product_ids = cart.line_items.pluck(:cartable_id)
+  def self.create_productable(productable_type, productable_params)
+    case productable_type
+    when "DigitalProduct"
+      DigitalProduct.new(**productable_params)
+    when "PhysicalProduct"
+      PhysicalProduct.new(**productable_params)
+    end
+  end
 
-    recommended_products = joins(:received_recommendations)
+  def self.find_recommendations(product_ids)
+    joins(:received_recommendations)
       .where(received_recommendations: { source_product_id: product_ids })
       .active
       .distinct
-
-    recommended_products_ids = recommended_products.pluck(:id).sample([ limit, recommended_products.count ].min)
-    recommended_products_ids -= product_ids
-
-    where(id: recommended_products_ids).limit(limit)
   end
 
-  private
+  def self.sample_recommendations(recommended_products, limit, product_ids)
+    recommended_products_ids = recommended_products.pluck(:id)
+    recommended_products_ids = recommended_products_ids.sample([ limit, recommended_products.count ].min)
+    recommended_products_ids -= product_ids
+    recommended_products_ids
+  end
 
   def update_recommendations
     update_recommendation_type(:upsell, @upsell_product_ids) if @upsell_product_ids
@@ -128,10 +140,16 @@ class Product < ApplicationRecord
     new_ids = new_ids.reject(&:blank?).map(&:to_i)
     current_ids = source_recommendations.send(type).pluck(:recommended_product_id)
 
-    ids_to_remove = current_ids - new_ids
-    source_recommendations.send(type).where(recommended_product_id: ids_to_remove).destroy_all
+    remove_recommendations(type, current_ids - new_ids)
+    add_recommendations(type, new_ids - current_ids)
+    update_positions(type, new_ids)
+  end
 
-    ids_to_add = new_ids - current_ids
+  def remove_recommendations(type, ids_to_remove)
+    source_recommendations.send(type).where(recommended_product_id: ids_to_remove).destroy_all
+  end
+
+  def add_recommendations(type, ids_to_add)
     ids_to_add.each_with_index do |product_id, index|
       source_recommendations.create!(
         recommended_product_id: product_id,
@@ -139,10 +157,12 @@ class Product < ApplicationRecord
         position: index
       )
     end
+  end
 
-    new_ids.each_with_index do |product_id, index|
+  def update_positions(type, ids)
+    ids.each_with_index do |product_id, index|
       recommendation = source_recommendations.send(type).find_by(recommended_product_id: product_id)
-      recommendation.update(position: index) if recommendation
+      recommendation&.update(position: index)
     end
   end
 end

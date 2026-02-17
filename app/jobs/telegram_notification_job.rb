@@ -49,16 +49,17 @@ class TelegramNotificationJob < ApplicationJob
 
   def send_evidence_uploaded_notification
     evidence = payable.latest_payment_evidence
-    return unless evidence&.file&.attached?
 
-    Tempfile.create([ "payment_evidence", File.extname(evidence.file.filename.to_s) ]) do |tempfile|
-      tempfile.binmode
-      tempfile.write(evidence.file.download)
-      tempfile.rewind
+    if evidence&.file&.attached?
+      Tempfile.create([ "payment_evidence", File.extname(evidence.file.filename.to_s) ]) do |tempfile|
+        tempfile.binmode
+        tempfile.write(evidence.file.download)
+        tempfile.rewind
 
-      caption = format_evidence_uploaded_message
-      reply_markup = manual_payment_keyboard
-      TelegramClient.new.send_photo(tempfile.path, caption: caption, parse_mode: "Markdown", reply_markup: reply_markup)
+        caption = format_evidence_uploaded_message
+        reply_markup = manual_payment_keyboard
+        TelegramClient.new.send_photo(tempfile.path, caption: caption, parse_mode: "Markdown", reply_markup: reply_markup)
+      end
     end
   end
 

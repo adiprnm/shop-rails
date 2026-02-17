@@ -1,8 +1,9 @@
 class Order < ApplicationRecord
+  include Payable
+
   belongs_to :cart
 
   has_many :line_items, class_name: "OrderLineItem", dependent: :delete_all
-  has_many :payment_evidences, -> { order(created_at: :desc) }, as: :payable, dependent: :destroy
   has_many :coupon_usages, dependent: :destroy
 
   belongs_to :shipping_cost_record, class_name: "ShippingCost", optional: true, foreign_key: "shipping_cost_id"
@@ -15,8 +16,6 @@ class Order < ApplicationRecord
   belongs_to :shipping_subdistrict, class_name: "Subdistrict", optional: true
 
   enum :state, %w[ pending paid failed expired ]
-
-  before_save -> { self.state_updated_at = Time.now }, if: :state_changed?
   before_save -> { self.tracking_number_updated_at = Time.now }, if: :tracking_number_changed?
   before_create -> { self.order_id = SecureRandom.uuid }
   before_create -> { self.unique_code = generate_unique_code }, if: -> { Current.settings["payment_provider"] == "manual" }
@@ -53,20 +52,12 @@ class Order < ApplicationRecord
     has_physical_products == true
   end
 
-  def latest_payment_evidence
-    payment_evidences.first
-  end
-
   def expire?
     Time.now > will_expire_at && pending?
   end
 
   def will_expire_at
     (created_at + 1.day).in_time_zone(Current.time_zone)
-  end
-
-  def mark_evidences_as_checked
-    payment_evidences.where(checked: false).update_all(checked: true)
   end
 
   def generate_unique_code

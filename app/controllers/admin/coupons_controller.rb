@@ -85,46 +85,39 @@ class Admin::CouponsController < AdminController
   end
 
   def process_restrictions(coupon)
-    if params[:coupon][:included_product_ids].present?
-      params[:coupon][:included_product_ids].each do |product_id|
+    process_product_restrictions(coupon, "include")
+    process_product_restrictions(coupon, "exclude")
+    process_category_restrictions(coupon, "include")
+    process_category_restrictions(coupon, "exclude")
+  end
+
+  def process_product_restrictions(coupon, kind)
+    param_key = kind == "include" ? :included_product_ids : :excluded_product_ids
+
+    if params[:coupon][param_key].present?
+      params[:coupon][param_key].each do |product_id|
         next if product_id.blank?
+
         coupon.coupon_restrictions.create!(
           restriction_type: "Product",
           restriction_id: product_id,
-          restriction_kind: "include"
+          restriction_kind: kind
         )
       end
     end
+  end
 
-    if params[:coupon][:excluded_product_ids].present?
-      params[:coupon][:excluded_product_ids].each do |product_id|
-        next if product_id.blank?
-        coupon.coupon_restrictions.create!(
-          restriction_type: "Product",
-          restriction_id: product_id,
-          restriction_kind: "exclude"
-        )
-      end
-    end
+  def process_category_restrictions(coupon, kind)
+    param_key = kind == "include" ? :included_category_ids : :excluded_category_ids
 
-    if params[:coupon][:included_category_ids].present?
-      params[:coupon][:included_category_ids].each do |category_id|
+    if params[:coupon][param_key].present?
+      params[:coupon][param_key].each do |category_id|
         next if category_id.blank?
+
         coupon.coupon_restrictions.create!(
           restriction_type: "Category",
           restriction_id: category_id,
-          restriction_kind: "include"
-        )
-      end
-    end
-
-    if params[:coupon][:excluded_category_ids].present?
-      params[:coupon][:excluded_category_ids].each do |category_id|
-        next if category_id.blank?
-        coupon.coupon_restrictions.create!(
-          restriction_type: "Category",
-          restriction_id: category_id,
-          restriction_kind: "exclude"
+          restriction_kind: kind
         )
       end
     end

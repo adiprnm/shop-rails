@@ -3,6 +3,7 @@ class Admin::OrdersController < AdminController
 
   def index
     all_orders = Order.all.order(created_at: :desc)
+
     if params[:product_id].present?
       all_orders = all_orders.joins(:line_items).merge(OrderLineItem.where(orderable_id: params[:product_id]))
     end
@@ -19,19 +20,7 @@ class Admin::OrdersController < AdminController
   def edit; end
 
   def update
-    @order.update(
-      params
-      .require(:order)
-      .permit(
-        :customer_name,
-        :customer_email_address,
-        :customer_agree_to_terms,
-        :customer_agree_to_receive_newsletter,
-        :state,
-        :remark,
-        :tracking_number,
-      )
-    )
+    @order.update(order_params)
 
     if @order.saved_change_to_state?
       @order.mark_evidences_as_checked
@@ -47,7 +36,20 @@ class Admin::OrdersController < AdminController
   end
 
   private
-    def set_order
-      @order = Order.find(params[:id])
-    end
+
+  def set_order
+    @order = Order.find(params[:id])
+  end
+
+  def order_params
+    params.require(:order).permit(
+      :customer_name,
+      :customer_email_address,
+      :customer_agree_to_terms,
+      :customer_agree_to_receive_newsletter,
+      :state,
+      :remark,
+      :tracking_number
+    )
+  end
 end

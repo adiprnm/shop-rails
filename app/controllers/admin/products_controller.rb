@@ -32,10 +32,7 @@ class Admin::ProductsController < AdminController
 
   def update
     @product.update(product_params)
-
-    if productable_params
-      @product.productable.update(productable_params)
-    end
+    @product.productable.update(productable_params) if productable_params
 
     redirect_to edit_admin_product_path(@product), notice: "Update berhasil!"
   end

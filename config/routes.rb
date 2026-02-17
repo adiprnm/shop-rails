@@ -1,57 +1,57 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  root "products#index"
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  mount MissionControl::Jobs::Engine, at: "/jobs"
 
-  # Defines the root path route ("/")
-  root "products#index"
-  resources :products, only: %w[ index show ] do
-    member do
-      post :add_to_cart
-    end
-  end
-  resources :product, only: %w[ index show ], controller: "products" do
-    member do
-      post :add_to_cart
-    end
-  end
-  resources :categories, only: %w[ show ]
-  resource :cart, only: %w[ show ] do
-    resources :line_items, controller: "cart_line_items", only: %w[ destroy ]
-    collection do
-      post :apply_coupon
-      post :remove_coupon
-    end
-  end
-  resources :supports, controller: "donations", only: %w[ index show create ] do
-    resource :payment_evidence, only: %w[ new create ], controller: "donations/payment_evidences"
+  namespace :addresses do
+    resources :provinces, only: [ :index ]
+    resources :cities, only: [ :index ]
+    resources :districts, only: [ :index ]
+    resources :subdistricts, only: [ :index ]
   end
 
-  resources :orders, only: %w[ new show create ] do
-    resource :payment_evidence, only: %w[ new create ], controller: "orders/payment_evidences"
+  resource :cart, only: [ :show ] do
+    scope module: :cart do
+      resources :items, only: [ :create, :destroy ]
+      resource :coupon_redemption, only: [ :create, :destroy ]
+    end
   end
 
-  resources :admin, controller: "admin", only: %w[ index ]
+  resources :categories, only: [ :show ]
+
+  resources :orders, only: [ :new, :show, :create ] do
+    resource :payment_evidence, only: [ :new, :create ], controller: "orders/payment_evidences"
+  end
+
+  resources :products, only: [ :index, :show ]
+
+  resources :shipping_costs, only: [ :index ]
+
+  resources :supports, controller: "donations", only: [ :index, :show, :create ] do
+    resource :payment_evidence, only: [ :new, :create ], controller: "donations/payment_evidences"
+  end
+
+  resources :admin, controller: "admin", only: [ :index ]
+
   namespace :admin do
     resources :products do
       member do
         delete :delete_image
       end
-      resources :product_variants, only: %w[ index new create ]
+      resources :product_variants, only: [ :index, :new, :create ]
     end
-    resources :product_variants, only: %w[ edit update destroy ] do
+
+    resources :product_variants, only: [ :edit, :update, :destroy ] do
       collection do
         post :bulk_activate
         post :bulk_deactivate
       end
     end
+
     resources :categories
+
     resources :coupons do
       member do
         post :activate
@@ -61,44 +61,40 @@ Rails.application.routes.draw do
         post :export
       end
     end
-    resources :donations, only: %w[ index show edit update destroy ]
-    resources :emails, only: %w[ index ] do
+
+    resources :donations, only: [ :index, :show, :edit, :update, :destroy ]
+
+    resources :emails, only: [ :index ] do
       collection do
         post :test
       end
     end
+
     resources :orders
-    resource :settings, only: %w[ show update ]
-    resource :cache, only: %w[ show ] do
-      post :fetch_provinces
-      post :clear_shipping_cache
-    end
 
     resources :pages
-  end
 
-  resources :addresses, only: %w[] do
-    collection do
-      get :provinces
-      get :cities
-      get :districts
-      get :subdistricts
+    resource :settings, only: [ :show, :update ]
+
+    resource :cache, only: [ :show ] do
+      post :fetch_provinces
+      post :clear_shipping_cache
     end
   end
 
   namespace :integrations do
-    resource :midtrans, only: %w[] do
-      post :payment
+    resources :midtrans, only: [] do
+      collection do
+        post :payment
+      end
     end
 
-    resource :telegram_webhooks, only: %w[] do
-      post :create
+    resources :telegram_webhooks, only: [] do
+      collection do
+        post :create
+      end
     end
   end
-
-  resources :shipping_costs, only: %w[ index ]
-
-  mount MissionControl::Jobs::Engine, at: "/jobs"
 
   get ":slug", to: "pages#show"
 end
