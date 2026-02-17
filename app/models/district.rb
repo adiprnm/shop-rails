@@ -12,6 +12,6 @@ class District < ApplicationRecord
   end
 
   def phrased
-    "#{ name }, #{ city.name }, #{ city.province.name }"
+    "#{name}, #{city.name}, #{city.province.name}"
   end
 end

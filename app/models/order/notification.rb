@@ -11,7 +11,7 @@ class Order::Notification
   end
 
   def notify
-    notify_admin if Current.settings["payment_provider"] == "midtrans"
+    notify_admin
     notify_customer
     notify_telegram_admin
   end
@@ -30,6 +30,8 @@ class Order::Notification
   end
 
   def notify_admin
+    return unless Current.settings["payment_provider"] == "midtrans"
+
     OrderMailer
       .with(order: order, products: line_items)
       .admin_notification
@@ -46,22 +48,20 @@ class Order::Notification
   end
 
   def notify_telegram_admin
-    if telegram_enabled? && Current.settings["payment_provider"] == "midtrans"
-      TelegramNotificationJob.perform_later(order, :paid)
-    end
+    return unless telegram_enabled?
+    return unless Current.settings["payment_provider"] == "midtrans"
+
+    TelegramNotificationJob.perform_later(order, :paid)
   end
 
   def notify_telegram_failed
-    if telegram_enabled? && Current.settings["payment_provider"] == "midtrans"
-      TelegramNotificationJob.perform_later(order, :failed)
-    end
+    return unless telegram_enabled?
+    return unless Current.settings["payment_provider"] == "midtrans"
+
+    TelegramNotificationJob.perform_later(order, :failed)
   end
 
   private
-    def telegram_enabled?
-      Current.settings["telegram_enabled"] &&
-        Current.settings["telegram_enabled"] == "true" &&
-        Current.settings["telegram_bot_token"].present? &&
-        Current.settings["telegram_chat_id"].present?
-    end
+
+  include TelegramNotifiable
 end

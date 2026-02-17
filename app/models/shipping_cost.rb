@@ -26,32 +26,15 @@ class ShippingCost < ApplicationRecord
     destination_type = destination.class.name
     destination_id = destination.id
 
-    existing_record = find_by(
-      origin_type: origin_type,
-      origin_id: origin_id,
-      destination_type: destination_type,
-      destination_id: destination_id,
-      weight: weight,
-      courier: courier,
-      service: service
+    existing_record = find_existing_record(
+      origin_type, origin_id, destination_type, destination_id, weight, courier, service
     )
 
     if existing_record
-      return existing_record if existing_record.fresh?
-
-      new_cost = yield
-      if new_cost
-        existing_record.update(cost: new_cost.cost, price_updated_at: Time.current)
-      end
-      return existing_record
+      handle_existing_record(existing_record)
+    else
+      create_new_record(yield)
     end
-
-    new_cost = yield
-    if new_cost
-      new_cost.price_updated_at = Time.current
-      new_cost.save
-    end
-    new_cost
   end
 
   def self.purge_expired
@@ -67,5 +50,37 @@ class ShippingCost < ApplicationRecord
 
   def calculate
     cost
+  end
+
+  private
+
+  def self.find_existing_record(origin_type, origin_id, destination_type, destination_id, weight, courier, service)
+    find_by(
+      origin_type: origin_type,
+      origin_id: origin_id,
+      destination_type: destination_type,
+      destination_id: destination_id,
+      weight: weight,
+      courier: courier,
+      service: service
+    )
+  end
+
+  def self.handle_existing_record(existing_record)
+    return existing_record if existing_record.fresh?
+
+    new_cost = yield
+    if new_cost
+      existing_record.update(cost: new_cost.cost, price_updated_at: Time.current)
+    end
+    existing_record
+  end
+
+  def self.create_new_record(new_cost)
+    if new_cost
+      new_cost.price_updated_at = Time.current
+      new_cost.save
+    end
+    new_cost
   end
 end

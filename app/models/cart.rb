@@ -5,30 +5,11 @@ class Cart < ApplicationRecord
   has_one :coupon, primary_key: :coupon_code, foreign_key: :code
 
   def add_item(cartable, price = nil, product_variant = nil, quantity = 1)
-    if cartable.is_a?(Product) && cartable.physical_product?
-      unless product_variant
-        raise ArgumentError, "Variant must be specified for physical products"
-      end
-      unless product_variant.is_active
-        raise ArgumentError, "Selected variant is not available"
-      end
-      unless product_variant.product_id == cartable.id
-        raise ArgumentError, "Variant does not belong to this product"
-      end
-      unless product_variant.stock.positive?
-        raise ArgumentError, "Selected variant is out of stock"
-      end
-    end
+    validate_physical_product_addition(cartable, product_variant)
 
     line_item = line_items.find_or_initialize_by(cartable: cartable, product_variant: product_variant)
     line_item.price = price
-    if cartable.physical_product?
-      if line_item.new_record?
-        line_item.quantity = quantity
-      else
-        line_item.quantity += quantity
-      end
-    end
+    set_line_item_quantity(line_item, cartable, quantity)
     line_item.save!
     line_item
   end
@@ -90,5 +71,26 @@ class Cart < ApplicationRecord
 
   def shipping_cost
     0
+  end
+
+  private
+
+  def validate_physical_product_addition(cartable, product_variant)
+    return unless cartable.is_a?(Product) && cartable.physical_product?
+
+    raise ArgumentError, "Variant must be specified for physical products" unless product_variant
+    raise ArgumentError, "Selected variant is not available" unless product_variant.is_active
+    raise ArgumentError, "Variant does not belong to this product" unless product_variant.product_id == cartable.id
+    raise ArgumentError, "Selected variant is out of stock" unless product_variant.stock.positive?
+  end
+
+  def set_line_item_quantity(line_item, cartable, quantity)
+    if cartable.physical_product?
+      if line_item.new_record?
+        line_item.quantity = quantity
+      else
+        line_item.quantity += quantity
+      end
+    end
   end
 end

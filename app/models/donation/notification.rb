@@ -32,17 +32,13 @@ class Donation::Notification
     TelegramNotificationJob.perform_later(donation, :paid)
   end
 
+  private
+
   def notify_telegram_failed
     return unless telegram_enabled?
 
     TelegramNotificationJob.perform_later(donation, :failed)
   end
 
-  private
-    def telegram_enabled?
-      Current.settings["telegram_enabled"] &&
-        Current.settings["telegram_enabled"] == "true" &&
-        Current.settings["telegram_bot_token"].present? &&
-        Current.settings["telegram_chat_id"].present?
-    end
+  include TelegramNotifiable
 end

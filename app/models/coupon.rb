@@ -168,7 +168,7 @@ class Coupon < ApplicationRecord
       return false unless (excluded_category_ids & cart_category_ids).empty?
     end
 
-    if included_categories.any?
+    if included_category_ids.any?
       return false unless cart_category_ids.any? { |id| included_category_ids.include?(id) }
     end
 
