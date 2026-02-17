@@ -5,40 +5,9 @@ class AdminController < ApplicationController
   around_action :use_time_zone
 
   def index
-    @total_earnings = Order.paid.sum(:total_price)
-    @onhold_earnings = Order.pending.sum(:total_price)
-    @total_order = Order.count
-    @completed_order = Order.paid.count
-    @pending_order = Order.pending.count
-    @expired_order = Order.expired.count
-
-    @today_earnings = Order.paid.today.sum(:total_price)
-    @today_onhold_earnings = Order.pending.today.sum(:total_price)
-    @today_total_order = Order.today.where.not(state: :expired).count
-    @today_completed_order = Order.paid.today.count
-    @today_pending_order = Order.pending.today.count
-    @today_expired_order = Order.expired.today.count
-
-    @total_coupons = Coupon.count
-    @active_coupons = Coupon.active.count
-    @total_coupon_usage = CouponUsage.count
-    @total_discount_given = CouponUsage.sum(:discount_amount)
-
-    @today_created_coupons = Coupon.today.count
-    @today_activated_coupons = 0
-    @today_coupon_usage = CouponUsage.joins(:order).where(orders: { created_at: Time.current.all_day }).count
-    @today_discount_given = CouponUsage.joins(:order).where(orders: { created_at: Time.current.all_day }).sum(:discount_amount)
-
-    @revenue_chart_data = revenue_chart_data
-    @order_trend_data = order_trend_data
-    @category_sales_data = category_sales_data
-    @products = top_products
-    @average_order_value = average_order_value
-    @repeat_customers = repeat_customers_count
-    @geographic_distribution = geographic_distribution
-    @coupon_effectiveness = coupon_effectiveness_data
-    @coupon_usage_chart_data = coupon_usage_chart_data
-    @top_coupons = top_coupons_data
+    load_order_statistics
+    load_coupon_statistics
+    load_dashboard_analytics
   end
 
   def export_coupons
@@ -72,6 +41,47 @@ class AdminController < ApplicationController
   end
 
   private
+    def load_order_statistics
+      @total_earnings = Order.paid.sum(:total_price)
+      @onhold_earnings = Order.pending.sum(:total_price)
+      @total_order = Order.count
+      @completed_order = Order.paid.count
+      @pending_order = Order.pending.count
+      @expired_order = Order.expired.count
+
+      @today_earnings = Order.paid.today.sum(:total_price)
+      @today_onhold_earnings = Order.pending.today.sum(:total_price)
+      @today_total_order = Order.today.where.not(state: :expired).count
+      @today_completed_order = Order.paid.today.count
+      @today_pending_order = Order.pending.today.count
+      @today_expired_order = Order.expired.today.count
+    end
+
+    def load_coupon_statistics
+      @total_coupons = Coupon.count
+      @active_coupons = Coupon.active.count
+      @total_coupon_usage = CouponUsage.count
+      @total_discount_given = CouponUsage.sum(:discount_amount)
+
+      @today_created_coupons = Coupon.today.count
+      @today_activated_coupons = 0
+      @today_coupon_usage = CouponUsage.joins(:order).where(orders: { created_at: Time.current.all_day }).count
+      @today_discount_given = CouponUsage.joins(:order).where(orders: { created_at: Time.current.all_day }).sum(:discount_amount)
+    end
+
+    def load_dashboard_analytics
+      @revenue_chart_data = revenue_chart_data
+      @order_trend_data = order_trend_data
+      @category_sales_data = category_sales_data
+      @products = top_products
+      @average_order_value = average_order_value
+      @repeat_customers = repeat_customers_count
+      @geographic_distribution = geographic_distribution
+      @coupon_effectiveness = coupon_effectiveness_data
+      @coupon_usage_chart_data = coupon_usage_chart_data
+      @top_coupons = top_coupons_data
+    end
+
     def authenticate
       authenticate_or_request_with_http_basic do |username, password|
         username == Setting.admin_username.value && password == Setting.admin_password.value
